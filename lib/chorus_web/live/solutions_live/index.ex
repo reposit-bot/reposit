@@ -10,29 +10,31 @@ defmodule ChorusWeb.SolutionsLive.Index do
   def mount(_params, _session, socket) do
     {:ok,
      socket
+     |> assign(:page_title, "Browse Solutions")
      |> assign(:page, 1)
      |> assign(:sort, :score)
      |> assign(:per_page, @per_page)
-     |> load_solutions()}
+     |> assign(:loading, false)
+     |> assign(:end_of_list, false)
+     |> stream(:solutions, [])
+     |> load_initial_solutions()}
   end
 
   @impl true
   def handle_params(params, _uri, socket) do
-    page = parse_page(params["page"])
     sort = parse_sort(params["sort"])
 
-    {:noreply,
-     socket
-     |> assign(:page, page)
-     |> assign(:sort, sort)
-     |> load_solutions()}
-  end
-
-  defp parse_page(nil), do: 1
-  defp parse_page(page) when is_binary(page) do
-    case Integer.parse(page) do
-      {n, _} when n > 0 -> n
-      _ -> 1
+    # Only reload if sort changed
+    if sort != socket.assigns.sort do
+      {:noreply,
+       socket
+       |> assign(:sort, sort)
+       |> assign(:page, 1)
+       |> assign(:end_of_list, false)
+       |> stream(:solutions, [], reset: true)
+       |> load_initial_solutions()}
+    else
+      {:noreply, socket}
     end
   end
 
@@ -45,23 +47,50 @@ defmodule ChorusWeb.SolutionsLive.Index do
   defp sort_to_param(:upvotes), do: "votes"
   defp sort_to_param(:score), do: "score"
 
-  defp load_solutions(socket) do
-    %{page: page, sort: sort, per_page: per_page} = socket.assigns
+  defp load_initial_solutions(socket) do
+    %{sort: sort, per_page: per_page} = socket.assigns
 
-    offset = (page - 1) * per_page
-    solutions = Solutions.list_solutions(limit: per_page, offset: offset, order_by: sort)
+    solutions = Solutions.list_solutions(limit: per_page, offset: 0, order_by: sort)
     total = Solutions.count_solutions()
-    total_pages = max(1, ceil(total / per_page))
+    end_of_list = length(solutions) < per_page
 
     socket
     |> stream(:solutions, solutions, reset: true)
     |> assign(:total, total)
-    |> assign(:total_pages, total_pages)
+    |> assign(:end_of_list, end_of_list)
   end
 
   @impl true
   def handle_event("sort", %{"sort" => sort}, socket) do
-    {:noreply, push_patch(socket, to: ~p"/solutions?sort=#{sort}&page=1")}
+    {:noreply, push_patch(socket, to: ~p"/solutions?sort=#{sort}")}
+  end
+
+  @impl true
+  def handle_event("load-more", _params, socket) do
+    if socket.assigns.loading || socket.assigns.end_of_list do
+      {:noreply, socket}
+    else
+      {:noreply,
+       socket
+       |> assign(:loading, true)
+       |> load_more_solutions()}
+    end
+  end
+
+  defp load_more_solutions(socket) do
+    %{page: page, sort: sort, per_page: per_page} = socket.assigns
+
+    next_page = page + 1
+    offset = page * per_page
+
+    solutions = Solutions.list_solutions(limit: per_page, offset: offset, order_by: sort)
+    end_of_list = length(solutions) < per_page
+
+    socket
+    |> stream(:solutions, solutions)
+    |> assign(:page, next_page)
+    |> assign(:loading, false)
+    |> assign(:end_of_list, end_of_list)
   end
 
   @impl true
@@ -121,12 +150,25 @@ defmodule ChorusWeb.SolutionsLive.Index do
           <.solution_card :for={{dom_id, solution} <- @streams.solutions} id={dom_id} solution={solution} />
         </div>
 
-        <.pagination
-          :if={@total_pages > 1}
-          page={@page}
-          total_pages={@total_pages}
-          sort={@sort}
-        />
+        <!-- Infinite scroll sentinel -->
+        <div
+          :if={not @end_of_list and @total > 0}
+          id="infinite-scroll-sentinel"
+          phx-hook="InfiniteScroll"
+          class="flex justify-center py-8"
+        >
+          <span :if={@loading} class="loading loading-spinner loading-lg text-primary"></span>
+          <span :if={not @loading} class="text-base-content/50 text-sm">Scroll for more...</span>
+        </div>
+
+        <!-- End of list message -->
+        <div
+          :if={@end_of_list and @total > 0}
+          class="text-center py-8 text-base-content/50"
+        >
+          <p>You've reached the end!</p>
+          <p class="text-sm mt-1">{@total} solutions total</p>
+        </div>
       </div>
     </Layouts.app>
     """
@@ -224,32 +266,6 @@ defmodule ChorusWeb.SolutionsLive.Index do
   defp score_color(score) when score > 0, do: "text-success"
   defp score_color(score) when score < 0, do: "text-error"
   defp score_color(_), do: "text-base-content/70"
-
-  defp pagination(assigns) do
-    ~H"""
-    <div class="flex justify-center mt-8">
-      <div class="join">
-        <.link
-          :if={@page > 1}
-          patch={~p"/solutions?page=#{@page - 1}&sort=#{sort_to_param(@sort)}"}
-          class="join-item btn btn-sm"
-        >
-          Previous
-        </.link>
-        <button class="join-item btn btn-sm btn-disabled">
-          Page {@page} of {@total_pages}
-        </button>
-        <.link
-          :if={@page < @total_pages}
-          patch={~p"/solutions?page=#{@page + 1}&sort=#{sort_to_param(@sort)}"}
-          class="join-item btn btn-sm"
-        >
-          Next
-        </.link>
-      </div>
-    </div>
-    """
-  end
 
   defp truncate(text, max_length) when is_binary(text) and byte_size(text) > max_length do
     String.slice(text, 0, max_length) <> "..."
