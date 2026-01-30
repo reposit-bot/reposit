@@ -3,6 +3,12 @@ defmodule Chorus.Embeddings do
   Handles embedding generation using OpenAI's text-embedding-3-small model.
 
   Uses req_llm for the OpenAI API integration.
+
+  ## Test Mode
+
+  In test environment, returns a stub embedding by default to avoid API calls.
+  Set `config :chorus, :embeddings_stub, false` to enable real API calls for
+  integration tests.
   """
 
   require Logger
@@ -28,6 +34,27 @@ defmodule Chorus.Embeddings do
   """
   @spec generate(String.t()) :: {:ok, [float()], non_neg_integer()} | {:error, term()}
   def generate(text) when is_binary(text) and byte_size(text) > 0 do
+    if stub_enabled?() do
+      generate_stub(text)
+    else
+      generate_live(text)
+    end
+  end
+
+  def generate(""), do: {:error, :empty_text}
+  def generate(nil), do: {:error, :empty_text}
+
+  defp stub_enabled? do
+    Application.get_env(:chorus, :embeddings_stub, false)
+  end
+
+  defp generate_stub(_text) do
+    # Return a deterministic fake embedding for testing
+    embedding = List.duplicate(0.0, @dimensions)
+    {:ok, embedding, 0}
+  end
+
+  defp generate_live(text) do
     start_time = System.monotonic_time(:millisecond)
 
     try do
@@ -51,9 +78,6 @@ defmodule Chorus.Embeddings do
         {:error, :api_key_not_configured}
     end
   end
-
-  def generate(""), do: {:error, :empty_text}
-  def generate(nil), do: {:error, :empty_text}
 
   @doc """
   Generates an embedding and returns only the vector, raising on error.

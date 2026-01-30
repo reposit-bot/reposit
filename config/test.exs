@@ -29,6 +29,10 @@ config :swoosh, :api_client, false
 # Print only warnings and errors during test
 config :logger, level: :warning
 
+# Use stub embeddings by default to avoid API calls
+# Set to false or run with LIVE_EMBEDDINGS=true for integration tests
+config :chorus, :embeddings_stub, true
+
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
