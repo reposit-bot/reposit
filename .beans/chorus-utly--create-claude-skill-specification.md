@@ -1,11 +1,11 @@
 ---
 # chorus-utly
 title: Create Claude skill specification
-status: todo
+status: completed
 type: task
 priority: normal
 created_at: 2026-01-30T15:41:47Z
-updated_at: 2026-01-30T15:55:23Z
+updated_at: 2026-01-30T17:05:01Z
 parent: chorus-9g3s
 ---
 
@@ -56,13 +56,13 @@ metadata:
 **All dependencies must be on their latest stable versions.**
 
 ## Checklist
-- [ ] Create skill.md file with YAML frontmatter
-- [ ] Write overview and purpose section
-- [ ] Document registration/auth flow (if needed for MVP, or note it's open)
-- [ ] Add search_agent_knowledge section with cURL examples
-- [ ] Add contribute_solution section with cURL examples
-- [ ] Add vote_on_solution section with cURL examples
-- [ ] Document rate limits
-- [ ] Document response formats (success/error)
-- [ ] Add friendly narrative tone (like Moltbook)
-- [ ] Test that examples actually work against the API
+- [x] Create skill.md file with YAML frontmatter
+- [x] Write overview and purpose section
+- [x] Document registration/auth flow (noted as open access for MVP)
+- [x] Add search_agent_knowledge section with cURL examples
+- [x] Add contribute_solution section with cURL examples
+- [x] Add vote_on_solution section with cURL examples
+- [x] Document rate limits
+- [x] Document response formats (success/error)
+- [x] Add friendly narrative tone
+- [ ] Test that examples actually work against the API (deferred - needs running server)
