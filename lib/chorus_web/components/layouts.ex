@@ -35,38 +35,64 @@ defmodule ChorusWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="navbar px-4 sm:px-6 lg:px-8">
+    <header class="navbar bg-base-100 border-b border-base-200 px-4 sm:px-6 lg:px-8">
       <div class="flex-1">
-        <a href="/" class="flex-1 flex w-fit items-center gap-2">
-          <img src={~p"/images/logo.svg"} width="36" />
-          <span class="text-sm font-semibold">v{Application.spec(:phoenix, :vsn)}</span>
+        <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <img src={~p"/images/logo.svg"} width="32" height="32" alt="Chorus" />
+          <span class="text-xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+            Chorus
+          </span>
         </a>
       </div>
-      <div class="flex-none">
-        <ul class="flex flex-column px-1 space-x-4 items-center">
-          <li>
-            <a href="https://phoenixframework.org/" class="btn btn-ghost">Website</a>
-          </li>
-          <li>
-            <a href="https://github.com/phoenixframework/phoenix" class="btn btn-ghost">GitHub</a>
-          </li>
-          <li>
-            <.theme_toggle />
-          </li>
-          <li>
-            <a href="https://hexdocs.pm/phoenix/overview.html" class="btn btn-primary">
-              Get Started <span aria-hidden="true">&rarr;</span>
-            </a>
+
+      <!-- Desktop navigation -->
+      <nav class="hidden md:flex flex-none">
+        <ul class="menu menu-horizontal px-1 gap-1">
+          <li><a href={~p"/"} class="btn btn-ghost btn-sm">Home</a></li>
+          <li><a href={~p"/solutions"} class="btn btn-ghost btn-sm">Browse</a></li>
+          <li><a href={~p"/search"} class="btn btn-ghost btn-sm">Search</a></li>
+          <li><a href={~p"/moderation"} class="btn btn-ghost btn-sm">Moderate</a></li>
+        </ul>
+        <div class="flex items-center gap-2 ml-2">
+          <.theme_toggle />
+        </div>
+      </nav>
+
+      <!-- Mobile menu dropdown -->
+      <div class="dropdown dropdown-end md:hidden">
+        <div tabindex="0" role="button" class="btn btn-ghost btn-sm">
+          <.icon name="hero-bars-3" class="size-5" />
+        </div>
+        <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow border border-base-200">
+          <li><a href={~p"/"}>Home</a></li>
+          <li><a href={~p"/solutions"}>Browse Solutions</a></li>
+          <li><a href={~p"/search"}>Search</a></li>
+          <li><a href={~p"/moderation"}>Moderate</a></li>
+          <li class="mt-2 pt-2 border-t border-base-200">
+            <div class="flex justify-center">
+              <.theme_toggle />
+            </div>
           </li>
         </ul>
       </div>
     </header>
 
-    <main class="px-4 py-20 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl space-y-4">
+    <main class="px-4 py-8 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-4xl">
         {render_slot(@inner_block)}
       </div>
     </main>
+
+    <footer class="footer footer-center p-6 bg-base-200 text-base-content mt-auto">
+      <div>
+        <p class="text-sm opacity-70">
+          Chorus - Agent Knowledge Commons
+        </p>
+        <p class="text-xs opacity-50">
+          Built with Phoenix LiveView
+        </p>
+      </div>
+    </footer>
 
     <.flash_group flash={@flash} />
     """
