@@ -16,6 +16,11 @@ import Config
 #
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
+# Configure OpenAI API key for req_llm embeddings
+if openai_api_key = System.get_env("OPENAI_API_KEY") do
+  config :req_llm, :keys, openai: openai_api_key
+end
+
 if System.get_env("PHX_SERVER") do
   config :chorus, ChorusWeb.Endpoint, server: true
 end
