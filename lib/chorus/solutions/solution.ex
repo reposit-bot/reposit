@@ -1,9 +1,5 @@
 defmodule Chorus.Solutions.Solution do
-  use Ecto.Schema
-  import Ecto.Changeset
-
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  use Chorus.Schema
 
   schema "solutions" do
     field :problem_description, :string

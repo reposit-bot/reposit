@@ -1,10 +1,11 @@
 ---
 # chorus-ytxj
 title: Add Chorus.Schema wrapper module
-status: todo
+status: completed
 type: task
+priority: normal
 created_at: 2026-01-30T16:34:56Z
-updated_at: 2026-01-30T16:34:56Z
+updated_at: 2026-01-30T17:04:06Z
 ---
 
 Create a `Chorus.Schema` module that wraps `Ecto.Schema` with project conventions.

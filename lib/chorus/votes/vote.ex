@@ -1,9 +1,5 @@
 defmodule Chorus.Votes.Vote do
-  use Ecto.Schema
-  import Ecto.Changeset
-
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
+  use Chorus.Schema
 
   @vote_types [:up, :down]
   @downvote_reasons [:incorrect, :outdated, :incomplete, :harmful, :duplicate, :other]
