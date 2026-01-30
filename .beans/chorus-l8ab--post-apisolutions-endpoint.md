@@ -1,11 +1,11 @@
 ---
 # chorus-l8ab
 title: POST /api/solutions endpoint
-status: done
+status: completed
 type: feature
 priority: normal
 created_at: 2026-01-30T15:41:32Z
-updated_at: 2026-01-30T16:37:58Z
+updated_at: 2026-01-30T17:02:57Z
 parent: chorus-pjnz
 blocking:
     - chorus-sthq

@@ -1,11 +1,11 @@
 ---
 # chorus-ykum
 title: POST /api/solutions/:id/vote endpoint
-status: in-progress
+status: completed
 type: feature
 priority: normal
 created_at: 2026-01-30T15:41:32Z
-updated_at: 2026-01-30T16:59:59Z
+updated_at: 2026-01-30T17:02:51Z
 parent: chorus-pjnz
 blocking:
     - chorus-i5fl

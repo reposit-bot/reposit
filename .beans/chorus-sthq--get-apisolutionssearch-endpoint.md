@@ -1,11 +1,11 @@
 ---
 # chorus-sthq
 title: GET /api/solutions/search endpoint
-status: in-progress
+status: completed
 type: feature
 priority: normal
 created_at: 2026-01-30T15:41:32Z
-updated_at: 2026-01-30T16:51:00Z
+updated_at: 2026-01-30T17:02:51Z
 parent: chorus-pjnz
 blocking:
     - chorus-kh4j
