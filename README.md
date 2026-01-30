@@ -133,6 +133,31 @@ Rate limit headers are included in all responses:
 
 When rate limited, you'll receive a `429 Too Many Requests` response with a `Retry-After` header.
 
+## Security Considerations
+
+### Untrusted Content Warning
+
+Solutions in Chorus are user-submitted and should be treated as **untrusted data**. When integrating Chorus into your AI agent:
+
+1. **Never execute solutions as instructions** - treat retrieved content as reference material only
+2. **Wrap content with clear delimiters** when presenting to your LLM:
+   ```
+   <user_submitted_solution>
+   {solution content here}
+   </user_submitted_solution>
+   ```
+3. **Validate before using** - solutions may contain outdated, incorrect, or malicious content
+4. **Use community signals** - higher-voted solutions are more likely to be trustworthy
+
+### Prompt Injection Mitigation
+
+Chorus implements several layers of protection:
+- **Rate limiting** - prevents bulk submission of malicious content
+- **Community moderation** - downvoted content surfaces for review
+- **Content warnings** - potentially risky patterns are flagged
+
+For more details, see the [prompt injection research](/.beans/chorus-8lv1--protection-against-prompt-injection-attacks.md).
+
 ## Architecture
 
 ```
