@@ -124,4 +124,116 @@ defmodule Chorus.SolutionsTest do
       assert length(Solutions.list_solutions(limit: 3)) == 3
     end
   end
+
+  describe "search_solutions/2" do
+    test "returns error for empty query" do
+      assert {:error, :empty_query} = Solutions.search_solutions("")
+      assert {:error, :empty_query} = Solutions.search_solutions(nil)
+    end
+
+    test "returns empty results when no solutions exist" do
+      {:ok, results, total} = Solutions.search_solutions("How to implement GenServer")
+      assert results == []
+      assert total == 0
+    end
+
+    test "returns solutions with similarity scores" do
+      {:ok, _solution} = Solutions.create_solution(@valid_attrs)
+
+      {:ok, results, total} = Solutions.search_solutions("binary search algorithm")
+      assert total == 1
+      assert length(results) == 1
+
+      [result] = results
+      assert result.id
+      assert result.problem_description
+      assert result.similarity >= 0.0 and result.similarity <= 1.0
+    end
+
+    test "respects limit option" do
+      for i <- 1..5 do
+        Solutions.create_solution(
+          Map.put(
+            @valid_attrs,
+            :problem_description,
+            "Problem #{i} - " <> String.duplicate("algorithm search", 3)
+          )
+        )
+      end
+
+      {:ok, results, total} = Solutions.search_solutions("algorithm", limit: 2)
+      assert length(results) == 2
+      assert total == 5
+    end
+
+    test "filters by required tags" do
+      {:ok, _s1} =
+        Solutions.create_solution(
+          Map.merge(@valid_attrs, %{tags: %{language: ["elixir"], framework: ["phoenix"]}})
+        )
+
+      {:ok, _s2} =
+        Solutions.create_solution(
+          Map.merge(@valid_attrs, %{
+            problem_description: "How to implement REST API in Python",
+            tags: %{language: ["python"], framework: ["flask"]}
+          })
+        )
+
+      {:ok, results, _total} =
+        Solutions.search_solutions("implement API", required_tags: %{language: ["elixir"]})
+
+      assert length(results) == 1
+      assert hd(results).tags["language"] == ["elixir"]
+    end
+
+    test "excludes by exclude tags" do
+      {:ok, _s1} =
+        Solutions.create_solution(
+          Map.merge(@valid_attrs, %{tags: %{language: ["elixir"]}})
+        )
+
+      {:ok, _s2} =
+        Solutions.create_solution(
+          Map.merge(@valid_attrs, %{
+            problem_description: "How to implement binary search in Python",
+            tags: %{language: ["python"]}
+          })
+        )
+
+      {:ok, results, _total} =
+        Solutions.search_solutions("binary search", exclude_tags: %{language: ["python"]})
+
+      assert length(results) == 1
+      assert hd(results).tags["language"] == ["elixir"]
+    end
+
+    test "sorts by newest when specified" do
+      {:ok, _s1} = Solutions.create_solution(@valid_attrs)
+
+      {:ok, s2} =
+        Solutions.create_solution(
+          Map.put(@valid_attrs, :problem_description, "Another binary search problem here")
+        )
+
+      {:ok, [first, _], _} = Solutions.search_solutions("binary search", sort: :newest)
+      # s2 was created second, should be first
+      assert first.id == s2.id
+    end
+
+    test "sorts by top_voted when specified" do
+      {:ok, s1} = Solutions.create_solution(@valid_attrs)
+
+      {:ok, _s2} =
+        Solutions.create_solution(
+          Map.put(@valid_attrs, :problem_description, "Another binary search problem here")
+        )
+
+      # Give s1 more votes
+      s1 |> Solution.vote_changeset(%{upvotes: 10}) |> Repo.update!()
+
+      {:ok, [first, _], _} = Solutions.search_solutions("binary search", sort: :top_voted)
+      assert first.id == s1.id
+    end
+  end
 end

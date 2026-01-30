@@ -1,11 +1,11 @@
 ---
 # chorus-sthq
 title: GET /api/solutions/search endpoint
-status: todo
+status: in-progress
 type: feature
 priority: normal
 created_at: 2026-01-30T15:41:32Z
-updated_at: 2026-01-30T16:03:46Z
+updated_at: 2026-01-30T16:51:00Z
 parent: chorus-pjnz
 blocking:
     - chorus-kh4j
@@ -54,13 +54,13 @@ Implement semantic search endpoint with tag filtering.
 ```
 
 ## Checklist
-- [ ] Implement vector similarity search with pgvector (`<->` operator)
-- [ ] Add HNSW or IVFFlat index on embedding column for speed
-- [ ] Add tag filtering logic (required/preferred/exclude)
-- [ ] Implement result ranking/boosting for preferred tags
-- [ ] Create search controller at /api/v1/solutions/search
-- [ ] Log latency for monitoring (don't include in response)
-- [ ] Write search context tests (similarity, filtering, edge cases)
-- [ ] Write controller tests
-- [ ] Run `mix test --cover` and report coverage
-- [ ] Benchmark: target < 500ms for 10k solutions
+- [x] Implement vector similarity search with pgvector (`<=>` cosine distance operator)
+- [x] Add HNSW or IVFFlat index on embedding column for speed (HNSW already existed)
+- [x] Add tag filtering logic (required/exclude implemented, preferred deferred)
+- [ ] Implement result ranking/boosting for preferred tags (deferred - core search works)
+- [x] Create search controller at /api/v1/solutions/search
+- [ ] Log latency for monitoring (deferred)
+- [x] Write search context tests (similarity, filtering, sorting)
+- [x] Write controller tests
+- [x] Run `mix test --cover` and report coverage (80.68%, 77 tests)
+- [ ] Benchmark: target < 500ms for 10k solutions (deferred - needs production data)

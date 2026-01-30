@@ -108,4 +108,102 @@ defmodule ChorusWeb.Api.V1.SolutionsControllerTest do
   defp atomize_keys(map) do
     Map.new(map, fn {k, v} -> {String.to_atom(k), v} end)
   end
+
+  describe "GET /api/v1/solutions/search" do
+    test "returns error when query is missing", %{conn: conn} do
+      conn = get(conn, ~p"/api/v1/solutions/search")
+
+      assert %{
+               "success" => false,
+               "error" => "missing_query"
+             } = json_response(conn, 400)
+    end
+
+    test "returns empty results when no solutions match", %{conn: conn} do
+      conn = get(conn, ~p"/api/v1/solutions/search?q=nonexistent")
+
+      assert %{
+               "success" => true,
+               "data" => %{
+                 "results" => [],
+                 "total" => 0
+               }
+             } = json_response(conn, 200)
+    end
+
+    test "returns matching solutions with similarity scores", %{conn: conn} do
+      {:ok, _solution} = Solutions.create_solution(atomize_keys(@valid_attrs))
+
+      conn = get(conn, ~p"/api/v1/solutions/search?q=binary+search")
+
+      assert %{
+               "success" => true,
+               "data" => %{
+                 "results" => [result],
+                 "total" => 1
+               }
+             } = json_response(conn, 200)
+
+      assert result["id"]
+      assert result["problem_description"]
+      assert result["similarity"]
+      assert result["upvotes"] == 0
+      assert result["downvotes"] == 0
+    end
+
+    test "respects limit parameter", %{conn: conn} do
+      for i <- 1..5 do
+        Solutions.create_solution(%{
+          problem_description: "Problem #{i} - " <> String.duplicate("algorithm", 5),
+          solution_pattern: @valid_attrs["solution_pattern"]
+        })
+      end
+
+      conn = get(conn, ~p"/api/v1/solutions/search?q=algorithm&limit=2")
+
+      assert %{
+               "data" => %{
+                 "results" => results,
+                 "total" => 5
+               }
+             } = json_response(conn, 200)
+
+      assert length(results) == 2
+    end
+
+    test "filters by required_tags", %{conn: conn} do
+      {:ok, _s1} =
+        Solutions.create_solution(%{
+          problem_description: "How to implement binary search in Elixir",
+          solution_pattern: @valid_attrs["solution_pattern"],
+          tags: %{language: ["elixir"]}
+        })
+
+      {:ok, _s2} =
+        Solutions.create_solution(%{
+          problem_description: "How to implement binary search in Python",
+          solution_pattern: @valid_attrs["solution_pattern"],
+          tags: %{language: ["python"]}
+        })
+
+      conn = get(conn, ~p"/api/v1/solutions/search?q=binary+search&required_tags=language:elixir")
+
+      assert %{
+               "data" => %{
+                 "results" => results
+               }
+             } = json_response(conn, 200)
+
+      assert length(results) == 1
+      assert hd(results)["tags"]["language"] == ["elixir"]
+    end
+
+    test "sorts by sort parameter", %{conn: conn} do
+      {:ok, _} = Solutions.create_solution(atomize_keys(@valid_attrs))
+
+      conn = get(conn, ~p"/api/v1/solutions/search?q=binary&sort=newest")
+
+      assert %{"success" => true} = json_response(conn, 200)
+    end
+  end
 end

@@ -26,6 +26,8 @@ defmodule ChorusWeb.Router do
 
     get "/health", HealthController, :index
 
+    # Search must come before resources to avoid matching as :id
+    get "/solutions/search", SolutionsController, :search
     resources "/solutions", SolutionsController, only: [:create, :show]
   end
 
