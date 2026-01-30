@@ -19,6 +19,8 @@ defmodule ChorusWeb.Router do
 
     get "/", PageController, :home
     live "/demo", DemoLive
+    live "/solutions", SolutionsLive.Index
+    live "/solutions/:id", SolutionsLive.Show
   end
 
   scope "/api/v1", ChorusWeb.Api.V1 do

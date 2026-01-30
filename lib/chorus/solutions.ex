@@ -88,13 +88,21 @@ defmodule Chorus.Solutions do
   end
 
   @doc """
+  Counts total solutions.
+  """
+  @spec count_solutions() :: non_neg_integer()
+  def count_solutions do
+    Repo.aggregate(Solution, :count)
+  end
+
+  @doc """
   Lists solutions with optional filters.
 
   ## Options
 
   - `:limit` - Maximum number of results (default: 20)
   - `:offset` - Number of results to skip (default: 0)
-  - `:order_by` - Field to order by (:score, :inserted_at) (default: :score)
+  - `:order_by` - Field to order by (:score, :inserted_at, :upvotes) (default: :score)
 
   """
   @spec list_solutions(keyword()) :: [Solution.t()]
@@ -115,6 +123,9 @@ defmodule Chorus.Solutions do
 
         :inserted_at ->
           from s in query, order_by: [desc: s.inserted_at]
+
+        :upvotes ->
+          from s in query, order_by: [desc: s.upvotes]
 
         _ ->
           query
