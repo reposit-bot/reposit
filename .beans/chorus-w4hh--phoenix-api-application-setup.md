@@ -27,13 +27,13 @@ Initialize a new Phoenix API application with LiveView for the web UI.
 - LiveView for admin/browsing UI
 
 ## Checklist
-- [ ] Create new Phoenix project: `mix phx.new chorus --database postgres`
-- [ ] Verify all generated deps are latest versions (run `mix hex.outdated`)
-- [ ] Update any outdated deps to latest
-- [ ] Configure test coverage in mix.exs (`test_coverage: [tool: ExCoveralls]` or built-in)
-- [ ] Set up basic health check endpoint `GET /api/health`
-- [ ] Verify LiveView works with a simple test page
-- [ ] Verify DaisyUI components render correctly
-- [ ] Add DaisyUI.md reference file to project root for LLM context
-- [ ] Run `mix test --cover` and report baseline coverage
+- [x] Create new Phoenix project: `mix phx.new chorus --database postgres`
+- [x] Verify all generated deps are latest versions (run `mix hex.outdated`)
+- [x] Update any outdated deps to latest (all up-to-date)
+- [x] Configure test coverage in mix.exs (built-in, 30% threshold, ignoring Phoenix boilerplate)
+- [x] Set up basic health check endpoint `GET /api/v1/health`
+- [x] Verify LiveView works with a simple test page (/demo)
+- [x] Verify DaisyUI components render correctly (home page, demo page)
+- [x] Add DaisyUI.md reference file to project root for LLM context
+- [x] Run `mix test --cover` and report baseline coverage (82.69%, 9 tests)
 - [ ] Commit with all deps on latest versions
