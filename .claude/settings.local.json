@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(beans prime)",
+      "Bash(beans create:*)",
+      "Bash(beans query:*)",
+      "Bash(beans update:*)"
+    ]
+  }
+}
