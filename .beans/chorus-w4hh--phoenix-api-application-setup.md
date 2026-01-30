@@ -1,11 +1,11 @@
 ---
 # chorus-w4hh
 title: Phoenix API application setup
-status: in-progress
+status: completed
 type: task
 priority: normal
 created_at: 2026-01-30T15:41:17Z
-updated_at: 2026-01-30T16:06:47Z
+updated_at: 2026-01-30T16:26:25Z
 parent: chorus-n2ec
 blocking:
     - chorus-5kuk
@@ -36,4 +36,4 @@ Initialize a new Phoenix API application with LiveView for the web UI.
 - [x] Verify DaisyUI components render correctly (home page, demo page)
 - [x] Add DaisyUI.md reference file to project root for LLM context
 - [x] Run `mix test --cover` and report baseline coverage (82.69%, 9 tests)
-- [ ] Commit with all deps on latest versions
+- [x] Commit with all deps on latest versions
