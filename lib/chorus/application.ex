@@ -12,8 +12,8 @@ defmodule Chorus.Application do
       Chorus.Repo,
       {DNSCluster, query: Application.get_env(:chorus, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Chorus.PubSub},
-      # Start a worker by calling: Chorus.Worker.start_link(arg)
-      # {Chorus.Worker, arg},
+      # Rate limiter with ETS backend
+      {Chorus.RateLimiter, clean_period: :timer.minutes(10)},
       # Start to serve requests, typically the last entry
       ChorusWeb.Endpoint
     ]

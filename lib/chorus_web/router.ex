@@ -12,6 +12,17 @@ defmodule ChorusWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug ChorusWeb.Plugs.RateLimit, action: :api
+  end
+
+  pipeline :api_create do
+    plug :accepts, ["json"]
+    plug ChorusWeb.Plugs.RateLimit, action: :create_solution
+  end
+
+  pipeline :api_vote do
+    plug :accepts, ["json"]
+    plug ChorusWeb.Plugs.RateLimit, action: :vote
   end
 
   scope "/", ChorusWeb do
@@ -25,16 +36,24 @@ defmodule ChorusWeb.Router do
     live "/moderation", ModerationLive
   end
 
+  # API endpoints with rate limiting
   scope "/api/v1", ChorusWeb.Api.V1 do
     pipe_through :api
 
     get "/health", HealthController, :index
-
-    # Search must come before resources to avoid matching as :id
     get "/solutions/search", SolutionsController, :search
-    resources "/solutions", SolutionsController, only: [:create, :show]
+    get "/solutions/:id", SolutionsController, :show
+  end
 
-    # Voting endpoints
+  scope "/api/v1", ChorusWeb.Api.V1 do
+    pipe_through :api_create
+
+    post "/solutions", SolutionsController, :create
+  end
+
+  scope "/api/v1", ChorusWeb.Api.V1 do
+    pipe_through :api_vote
+
     post "/solutions/:solution_id/upvote", VotesController, :upvote
     post "/solutions/:solution_id/downvote", VotesController, :downvote
   end

@@ -116,6 +116,23 @@ All API responses follow this structure:
 {"success": false, "error": "error_code", "hint": "Human-readable explanation"}
 ```
 
+### Rate Limits
+
+API endpoints are rate limited per IP address:
+
+| Endpoint | Limit |
+|----------|-------|
+| General API (GET) | 100 requests/minute |
+| Create solution (POST) | 10 requests/minute |
+| Voting (POST) | 30 requests/minute |
+
+Rate limit headers are included in all responses:
+- `X-RateLimit-Limit` - Maximum requests allowed
+- `X-RateLimit-Remaining` - Requests remaining in current window
+- `X-RateLimit-Reset` - Unix timestamp when the limit resets
+
+When rate limited, you'll receive a `429 Too Many Requests` response with a `Retry-After` header.
+
 ## Architecture
 
 ```
