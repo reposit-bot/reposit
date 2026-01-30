@@ -315,4 +315,83 @@ defmodule Chorus.Solutions do
   end
 
   defp apply_sort(query, _, query_embedding), do: apply_sort(query, :relevance, query_embedding)
+
+  # Moderation functions
+
+  @doc """
+  Lists flagged solutions that need moderation review.
+
+  A solution is flagged if:
+  - downvotes > upvotes, OR
+  - downvotes >= 3
+
+  Preloads votes with comments for moderator review.
+
+  ## Options
+  - `:reason` - Filter by downvote reason
+  - `:limit` - Maximum results (default: 20)
+  """
+  @spec list_flagged_solutions(keyword()) :: [Solution.t()]
+  def list_flagged_solutions(opts \\ []) do
+    limit = Keyword.get(opts, :limit, 20)
+    reason = Keyword.get(opts, :reason)
+
+    # Only show active solutions that need moderation
+    query =
+      from s in Solution,
+        where: s.status == :active,
+        where: s.downvotes > s.upvotes or s.downvotes >= 3,
+        order_by: [desc: s.downvotes],
+        limit: ^limit
+
+    # Optionally filter by reason
+    query =
+      if reason do
+        votes_with_reason =
+          from v in Chorus.Votes.Vote,
+            where: v.vote_type == :down and v.reason == ^reason,
+            select: v.solution_id
+
+        from s in query,
+          where: s.id in subquery(votes_with_reason)
+      else
+        query
+      end
+
+    # Preload downvotes with comments
+    votes_query =
+      from v in Chorus.Votes.Vote,
+        where: v.vote_type == :down,
+        order_by: [desc: v.inserted_at]
+
+    query
+    |> preload(votes: ^votes_query)
+    |> Repo.all()
+  end
+
+  @doc """
+  Archives a solution (soft delete).
+  """
+  @spec archive_solution(binary()) :: {:ok, Solution.t()} | {:error, :not_found | Ecto.Changeset.t()}
+  def archive_solution(id) do
+    case Repo.get(Solution, id) do
+      nil -> {:error, :not_found}
+      solution ->
+        solution
+        |> Ecto.Changeset.change(status: :archived)
+        |> Repo.update()
+    end
+  end
+
+  @doc """
+  Approves a solution (keeps it active, clears flags by confirming quality).
+  For MVP, this just confirms the solution stays active.
+  """
+  @spec approve_solution(binary()) :: {:ok, Solution.t()} | {:error, :not_found}
+  def approve_solution(id) do
+    case Repo.get(Solution, id) do
+      nil -> {:error, :not_found}
+      solution -> {:ok, solution}
+    end
+  end
 end

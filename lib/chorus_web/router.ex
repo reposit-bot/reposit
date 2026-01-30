@@ -22,6 +22,7 @@ defmodule ChorusWeb.Router do
     live "/solutions", SolutionsLive.Index
     live "/solutions/:id", SolutionsLive.Show
     live "/search", SearchLive
+    live "/moderation", ModerationLive
   end
 
   scope "/api/v1", ChorusWeb.Api.V1 do

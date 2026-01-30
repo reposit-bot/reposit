@@ -1,6 +1,8 @@
 defmodule Chorus.Solutions.Solution do
   use Chorus.Schema
 
+  @statuses [:active, :archived]
+
   schema "solutions" do
     field :problem_description, :string
     field :solution_pattern, :string
@@ -9,11 +11,17 @@ defmodule Chorus.Solutions.Solution do
     field :tags, :map, default: %{language: [], framework: [], domain: [], platform: []}
     field :upvotes, :integer, default: 0
     field :downvotes, :integer, default: 0
+    field :status, Ecto.Enum, values: @statuses, default: :active
 
     has_many :votes, Chorus.Votes.Vote
 
     timestamps(type: :utc_datetime_usec)
   end
+
+  @doc """
+  Returns the list of valid statuses.
+  """
+  def statuses, do: @statuses
 
   @required_fields [:problem_description, :solution_pattern]
   @optional_fields [:context_requirements, :embedding, :tags]
