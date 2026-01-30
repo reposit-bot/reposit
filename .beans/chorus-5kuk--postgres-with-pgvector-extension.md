@@ -1,11 +1,11 @@
 ---
 # chorus-5kuk
 title: Postgres with pgvector extension
-status: todo
+status: in-progress
 type: task
 priority: normal
 created_at: 2026-01-30T15:41:17Z
-updated_at: 2026-01-30T15:55:47Z
+updated_at: 2026-01-30T16:27:18Z
 parent: chorus-n2ec
 blocking:
     - chorus-7g3w
@@ -17,9 +17,10 @@ Set up PostgreSQL database with pgvector extension for vector similarity search.
 **All dependencies must be on their latest stable versions.** Check hex.pm for latest pgvector library.
 
 ## Checklist
-- [ ] Configure Ecto for PostgreSQL
-- [ ] Add {:pgvector, "~> 0.x"} - use latest version from hex.pm
-- [ ] Create migration to enable pgvector extension
-- [ ] Configure vector type in Ecto schemas (1536 dimensions for text-embedding-3-small)
-- [ ] Test vector operations work correctly
-- [ ] Add index on embedding column for fast similarity search
+- [x] Configure Ecto for PostgreSQL (done by Phoenix)
+- [x] Add {:pgvector, "~> 0.3.1"} - latest version from hex.pm
+- [x] Create migration to enable pgvector extension
+- [x] Configure Postgrex types for pgvector (Chorus.PostgrexTypes)
+- [x] Test vector operations work correctly (cosine similarity search)
+- [ ] ~~Configure vector type in Ecto schemas~~ (part of chorus-7g3w schema design)
+- [ ] ~~Add index on embedding column~~ (part of chorus-7g3w schema design)

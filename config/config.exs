@@ -11,6 +11,9 @@ config :chorus,
   ecto_repos: [Chorus.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+# Configure Repo to use pgvector types
+config :chorus, Chorus.Repo, types: Chorus.PostgrexTypes
+
 # Configure the endpoint
 config :chorus, ChorusWeb.Endpoint,
   url: [host: "localhost"],
