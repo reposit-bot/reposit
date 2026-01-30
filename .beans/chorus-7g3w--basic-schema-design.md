@@ -1,11 +1,11 @@
 ---
 # chorus-7g3w
 title: Basic schema design
-status: in-progress
+status: completed
 type: task
 priority: normal
 created_at: 2026-01-30T15:41:17Z
-updated_at: 2026-01-30T16:31:32Z
+updated_at: 2026-01-30T16:33:56Z
 parent: chorus-n2ec
 blocking:
     - chorus-l8ab
