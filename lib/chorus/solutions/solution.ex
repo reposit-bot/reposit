@@ -46,16 +46,18 @@ defmodule Chorus.Solutions.Solution do
 
   defp validate_tags(changeset) do
     validate_change(changeset, :tags, fn :tags, tags ->
-      valid_keys = ~w(language framework domain platform)a
+      valid_keys = MapSet.new(~w(language framework domain platform))
 
       case tags do
         %{} = map ->
-          invalid_keys = Map.keys(map) -- valid_keys
+          # Normalize all keys to strings for comparison
+          keys = map |> Map.keys() |> Enum.map(&to_string/1) |> MapSet.new()
+          invalid_keys = MapSet.difference(keys, valid_keys)
 
-          if Enum.empty?(invalid_keys) do
+          if MapSet.size(invalid_keys) == 0 do
             []
           else
-            [tags: "contains invalid keys: #{inspect(invalid_keys)}"]
+            [tags: "contains invalid keys: #{inspect(MapSet.to_list(invalid_keys))}"]
           end
 
         _ ->

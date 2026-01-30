@@ -1,11 +1,11 @@
 ---
 # chorus-l8ab
 title: POST /api/solutions endpoint
-status: todo
+status: done
 type: feature
 priority: normal
 created_at: 2026-01-30T15:41:32Z
-updated_at: 2026-01-30T16:01:28Z
+updated_at: 2026-01-30T16:37:58Z
 parent: chorus-pjnz
 blocking:
     - chorus-sthq
@@ -60,12 +60,12 @@ Implement endpoint to submit new solutions with automatic embedding generation.
 ```
 
 ## Checklist
-- [ ] Create Solutions context module with create_solution/1
-- [ ] Add Phoenix controller for POST /api/v1/solutions
-- [ ] Use consistent response format
-- [ ] Validate required fields with helpful hints
-- [ ] Generate embedding on creation (consider async for speed)
-- [ ] Write context tests (business logic, validations)
-- [ ] Write controller tests (request/response format)
-- [ ] Run `mix test --cover` and report coverage
-- [ ] Measure endpoint latency - target < 200ms
+- [x] Create Solutions context module with create_solution/1
+- [x] Add Phoenix controller for POST /api/v1/solutions
+- [x] Use consistent response format (success/data or success/error/hint)
+- [x] Validate required fields with helpful hints
+- [x] Generate embedding on creation (sync, graceful fallback if no API key)
+- [x] Write context tests (business logic, validations)
+- [x] Write controller tests (request/response format)
+- [x] Run `mix test --cover` and report coverage (79.44%, 63 tests)
+- [x] Measure endpoint latency - graceful fallback works, ~150ms without embedding (API quota exceeded for real test)

@@ -25,6 +25,8 @@ defmodule ChorusWeb.Router do
     pipe_through :api
 
     get "/health", HealthController, :index
+
+    resources "/solutions", SolutionsController, only: [:create, :show]
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

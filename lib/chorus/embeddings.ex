@@ -30,18 +30,25 @@ defmodule Chorus.Embeddings do
   def generate(text) when is_binary(text) and byte_size(text) > 0 do
     start_time = System.monotonic_time(:millisecond)
 
-    result = ReqLLM.Embedding.embed(@model, text, dimensions: @dimensions)
+    try do
+      result = ReqLLM.Embedding.embed(@model, text, dimensions: @dimensions)
 
-    latency_ms = System.monotonic_time(:millisecond) - start_time
+      latency_ms = System.monotonic_time(:millisecond) - start_time
 
-    case result do
-      {:ok, embedding} when is_list(embedding) ->
-        Logger.debug("Generated embedding in #{latency_ms}ms (#{length(embedding)} dimensions)")
-        {:ok, embedding, latency_ms}
+      case result do
+        {:ok, embedding} when is_list(embedding) ->
+          Logger.debug("Generated embedding in #{latency_ms}ms (#{length(embedding)} dimensions)")
+          {:ok, embedding, latency_ms}
 
-      {:error, error} ->
-        Logger.error("Embedding generation failed: #{inspect(error)}")
-        {:error, error}
+        {:error, error} ->
+          Logger.error("Embedding generation failed: #{inspect(error)}")
+          {:error, error}
+      end
+    rescue
+      e in [ReqLLM.Error.Invalid.Parameter] ->
+        # Handle missing API key gracefully
+        Logger.warning("Embedding generation skipped: #{Exception.message(e)}")
+        {:error, :api_key_not_configured}
     end
   end
 
