@@ -1,11 +1,11 @@
 ---
 # chorus-5kuk
 title: Postgres with pgvector extension
-status: in-progress
+status: completed
 type: task
 priority: normal
 created_at: 2026-01-30T15:41:17Z
-updated_at: 2026-01-30T16:27:18Z
+updated_at: 2026-01-30T16:31:06Z
 parent: chorus-n2ec
 blocking:
     - chorus-7g3w
