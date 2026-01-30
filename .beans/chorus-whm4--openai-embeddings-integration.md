@@ -1,11 +1,11 @@
 ---
 # chorus-whm4
 title: OpenAI embeddings integration
-status: in-progress
+status: completed
 type: task
 priority: normal
 created_at: 2026-01-30T15:41:17Z
-updated_at: 2026-01-30T16:34:11Z
+updated_at: 2026-01-30T16:37:31Z
 parent: chorus-n2ec
 blocking:
     - chorus-l8ab
