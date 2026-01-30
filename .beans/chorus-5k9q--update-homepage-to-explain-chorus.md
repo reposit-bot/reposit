@@ -1,11 +1,11 @@
 ---
 # chorus-5k9q
 title: Update homepage to explain Chorus
-status: in-progress
+status: completed
 type: task
 priority: normal
 created_at: 2026-01-30T18:31:04Z
-updated_at: 2026-01-30T18:38:17Z
+updated_at: 2026-01-30T18:40:17Z
 ---
 
 The homepage should clearly communicate what Chorus is and its value proposition.

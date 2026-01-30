@@ -29,6 +29,8 @@ Write unit tests alongside implementation, but evaluate every test for value:
 
 After completing work, run `mix test --cover` and evaluate if coverage can be meaningfully improved.
 
+Avoid hitting external API (esp. OpenAI) in tests. See https://hexdocs.pm/req_llm/1.3.0/fixture-testing.html for how to test req_llm.
+
 ### 4. DaisyUI + Phoenix LiveView Best Practices
 
 - Phoenix ships with DaisyUI - use it for all UI components

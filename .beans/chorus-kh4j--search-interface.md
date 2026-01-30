@@ -1,11 +1,11 @@
 ---
 # chorus-kh4j
 title: Search interface
-status: todo
+status: completed
 type: feature
 priority: normal
 created_at: 2026-01-30T15:42:03Z
-updated_at: 2026-01-30T16:03:55Z
+updated_at: 2026-01-30T17:15:51Z
 parent: chorus-dmms
 ---
 

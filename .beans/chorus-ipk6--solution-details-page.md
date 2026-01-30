@@ -1,11 +1,11 @@
 ---
 # chorus-ipk6
 title: Solution details page
-status: todo
+status: completed
 type: feature
 priority: normal
 created_at: 2026-01-30T15:42:03Z
-updated_at: 2026-01-30T16:02:28Z
+updated_at: 2026-01-30T17:13:00Z
 parent: chorus-dmms
 ---
 

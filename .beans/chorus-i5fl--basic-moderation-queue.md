@@ -1,11 +1,11 @@
 ---
 # chorus-i5fl
 title: Basic moderation queue
-status: todo
+status: completed
 type: feature
 priority: normal
 created_at: 2026-01-30T15:42:03Z
-updated_at: 2026-01-30T16:02:28Z
+updated_at: 2026-01-30T18:17:46Z
 parent: chorus-dmms
 ---
 

@@ -52,7 +52,7 @@ defmodule ChorusWeb.SolutionsLive.IndexTest do
       html = render(view)
       assert html =~ "10"
       assert html =~ "2"
-      assert html =~ "(+8)"
+      assert html =~ "+8"
     end
 
     test "sorts by score by default", %{conn: conn} do
@@ -86,7 +86,7 @@ defmodule ChorusWeb.SolutionsLive.IndexTest do
       view |> element("button", "Newest") |> render_click()
 
       # Verify URL changed
-      assert_patch(view, ~p"/solutions?sort=newest&page=1")
+      assert_patch(view, ~p"/solutions?sort=newest")
 
       # Newer should appear first
       html = render(view)
@@ -110,7 +110,7 @@ defmodule ChorusWeb.SolutionsLive.IndexTest do
 
       view |> element("button", "Votes") |> render_click()
 
-      assert_patch(view, ~p"/solutions?sort=votes&page=1")
+      assert_patch(view, ~p"/solutions?sort=votes")
 
       html = render(view)
       high_pos = :binary.match(html, "High votes problem desc")
@@ -119,7 +119,7 @@ defmodule ChorusWeb.SolutionsLive.IndexTest do
       assert elem(high_pos, 0) < elem(low_pos, 0)
     end
 
-    test "pagination works correctly", %{conn: conn} do
+    test "infinite scroll loads more solutions", %{conn: conn} do
       # Create more than one page of solutions (12 per page)
       for i <- 1..15 do
         create_solution("Problem number #{i} description", "This is a detailed solution pattern number #{i} that helps solve the problem")
@@ -127,34 +127,31 @@ defmodule ChorusWeb.SolutionsLive.IndexTest do
 
       {:ok, view, _html} = live(conn, ~p"/solutions")
 
-      # Should show page 1 of 2
-      html = render(view)
-      assert html =~ "Page 1 of 2"
-      assert has_element?(view, "a", "Next")
-      refute has_element?(view, "a", "Previous")
+      # Should show 15 solutions total count
+      assert has_element?(view, "p", "15 solutions shared by the community")
 
-      # Navigate to page 2
-      view |> element("a", "Next") |> render_click()
+      # Should show the infinite scroll sentinel
+      assert has_element?(view, "#infinite-scroll-sentinel")
 
-      assert_patch(view, ~p"/solutions?page=2&sort=score")
+      # Trigger load more
+      render_hook(view, "load-more", %{})
 
-      html = render(view)
-      assert html =~ "Page 2 of 2"
-      assert has_element?(view, "a", "Previous")
-      refute has_element?(view, "a", "Next")
+      # After loading more, should show end message
+      assert has_element?(view, "p", "15 solutions total")
     end
 
-    test "handles invalid page param gracefully", %{conn: conn} do
-      # Create enough solutions to have multiple pages
-      for i <- 1..15 do
+    test "shows end message when all solutions are loaded", %{conn: conn} do
+      # Create fewer than one page of solutions
+      for i <- 1..5 do
         create_solution("Problem number #{i} description", "This is a detailed solution pattern number #{i} that helps solve the problem")
       end
 
-      {:ok, view, _html} = live(conn, ~p"/solutions?page=invalid")
+      {:ok, view, _html} = live(conn, ~p"/solutions")
 
-      # Should default to page 1
-      html = render(view)
-      assert html =~ "Page 1 of 2"
+      # With only 5 solutions (less than 12 per page), should show end message immediately
+      assert has_element?(view, "p", "5 solutions total")
+      # Should NOT show the infinite scroll sentinel when all are loaded
+      refute has_element?(view, "#infinite-scroll-sentinel")
     end
 
     test "handles invalid sort param gracefully", %{conn: conn} do

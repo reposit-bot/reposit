@@ -1,11 +1,11 @@
 ---
 # chorus-fb1d
 title: vote_on_solution tool
-status: todo
+status: completed
 type: feature
 priority: normal
 created_at: 2026-01-30T15:41:47Z
-updated_at: 2026-01-30T15:56:41Z
+updated_at: 2026-01-30T17:17:54Z
 parent: chorus-9g3s
 ---
 

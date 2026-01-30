@@ -1,11 +1,11 @@
 ---
 # chorus-naee
 title: Browse solutions page
-status: todo
+status: completed
 type: feature
 priority: normal
 created_at: 2026-01-30T15:42:03Z
-updated_at: 2026-01-30T16:02:01Z
+updated_at: 2026-01-30T17:09:41Z
 parent: chorus-dmms
 blocking:
     - chorus-ipk6

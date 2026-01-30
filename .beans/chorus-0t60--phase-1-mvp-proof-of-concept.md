@@ -1,11 +1,11 @@
 ---
 # chorus-0t60
 title: 'Phase 1: MVP - Proof of Concept'
-status: in-progress
+status: completed
 type: milestone
 priority: normal
 created_at: 2026-01-30T15:40:51Z
-updated_at: 2026-01-30T16:02:52Z
+updated_at: 2026-01-30T18:18:10Z
 ---
 
 Validate the core loop with a single-tenant proof of concept.

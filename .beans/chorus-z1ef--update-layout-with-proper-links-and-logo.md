@@ -1,11 +1,11 @@
 ---
 # chorus-z1ef
 title: Update layout with proper links and logo
-status: in-progress
+status: completed
 type: task
 priority: normal
 created_at: 2026-01-30T18:31:07Z
-updated_at: 2026-01-30T18:36:42Z
+updated_at: 2026-01-30T18:38:11Z
 ---
 
 The application layout needs proper navigation and branding.

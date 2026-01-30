@@ -1,11 +1,11 @@
 ---
 # chorus-grvu
 title: Infinite scroll for solutions on homepage
-status: in-progress
+status: completed
 type: feature
 priority: normal
 created_at: 2026-01-30T18:32:10Z
-updated_at: 2026-01-30T18:43:30Z
+updated_at: 2026-01-30T18:45:12Z
 ---
 
 Implement endless/infinite loading of solutions on the homepage for better UX with large datasets.

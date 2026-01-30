@@ -1,11 +1,11 @@
 ---
 # chorus-8lv1
 title: Protection against prompt injection attacks
-status: in-progress
+status: completed
 type: task
 priority: normal
 created_at: 2026-01-30T18:31:12Z
-updated_at: 2026-01-30T18:45:22Z
+updated_at: 2026-01-30T18:47:53Z
 ---
 
 Research and implement defenses against prompt injection attacks in user-submitted content.

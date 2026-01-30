@@ -43,10 +43,6 @@ defmodule ChorusWeb.SolutionsLive.Index do
   defp parse_sort("score"), do: :score
   defp parse_sort(_), do: :score
 
-  defp sort_to_param(:inserted_at), do: "newest"
-  defp sort_to_param(:upvotes), do: "votes"
-  defp sort_to_param(:score), do: "score"
-
   defp load_initial_solutions(socket) do
     %{sort: sort, per_page: per_page} = socket.assigns
 
@@ -145,9 +141,9 @@ defmodule ChorusWeb.SolutionsLive.Index do
         <div
           id="solutions"
           phx-update="stream"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          class="flex flex-col divide-y divide-base-200"
         >
-          <.solution_card :for={{dom_id, solution} <- @streams.solutions} id={dom_id} solution={solution} />
+          <.solution_row :for={{dom_id, solution} <- @streams.solutions} id={dom_id} solution={solution} />
         </div>
 
         <!-- Infinite scroll sentinel -->
@@ -174,47 +170,62 @@ defmodule ChorusWeb.SolutionsLive.Index do
     """
   end
 
-  defp solution_card(assigns) do
+  defp solution_row(assigns) do
+    score = Solution.score(assigns.solution)
+    assigns = assign(assigns, :score, score)
+
     ~H"""
-    <div id={@id} class="card bg-base-100 shadow-md hover:shadow-lg transition-shadow">
-      <div class="card-body">
-        <h2 class="card-title text-base line-clamp-2">
-          <.link navigate={~p"/solutions/#{@solution.id}"} class="hover:text-primary">
-            {truncate(@solution.problem_description, 80)}
-          </.link>
-        </h2>
-
-        <p class="text-sm text-base-content/70 line-clamp-3 flex-grow">
-          {truncate(@solution.solution_pattern, 120)}
-        </p>
-
-        <.tags tags={@solution.tags} />
-
-        <div class="card-actions justify-between items-center mt-4 pt-4 border-t border-base-200">
-          <.vote_display solution={@solution} />
-          <span class="text-xs text-base-content/50">
-            {format_date(@solution.inserted_at)}
+    <div id={@id} class="py-4 hover:bg-base-200/50 transition-colors">
+      <div class="flex gap-4">
+        <!-- Vote score on the left -->
+        <div class="flex flex-col items-center justify-start min-w-[60px] pt-1">
+          <span class={"text-lg font-bold #{score_color(@score)}"}>
+            {if @score >= 0, do: "+", else: ""}{@score}
           </span>
+          <span class="text-xs text-base-content/50">
+            {@solution.upvotes}↑ {downvotes(@solution)}↓
+          </span>
+        </div>
+
+        <!-- Main content -->
+        <div class="flex-1 min-w-0">
+          <.link navigate={~p"/solutions/#{@solution.id}"} class="group">
+            <h3 class="font-medium text-base group-hover:text-primary transition-colors line-clamp-1">
+              {truncate(@solution.problem_description, 100)}
+            </h3>
+            <p class="text-sm text-base-content/60 mt-1 line-clamp-2">
+              {truncate(@solution.solution_pattern, 180)}
+            </p>
+          </.link>
+
+          <div class="flex items-center gap-3 mt-2">
+            <.inline_tags tags={@solution.tags} />
+            <span class="text-xs text-base-content/40">
+              {format_date(@solution.inserted_at)}
+            </span>
+          </div>
         </div>
       </div>
     </div>
     """
   end
 
-  defp tags(assigns) do
+  defp downvotes(solution), do: solution.downvotes
+
+  defp inline_tags(assigns) do
     all_tags = flatten_tags(assigns.tags)
     assigns = assign(assigns, :all_tags, all_tags)
 
     ~H"""
-    <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1 mt-2">
+    <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1">
       <span
-        :for={tag <- Enum.take(@all_tags, 5)}
-        class={"badge badge-sm #{tag_color(tag.category)}"}
+        :for={tag <- Enum.take(@all_tags, 3)}
+        class={"badge badge-xs #{tag_color(tag.category)}"}
       >
         {tag.value}
       </span>
-      <span :if={length(@all_tags) > 5} class="badge badge-sm badge-ghost">
-        +{length(@all_tags) - 5}
+      <span :if={length(@all_tags) > 3} class="badge badge-xs badge-ghost">
+        +{length(@all_tags) - 3}
       </span>
     </div>
     """
@@ -237,31 +248,6 @@ defmodule ChorusWeb.SolutionsLive.Index do
   defp tag_color("platform"), do: "badge-info"
   defp tag_color(:platform), do: "badge-info"
   defp tag_color(_), do: "badge-ghost"
-
-  defp vote_display(assigns) do
-    score = Solution.score(assigns.solution)
-    assigns = assign(assigns, :score, score)
-
-    ~H"""
-    <div class="flex items-center gap-3 text-sm">
-      <span class="flex items-center gap-1 text-success">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-          <path fill-rule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z" clip-rule="evenodd" />
-        </svg>
-        {@solution.upvotes}
-      </span>
-      <span class="flex items-center gap-1 text-error">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-          <path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v10.638l3.96-4.158a.75.75 0 1 1 1.08 1.04l-5.25 5.5a.75.75 0 0 1-1.08 0l-5.25-5.5a.75.75 0 1 1 1.08-1.04l3.96 4.158V3.75A.75.75 0 0 1 10 3Z" clip-rule="evenodd" />
-        </svg>
-        {@solution.downvotes}
-      </span>
-      <span class={"font-semibold #{score_color(@score)}"}>
-        ({if @score >= 0, do: "+", else: ""}{@score})
-      </span>
-    </div>
-    """
-  end
 
   defp score_color(score) when score > 0, do: "text-success"
   defp score_color(score) when score < 0, do: "text-error"

@@ -1,10 +1,27 @@
 {
   "permissions": {
     "allow": [
-      "Bash(beans prime)",
       "Bash(beans create:*)",
+      "Bash(beans prime)",
       "Bash(beans query:*)",
-      "Bash(beans update:*)"
+      "Bash(beans update:*)",
+      "Bash(colima start:*)",
+      "Bash(colima status:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(elixir:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(mix archive.install:*)",
+      "Bash(mix deps:*)",
+      "Bash(mix deps.compile:*)",
+      "Bash(mix ecto.create:*)",
+      "Bash(mix ecto.gen.migration:*)",
+      "Bash(mix ecto.migrate:*)",
+      "Bash(mix hex.info:*)",
+      "Bash(mix hex.outdated:*)",
+      "Bash(mix phx.new:*)",
+      "Bash(mix precommit:*)",
+      "Bash(head:*)"
     ]
   }
 }
