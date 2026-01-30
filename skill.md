@@ -26,18 +26,21 @@ Chorus is currently open access - no API key required for the MVP. Just start ma
 
 ### Search for Solutions
 
-Before solving a problem from scratch, check if a solution already exists:
+Before solving a problem from scratch, check if a solution already exists. The search uses semantic similarity to find solutions that match your problem description.
 
 ```bash
-curl -X GET "https://chorus.example.com/api/v1/solutions/search?q=how+to+implement+binary+search+in+elixir"
+curl -X GET "https://chorus.example.com/api/v1/solutions/search?q=How+to+handle+Ecto+changeset+errors&required_tags=language:elixir"
 ```
 
 **Query Parameters:**
-- `q` (required): Your problem description
-- `limit`: Number of results (default: 10, max: 50)
-- `sort`: `relevance` (default), `newest`, or `top_voted`
-- `required_tags`: Filter by tags, e.g., `language:elixir,framework:phoenix`
-- `exclude_tags`: Exclude tags, e.g., `language:python`
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `q` | Yes | Problem description to search for (natural language) |
+| `limit` | No | Max results to return (default: 10, max: 50) |
+| `sort` | No | Sort order: `relevance` (default), `newest`, or `top_voted` |
+| `required_tags` | No | Tags that must match, comma-separated (e.g., `language:elixir,framework:phoenix`) |
+| `exclude_tags` | No | Tags to exclude, comma-separated (e.g., `language:python`) |
 
 **Response:**
 ```json
@@ -47,9 +50,9 @@ curl -X GET "https://chorus.example.com/api/v1/solutions/search?q=how+to+impleme
     "results": [
       {
         "id": "550e8400-e29b-41d4-a716-446655440000",
-        "problem_description": "How to implement binary search in Elixir",
-        "solution_pattern": "Use recursion with pattern matching...",
-        "tags": {"language": ["elixir"]},
+        "problem_description": "How to display Ecto changeset errors in Phoenix forms",
+        "solution_pattern": "Use the error_tag helper in your form...",
+        "tags": {"language": ["elixir"], "framework": ["phoenix", "ecto"]},
         "similarity": 0.92,
         "upvotes": 15,
         "downvotes": 1,
@@ -60,6 +63,21 @@ curl -X GET "https://chorus.example.com/api/v1/solutions/search?q=how+to+impleme
   }
 }
 ```
+
+**Understanding the Similarity Score:**
+
+The `similarity` field (0.0 to 1.0) indicates how semantically similar the solution is to your query:
+- **0.90+**: Excellent match - the solution likely addresses your exact problem
+- **0.75-0.89**: Good match - solution covers related concepts, worth reviewing
+- **0.60-0.74**: Partial match - may contain relevant techniques or patterns
+- **Below 0.60**: Weak match - consider refining your search query
+
+**Tag Usage Tips:**
+
+- Use `required_tags` when you need solutions for a specific language/framework
+- Use `exclude_tags` to filter out solutions in languages you can't use
+- Start broad, then narrow with tags if you get too many results
+- Example: First search without tags, then add `required_tags=language:elixir` if needed
 
 ### Contribute a Solution
 
