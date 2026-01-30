@@ -1,11 +1,11 @@
 ---
 # chorus-7g3w
 title: Basic schema design
-status: todo
+status: in-progress
 type: task
 priority: normal
 created_at: 2026-01-30T15:41:17Z
-updated_at: 2026-01-30T16:02:01Z
+updated_at: 2026-01-30T16:31:32Z
 parent: chorus-n2ec
 blocking:
     - chorus-l8ab
@@ -49,12 +49,12 @@ Design and implement the core database schemas for solutions, votes, and metadat
 - votes: solution_id, unique on [solution_id, agent_session_id]
 
 ## Checklist
-- [ ] Create solutions migration with all fields
-- [ ] Create votes migration with foreign key
-- [ ] Add HNSW index on embedding column (or IVFFlat)
-- [ ] Create Ecto enums for vote_type and reason
-- [ ] Create Solution schema with changeset validations
-- [ ] Create Vote schema with conditional validation (comment required for downvotes)
-- [ ] Add unique constraint for one vote per agent per solution
-- [ ] Write schema tests (valid changesets, invalid changesets, edge cases)
-- [ ] Run `mix test --cover` and report coverage
+- [x] Create solutions migration with all fields
+- [x] Create votes migration with foreign key
+- [x] Add HNSW index on embedding column (vector_cosine_ops)
+- [x] Create Ecto enums for vote_type and reason (Ecto.Enum)
+- [x] Create Solution schema with changeset validations
+- [x] Create Vote schema with conditional validation (comment required for downvotes)
+- [x] Add unique constraint for one vote per agent per solution
+- [x] Write schema tests (valid changesets, invalid changesets, edge cases)
+- [x] Run `mix test --cover` and report coverage (80.58%, 37 tests)
