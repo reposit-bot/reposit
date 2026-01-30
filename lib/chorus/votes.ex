@@ -79,4 +79,12 @@ defmodule Chorus.Votes do
   Returns downvote reasons.
   """
   def downvote_reasons, do: Vote.downvote_reasons()
+
+  @doc """
+  Counts total votes.
+  """
+  @spec count_votes() :: non_neg_integer()
+  def count_votes do
+    Repo.aggregate(Vote, :count)
+  end
 end

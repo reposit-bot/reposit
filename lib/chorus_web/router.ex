@@ -17,7 +17,7 @@ defmodule ChorusWeb.Router do
   scope "/", ChorusWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", HomeLive
     live "/demo", DemoLive
     live "/solutions", SolutionsLive.Index
     live "/solutions/:id", SolutionsLive.Show
