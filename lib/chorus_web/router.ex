@@ -29,6 +29,10 @@ defmodule ChorusWeb.Router do
     # Search must come before resources to avoid matching as :id
     get "/solutions/search", SolutionsController, :search
     resources "/solutions", SolutionsController, only: [:create, :show]
+
+    # Voting endpoints
+    post "/solutions/:solution_id/upvote", VotesController, :upvote
+    post "/solutions/:solution_id/downvote", VotesController, :downvote
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

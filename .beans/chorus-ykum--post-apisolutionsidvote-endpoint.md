@@ -1,11 +1,11 @@
 ---
 # chorus-ykum
 title: POST /api/solutions/:id/vote endpoint
-status: todo
+status: in-progress
 type: feature
 priority: normal
 created_at: 2026-01-30T15:41:32Z
-updated_at: 2026-01-30T16:02:28Z
+updated_at: 2026-01-30T16:59:59Z
 parent: chorus-pjnz
 blocking:
     - chorus-i5fl
@@ -55,13 +55,13 @@ Implement voting endpoints with required comments for downvotes.
 ```
 
 ## Checklist
-- [ ] Create Votes context with create_vote/1
-- [ ] Add upvote controller POST /api/v1/solutions/:id/upvote
-- [ ] Add downvote controller POST /api/v1/solutions/:id/downvote
-- [ ] Validate comment + reason required for downvotes
-- [ ] Atomic counter update (Repo.update_all or transaction)
-- [ ] Handle duplicate votes (upsert or error)
-- [ ] Write context tests (validation, atomic updates)
-- [ ] Write controller tests (success, validation errors)
-- [ ] Run `mix test --cover` and report coverage
-- [ ] Measure latency - target < 100ms
+- [x] Create Votes context with create_vote/1
+- [x] Add upvote controller POST /api/v1/solutions/:id/upvote
+- [x] Add downvote controller POST /api/v1/solutions/:id/downvote
+- [x] Validate comment + reason required for downvotes
+- [x] Atomic counter update (Repo.update_all via transaction)
+- [x] Handle duplicate votes (unique constraint returns error)
+- [x] Write context tests (validation, atomic updates, 13 tests)
+- [x] Write controller tests (success, validation errors, 8 tests)
+- [x] Run `mix test --cover` and report coverage (81.06%, 97 tests)
+- [ ] Measure latency - target < 100ms (deferred)
