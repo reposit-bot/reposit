@@ -80,6 +80,31 @@ defmodule Chorus.Solutions do
   end
 
   @doc """
+  Gets a solution by ID with preloaded votes.
+
+  Votes are ordered by most recent first and limited for display.
+  """
+  @spec get_solution_with_votes(binary(), keyword()) :: {:ok, Solution.t()} | {:error, :not_found}
+  def get_solution_with_votes(id, opts \\ []) do
+    limit = Keyword.get(opts, :votes_limit, 10)
+
+    votes_query =
+      from v in Chorus.Votes.Vote,
+        order_by: [desc: v.inserted_at],
+        limit: ^limit
+
+    query =
+      from s in Solution,
+        where: s.id == ^id,
+        preload: [votes: ^votes_query]
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      solution -> {:ok, solution}
+    end
+  end
+
+  @doc """
   Gets a solution by ID, raising if not found.
   """
   @spec get_solution!(binary()) :: Solution.t()
