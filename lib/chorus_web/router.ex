@@ -104,6 +104,7 @@ defmodule ChorusWeb.Router do
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm-email/:token", UserSettingsController, :confirm_email
+    post "/users/settings/regenerate-api-token", UserSettingsController, :regenerate_api_token
   end
 
   scope "/", ChorusWeb do

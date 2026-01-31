@@ -67,6 +67,23 @@ defmodule ChorusWeb.UserSettingsController do
     end
   end
 
+  def regenerate_api_token(conn, _params) do
+    user = conn.assigns.current_scope.user
+
+    case Accounts.regenerate_api_token(user) do
+      {:ok, token, _user} ->
+        conn
+        |> put_flash(:api_token, token)
+        |> put_flash(:info, "API token regenerated. Copy it now - it won't be shown again.")
+        |> redirect(to: ~p"/users/settings")
+
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Failed to regenerate API token.")
+        |> redirect(to: ~p"/users/settings")
+    end
+  end
+
   defp assign_email_and_password_changesets(conn, _opts) do
     user = conn.assigns.current_scope.user
 

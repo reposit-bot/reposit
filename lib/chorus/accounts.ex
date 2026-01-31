@@ -294,4 +294,51 @@ defmodule Chorus.Accounts do
       end
     end)
   end
+
+  ## API Tokens
+
+  @doc """
+  Generates an API token for the user.
+
+  Returns `{:ok, plaintext_token, user}` on success.
+  The plaintext token should be shown to the user once and not stored.
+  """
+  def generate_api_token(%User{} = user) do
+    {token, changeset} = User.generate_api_token(user)
+
+    case Repo.update(changeset) do
+      {:ok, user} -> {:ok, token, user}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+  @doc """
+  Regenerates the API token for the user, invalidating the old one.
+
+  Returns `{:ok, plaintext_token, user}` on success.
+  """
+  def regenerate_api_token(%User{} = user) do
+    generate_api_token(user)
+  end
+
+  @doc """
+  Gets a user by their API token.
+
+  Returns `nil` if the token is invalid or the user is not confirmed.
+  """
+  def get_user_by_api_token(token) when is_binary(token) do
+    case Base.url_decode64(token, padding: false) do
+      {:ok, decoded} ->
+        hashed = :crypto.hash(:sha256, decoded)
+
+        query =
+          from u in User,
+            where: u.api_token_hash == ^hashed and not is_nil(u.confirmed_at)
+
+        Repo.one(query)
+
+      :error ->
+        nil
+    end
+  end
 end

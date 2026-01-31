@@ -37,4 +37,38 @@
       Save Password
     </.button>
   </.form>
+
+  <div class="divider" />
+
+  <div class="space-y-4">
+    <h3 class="text-lg font-semibold">API Token</h3>
+    <p class="text-sm opacity-70">
+      Use this token to authenticate with the Chorus API and MCP endpoints.
+    </p>
+
+    <%= if token = Phoenix.Flash.get(@flash, :api_token) do %>
+      <div class="alert alert-warning">
+        <.icon name="alert-triangle" class="size-5" />
+        <div>
+          <p class="font-semibold">Copy your token now - it won't be shown again!</p>
+          <code class="block mt-2 p-2 bg-base-300 rounded text-sm break-all select-all"><%= token %></code>
+        </div>
+      </div>
+    <% else %>
+      <p class="text-sm">
+        <%= if @current_scope.user.api_token_hash do %>
+          You have an active API token. Regenerate to create a new one (invalidates the old token).
+        <% else %>
+          You don't have an API token yet. Generate one to use the API.
+        <% end %>
+      </p>
+    <% end %>
+
+    <form action={~p"/users/settings/regenerate-api-token"} method="post">
+      <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+      <button type="submit" class="btn">
+        <%= if @current_scope.user.api_token_hash, do: "Regenerate", else: "Generate" %> API Token
+      </button>
+    </form>
+  </div>
 </Layouts.app>
