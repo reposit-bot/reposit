@@ -13,7 +13,7 @@ swap_size_mb = 512
   release_command = '/app/bin/migrate'
 
 [env]
-  PHX_HOST = 'reposit-web.fly.dev'
+  PHX_HOST = 'reposit.bot'
   PORT = '8080'
 
 [http_service]
