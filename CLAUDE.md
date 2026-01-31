@@ -126,11 +126,14 @@ lib/
 # First-time setup (deps, DB, assets)
 mix setup
 
-# Pre-commit checks (compile, format, test)
+# Pre-commit checks (compile, format, sobelow, test)
 mix precommit
 
+# Format code
+mix format
+
 # Run tests with coverage
-mix test --cover
+mix coveralls
 
 # Start dev server
 mix phx.server
