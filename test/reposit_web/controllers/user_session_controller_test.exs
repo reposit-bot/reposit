@@ -70,7 +70,22 @@ defmodule RepositWeb.UserSessionControllerTest do
           "user" => %{"email" => user.email}
         })
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "If your email is in our system"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "magic link to sign in"
+      assert Reposit.Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "login"
+    end
+
+    test "creates new user and sends magic link email when user does not exist", %{conn: conn} do
+      email = "newuser#{System.unique_integer()}@example.com"
+      refute Accounts.get_user_by_email(email)
+
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"email" => email}
+        })
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "magic link to sign in"
+      user = Accounts.get_user_by_email(email)
+      assert user
       assert Reposit.Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "login"
     end
 

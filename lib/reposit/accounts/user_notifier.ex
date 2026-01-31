@@ -1,5 +1,6 @@
 defmodule Reposit.Accounts.UserNotifier do
   import Swoosh.Email
+  require Logger
 
   alias Reposit.Mailer
   alias Reposit.Accounts.User
@@ -13,8 +14,14 @@ defmodule Reposit.Accounts.UserNotifier do
       |> subject(subject)
       |> text_body(body)
 
-    with {:ok, _metadata} <- Mailer.deliver(email) do
-      {:ok, email}
+    case Mailer.deliver(email) do
+      {:ok, metadata} ->
+        Logger.info("Email sent to #{recipient}: #{subject}")
+        {:ok, email}
+
+      {:error, reason} ->
+        Logger.error("Failed to send email to #{recipient}: #{inspect(reason)}")
+        {:error, reason}
     end
   end
 

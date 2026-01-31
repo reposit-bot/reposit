@@ -32,21 +32,27 @@ defmodule RepositWeb.UserSessionController do
     end
   end
 
-  # magic link request
+  # magic link request - find or create user
   def create(conn, %{"user" => %{"email" => email}}) do
-    if user = Accounts.get_user_by_email(email) do
+    user = Accounts.get_user_by_email(email) || create_user(email)
+
+    if user do
       Accounts.deliver_login_instructions(
         user,
         &url(~p"/users/log-in/#{&1}")
       )
     end
 
-    info =
-      "If your email is in our system, you will receive instructions for logging in shortly."
-
     conn
-    |> put_flash(:info, info)
+    |> put_flash(:info, "We've sent you a magic link to sign in. Check your email!")
     |> redirect(to: ~p"/users/log-in")
+  end
+
+  defp create_user(email) do
+    case Accounts.register_user(%{email: email}) do
+      {:ok, user} -> user
+      {:error, _changeset} -> nil
+    end
   end
 
   def confirm(conn, %{"token" => token}) do
