@@ -33,6 +33,11 @@ config :logger, level: :warning
 # Set to false or run with LIVE_EMBEDDINGS=true for integration tests
 config :chorus, :embeddings_stub, true
 
+# MCP authentication tokens for testing
+config :chorus, :mcp_auth,
+  enabled: true,
+  tokens: ["test-token-123"]
+
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 

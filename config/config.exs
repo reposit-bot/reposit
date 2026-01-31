@@ -63,6 +63,13 @@ config :logger, :default_formatter,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# MCP authentication configuration
+# Tokens can be configured per-environment or via runtime config
+# When disabled, all connections are treated as unauthenticated
+config :chorus, :mcp_auth,
+  enabled: false,
+  tokens: []
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
