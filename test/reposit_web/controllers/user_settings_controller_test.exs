@@ -105,4 +105,22 @@ defmodule RepositWeb.UserSettingsControllerTest do
       assert redirected_to(conn) == ~p"/users/log-in"
     end
   end
+
+  describe "DELETE /users/settings" do
+    test "deletes the user account and logs out", %{conn: conn, user: user} do
+      conn = delete(conn, ~p"/users/settings")
+      assert redirected_to(conn) == ~p"/"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "Account deleted successfully"
+
+      refute Accounts.get_user_by_email(user.email)
+    end
+
+    test "redirects if user is not logged in" do
+      conn = build_conn()
+      conn = delete(conn, ~p"/users/settings")
+      assert redirected_to(conn) == ~p"/users/log-in"
+    end
+  end
 end

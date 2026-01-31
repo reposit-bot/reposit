@@ -295,6 +295,28 @@ defmodule Reposit.Accounts do
     end)
   end
 
+  ## Account Deletion
+
+  @doc """
+  Deletes a user and all associated data.
+
+  This permanently removes the user account along with all their:
+  - Session tokens
+  - Solutions (contributions)
+  - Votes
+
+  The cascade delete is handled at the database level via foreign key constraints.
+
+  ## Examples
+
+      iex> delete_user(user)
+      {:ok, %User{}}
+
+  """
+  def delete_user(%User{} = user) do
+    Repo.delete(user)
+  end
+
   ## API Tokens
 
   @doc """

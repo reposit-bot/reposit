@@ -49,4 +49,48 @@
       </button>
     </form>
   </div>
+
+  <div class="divider" />
+
+  <div class="space-y-4">
+    <h3 class="text-lg font-semibold text-error">Danger Zone</h3>
+    <p class="text-sm opacity-70">
+      Permanently delete your account and all associated data. This action cannot be undone.
+    </p>
+
+    <button type="button" class="btn btn-error btn-outline" onclick="delete_account_modal.showModal()">
+      Delete Account
+    </button>
+
+    <dialog id="delete_account_modal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg text-error">Delete Account</h3>
+        <p class="py-4">
+          Are you sure you want to delete your account? This will permanently remove:
+        </p>
+        <ul class="list-disc list-inside text-sm opacity-70 mb-4">
+          <li>Your profile and email</li>
+          <li>All your contributed solutions</li>
+          <li>All your votes</li>
+          <li>Your API token</li>
+        </ul>
+        <p class="text-sm font-semibold text-error">This action cannot be undone.</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="btn">Cancel</button>
+          </form>
+          <form action={~p"/users/settings"} method="post">
+            <input type="hidden" name="_method" value="delete" />
+            <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+            <button type="submit" class="btn btn-error">
+              Yes, Delete My Account
+            </button>
+          </form>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+  </div>
 </Layouts.app>

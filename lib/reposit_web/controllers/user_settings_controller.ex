@@ -67,6 +67,22 @@ defmodule RepositWeb.UserSettingsController do
     end
   end
 
+  def delete(conn, _params) do
+    user = conn.assigns.current_scope.user
+
+    case Accounts.delete_user(user) do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "Account deleted successfully.")
+        |> RepositWeb.UserAuth.log_out_user()
+
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Failed to delete account.")
+        |> redirect(to: ~p"/users/settings")
+    end
+  end
+
   defp assign_email_changeset(conn, _opts) do
     user = conn.assigns.current_scope.user
 

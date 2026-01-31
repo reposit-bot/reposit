@@ -450,4 +450,68 @@ defmodule Reposit.AccountsTest do
       refute Accounts.get_user_by_api_token(token)
     end
   end
+
+  describe "delete_user/1" do
+    test "deletes the user" do
+      user = user_fixture()
+      assert {:ok, deleted_user} = Accounts.delete_user(user)
+      assert deleted_user.id == user.id
+      refute Repo.get(User, user.id)
+    end
+
+    test "cascades to delete user tokens" do
+      user = user_fixture()
+      _token = Accounts.generate_user_session_token(user)
+      assert Repo.get_by(UserToken, user_id: user.id)
+
+      {:ok, _} = Accounts.delete_user(user)
+
+      refute Repo.get_by(UserToken, user_id: user.id)
+    end
+
+    test "cascades to delete user solutions" do
+      user = user_fixture()
+      scope = Reposit.Accounts.Scope.for_user(user)
+
+      {:ok, solution} =
+        Reposit.Solutions.create_solution(scope, %{
+          problem_description: "Test problem description that is long enough for validation",
+          solution_pattern: "Test solution pattern that is also long enough to pass the minimum character validation requirement"
+        })
+
+      {:ok, _} = Accounts.delete_user(user)
+
+      refute Repo.get(Reposit.Solutions.Solution, solution.id)
+    end
+
+    test "cascades to delete user votes" do
+      # Create solution author
+      author = user_fixture(%{email: "author@example.com"})
+      author_scope = Reposit.Accounts.Scope.for_user(author)
+
+      {:ok, solution} =
+        Reposit.Solutions.create_solution(author_scope, %{
+          problem_description: "Test problem description that is long enough for validation",
+          solution_pattern: "Test solution pattern that is also long enough to pass the minimum character validation requirement"
+        })
+
+      # Create voter
+      voter = user_fixture(%{email: "voter@example.com"})
+      voter_scope = Reposit.Accounts.Scope.for_user(voter)
+
+      {:ok, vote} =
+        Reposit.Votes.create_vote(voter_scope, %{
+          solution_id: solution.id,
+          vote_type: :up
+        })
+
+      # Delete the voter
+      {:ok, _} = Accounts.delete_user(voter)
+
+      # Vote should be deleted
+      refute Repo.get(Reposit.Votes.Vote, vote.id)
+      # Solution should still exist (owned by author)
+      assert Repo.get(Reposit.Solutions.Solution, solution.id)
+    end
+  end
 end

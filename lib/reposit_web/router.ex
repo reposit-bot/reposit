@@ -118,6 +118,7 @@ defmodule RepositWeb.Router do
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm-email/:token", UserSettingsController, :confirm_email
     post "/users/settings/regenerate-api-token", UserSettingsController, :regenerate_api_token
+    delete "/users/settings", UserSettingsController, :delete
   end
 
   scope "/", RepositWeb do
