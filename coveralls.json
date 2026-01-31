@@ -4,6 +4,7 @@
     "treat_no_relevant_lines_as_covered": true
   },
   "skip_files": [
+    "deps/",
     "lib/reposit_web/components/core_components.ex",
     "lib/reposit_web/components/layouts.ex",
     "lib/reposit_web/controllers/page_html.ex",
