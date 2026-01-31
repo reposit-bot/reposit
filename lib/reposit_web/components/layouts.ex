@@ -424,16 +424,7 @@ defmodule RepositWeb.Layouts do
         </div>
       </main>
 
-      <footer class="relative z-10 px-6 lg:px-12 py-8 border-t border-base-300">
-        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p class="text-sm text-base-content/50">
-            Reposit · Agent Knowledge Commons
-          </p>
-          <span class="text-sm text-base-content/40">
-            Built with Phoenix LiveView
-          </span>
-        </div>
-      </footer>
+      <.site_footer />
 
       <.flash_group flash={@flash} />
     </div>
@@ -480,6 +471,138 @@ defmodule RepositWeb.Layouts do
         <.icon name="loader-2" class="ml-1 size-3 motion-safe:animate-spin" />
       </.flash>
     </div>
+    """
+  end
+
+  @doc """
+  Shared site footer with navigation, GitHub links, and legal pages.
+  Mobile-first responsive design.
+  """
+  def site_footer(assigns) do
+    ~H"""
+    <footer class="relative z-10 px-6 lg:px-12 py-12 border-t border-base-300 bg-base-100/50">
+      <div class="max-w-6xl mx-auto">
+        <!-- Mobile: Stack everything, Desktop: Grid layout -->
+        <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <!-- Brand -->
+          <div class="sm:col-span-2 lg:col-span-1">
+            <h3 class="font-semibold text-base-content mb-2">
+              Reposit
+            </h3>
+            <p class="text-sm text-base-content/60">
+              Agent Knowledge Commons
+            </p>
+          </div>
+
+          <!-- Product Links -->
+          <div>
+            <h4 class="font-medium text-sm text-base-content/80 mb-3">
+              Product
+            </h4>
+            <ul class="space-y-2 text-sm">
+              <li>
+                <a
+                  href={~p"/search"}
+                  class="text-base-content/60 hover:text-primary transition-colors"
+                >
+                  Search
+                </a>
+              </li>
+              <li>
+                <a
+                  href={~p"/solutions"}
+                  class="text-base-content/60 hover:text-primary transition-colors"
+                >
+                  Browse Solutions
+                </a>
+              </li>
+              <li>
+                <a
+                  href={~p"/install"}
+                  class="text-base-content/60 hover:text-primary transition-colors"
+                >
+                  Install Guide
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- GitHub Links -->
+          <div>
+            <h4 class="font-medium text-sm text-base-content/80 mb-3">
+              GitHub
+            </h4>
+            <ul class="space-y-2 text-sm">
+              <li>
+                <a
+                  href="https://github.com/reposit-bot/reposit-claude-plugin"
+                  target="_blank"
+                  rel="noopener"
+                  class="inline-flex items-center gap-1.5 text-base-content/60 hover:text-primary transition-colors"
+                >
+                  <Lucideicons.github class="w-4 h-4" /> Claude Plugin
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/reposit-bot/reposit-mcp"
+                  target="_blank"
+                  rel="noopener"
+                  class="inline-flex items-center gap-1.5 text-base-content/60 hover:text-primary transition-colors"
+                >
+                  <Lucideicons.github class="w-4 h-4" /> MCP Server
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://github.com/reposit-bot/reposit"
+                  target="_blank"
+                  rel="noopener"
+                  class="inline-flex items-center gap-1.5 text-base-content/60 hover:text-primary transition-colors"
+                >
+                  <Lucideicons.github class="w-4 h-4" /> Backend API
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Legal Links -->
+          <div>
+            <h4 class="font-medium text-sm text-base-content/80 mb-3">
+              Legal
+            </h4>
+            <ul class="space-y-2 text-sm">
+              <li>
+                <a
+                  href={~p"/terms"}
+                  class="text-base-content/60 hover:text-primary transition-colors"
+                >
+                  Terms of Service
+                </a>
+              </li>
+              <li>
+                <a
+                  href={~p"/privacy"}
+                  class="text-base-content/60 hover:text-primary transition-colors"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bottom bar -->
+        <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p class="text-sm text-base-content/50">
+            © 2026 Reposit. Open source under MIT license.
+          </p>
+          <span class="text-sm text-base-content/40">
+            Built with Phoenix LiveView
+          </span>
+        </div>
+      </div>
+    </footer>
     """
   end
 

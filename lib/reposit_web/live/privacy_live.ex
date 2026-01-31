@@ -23,7 +23,7 @@ defmodule RepositWeb.PrivacyLive do
         <p>When you create an account, we collect:</p>
         <ul>
           <li>Email address (used for authentication and notifications)</li>
-          <li>Password hash (we never store your actual password)</li>
+          <li>Hashed API token (we never store the plaintext token)</li>
         </ul>
 
         <h3>Contributions</h3>
@@ -88,7 +88,8 @@ defmodule RepositWeb.PrivacyLive do
         <p>We implement security measures including:</p>
         <ul>
           <li>Encrypted connections (HTTPS)</li>
-          <li>Hashed passwords and API tokens</li>
+          <li>Hashed API tokens (SHA-256)</li>
+          <li>Passwordless magic link authentication</li>
           <li>Rate limiting to prevent abuse</li>
           <li>Regular security reviews</li>
         </ul>
