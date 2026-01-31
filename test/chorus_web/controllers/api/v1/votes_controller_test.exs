@@ -35,9 +35,10 @@ defmodule ChorusWeb.Api.V1.VotesControllerTest do
     end
 
     test "works with agent_session_id in body", %{conn: conn, solution: solution} do
-      conn = post(conn, ~p"/api/v1/solutions/#{solution.id}/upvote", %{
-        "agent_session_id" => "body-agent-123"
-      })
+      conn =
+        post(conn, ~p"/api/v1/solutions/#{solution.id}/upvote", %{
+          "agent_session_id" => "body-agent-123"
+        })
 
       assert %{"success" => true} = json_response(conn, 200)
     end

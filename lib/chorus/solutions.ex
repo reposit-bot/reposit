@@ -372,10 +372,13 @@ defmodule Chorus.Solutions do
   @doc """
   Archives a solution (soft delete).
   """
-  @spec archive_solution(binary()) :: {:ok, Solution.t()} | {:error, :not_found | Ecto.Changeset.t()}
+  @spec archive_solution(binary()) ::
+          {:ok, Solution.t()} | {:error, :not_found | Ecto.Changeset.t()}
   def archive_solution(id) do
     case Repo.get(Solution, id) do
-      nil -> {:error, :not_found}
+      nil ->
+        {:error, :not_found}
+
       solution ->
         solution
         |> Ecto.Changeset.change(status: :archived)

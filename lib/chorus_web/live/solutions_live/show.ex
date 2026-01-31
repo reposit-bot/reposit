@@ -28,6 +28,7 @@ defmodule ChorusWeb.SolutionsLive.Show do
   end
 
   defp render_markdown(nil), do: ""
+
   defp render_markdown(text) do
     case MDEx.to_html(text, extension: [autolink: true, strikethrough: true]) do
       {:ok, html} -> html
@@ -37,40 +38,99 @@ defmodule ChorusWeb.SolutionsLive.Show do
 
   @impl true
   def render(assigns) do
+    score = Solution.score(assigns.solution)
+    assigns = assign(assigns, :score, score)
+
     ~H"""
     <Layouts.app flash={@flash}>
-      <div class="container mx-auto px-4 py-8 max-w-4xl">
-        <div class="mb-6">
-          <.link navigate={~p"/solutions"} class="btn btn-ghost btn-sm gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-              <path fill-rule="evenodd" d="M17 10a.75.75 0 0 1-.75.75H5.612l4.158 3.96a.75.75 0 1 1-1.04 1.08l-5.5-5.25a.75.75 0 0 1 0-1.08l5.5-5.25a.75.75 0 1 1 1.04 1.08L5.612 9.25H16.25A.75.75 0 0 1 17 10Z" clip-rule="evenodd" />
-            </svg>
-            Back to Solutions
-          </.link>
-        </div>
+      <div class="space-y-6">
+        <!-- Back link -->
+        <a
+          href={~p"/solutions"}
+          class="inline-flex items-center gap-2 text-sm text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)] transition-colors"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          Back to Solutions
+        </a>
+        
+    <!-- Main content card -->
+        <div class="card-chorus p-6 lg:p-8">
+          <!-- Problem section -->
+          <div class="mb-8">
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider text-muted">Problem</span>
+              <.inline_tags tags={@solution.tags} />
+            </div>
+            <p class="text-[oklch(25%_0.02_280)] dark:text-[oklch(90%_0.01_280)] text-lg leading-relaxed">
+              {@solution.problem_description}
+            </p>
+          </div>
+          
+    <!-- Vote stats - compact horizontal -->
+          <div class="flex items-center gap-6 py-4 px-5 rounded-2xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] mb-8">
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-[oklch(55%_0.15_145)]" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="mono font-semibold text-[oklch(55%_0.15_145)]">{@solution.upvotes}</span>
+              <span class="text-xs text-muted">upvotes</span>
+            </div>
 
-        <div class="card bg-base-100 shadow-xl">
-          <div class="card-body">
-            <h1 class="card-title text-2xl mb-4">{@solution.problem_description}</h1>
+            <div class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-[oklch(60%_0.2_25)]" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M10 3a.75.75 0 0 1 .75.75v10.638l3.96-4.158a.75.75 0 1 1 1.08 1.04l-5.25 5.5a.75.75 0 0 1-1.08 0l-5.25-5.5a.75.75 0 1 1 1.08-1.04l3.96 4.158V3.75A.75.75 0 0 1 10 3Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="mono font-semibold text-[oklch(60%_0.2_25)]">{@solution.downvotes}</span>
+              <span class="text-xs text-muted">downvotes</span>
+            </div>
 
-            <.vote_stats solution={@solution} />
+            <div class="h-6 w-px bg-[oklch(90%_0.02_280)] dark:bg-[oklch(30%_0.025_280)]"></div>
 
-            <div class="divider">Solution</div>
-
-            <div class="prose max-w-none">
+            <div class="flex items-center gap-2">
+              <span class={"mono text-xl font-bold #{score_color(@score)}"}>
+                {if @score >= 0, do: "+", else: ""}{@score}
+              </span>
+              <span class="text-xs text-muted">score</span>
+            </div>
+          </div>
+          
+    <!-- Solution section -->
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-muted mb-4 block">
+              Solution
+            </span>
+            <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:text-[oklch(25%_0.02_280)] dark:prose-headings:text-[oklch(90%_0.01_280)] prose-p:text-[oklch(35%_0.02_280)] dark:prose-p:text-[oklch(75%_0.02_280)] prose-code:bg-[oklch(95%_0.01_280)] dark:prose-code:bg-[oklch(25%_0.02_280)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none prose-pre:bg-[oklch(20%_0.015_280)] prose-pre:rounded-xl">
               {Phoenix.HTML.raw(@markdown_html)}
             </div>
-
-            <.tags_by_category tags={@solution.tags} />
-
-            <.vote_comments votes={@solution.votes} />
-
-            <div class="mt-6 pt-6 border-t border-base-200 flex justify-between items-center text-sm text-base-content/50">
-              <span>Created {format_date(@solution.inserted_at)}</span>
-              <span :if={@solution.updated_at != @solution.inserted_at}>
-                Updated {format_date(@solution.updated_at)}
-              </span>
-            </div>
+          </div>
+          
+    <!-- Tags by category -->
+          <.tags_by_category tags={@solution.tags} />
+          
+    <!-- Vote comments -->
+          <.vote_comments votes={@solution.votes} />
+          
+    <!-- Metadata footer -->
+          <div class="mt-8 pt-6 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(28%_0.025_280)] flex flex-wrap gap-4 text-xs text-muted">
+            <span>Created {format_date(@solution.inserted_at)}</span>
+            <span :if={@solution.updated_at != @solution.inserted_at}>
+              · Updated {format_date(@solution.updated_at)}
+            </span>
           </div>
         </div>
       </div>
@@ -78,51 +138,18 @@ defmodule ChorusWeb.SolutionsLive.Show do
     """
   end
 
-  defp vote_stats(assigns) do
-    score = Solution.score(assigns.solution)
-    total_votes = assigns.solution.upvotes + assigns.solution.downvotes
-    upvote_percent = if total_votes > 0, do: round(assigns.solution.upvotes / total_votes * 100), else: 0
-
-    assigns =
-      assigns
-      |> assign(:score, score)
-      |> assign(:total_votes, total_votes)
-      |> assign(:upvote_percent, upvote_percent)
+  defp inline_tags(assigns) do
+    all_tags = flatten_tags(assigns.tags)
+    assigns = assign(assigns, :all_tags, Enum.take(all_tags, 4))
 
     ~H"""
-    <div class="stats shadow bg-base-200 w-full">
-      <div class="stat">
-        <div class="stat-figure text-success">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
-            <path fill-rule="evenodd" d="M12 20.25a.75.75 0 0 1-.75-.75V6.31l-5.47 5.47a.75.75 0 0 1-1.06-1.06l6.75-6.75a.75.75 0 0 1 1.06 0l6.75 6.75a.75.75 0 1 1-1.06 1.06l-5.47-5.47V19.5a.75.75 0 0 1-.75.75Z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="stat-title">Upvotes</div>
-        <div class="stat-value text-success">{@solution.upvotes}</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-figure text-error">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
-            <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v13.19l5.47-5.47a.75.75 0 1 1 1.06 1.06l-6.75 6.75a.75.75 0 0 1-1.06 0l-6.75-6.75a.75.75 0 1 1 1.06-1.06l5.47 5.47V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="stat-title">Downvotes</div>
-        <div class="stat-value text-error">{@solution.downvotes}</div>
-      </div>
-
-      <div class="stat">
-        <div class="stat-figure text-primary">
-          <div class="radial-progress text-primary" style={"--value:#{@upvote_percent}; --size:3.5rem;"} role="progressbar">
-            {@upvote_percent}%
-          </div>
-        </div>
-        <div class="stat-title">Score</div>
-        <div class={"stat-value #{score_color(@score)}"}>
-          {if @score >= 0, do: "+", else: ""}{@score}
-        </div>
-        <div class="stat-desc">{@total_votes} total votes</div>
-      </div>
+    <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1.5">
+      <span
+        :for={tag <- @all_tags}
+        class={"badge-chorus text-[0.65rem] py-0.5 px-2 #{tag_color(tag.category)}"}
+      >
+        {tag.value}
+      </span>
     </div>
     """
   end
@@ -132,17 +159,20 @@ defmodule ChorusWeb.SolutionsLive.Show do
     assigns = assign(assigns, :grouped, grouped)
 
     ~H"""
-    <div :if={map_size(@grouped) > 0} class="mt-6">
-      <div class="divider">Tags</div>
-      <div class="flex flex-wrap gap-4">
-        <div :for={{category, values} <- @grouped} class="flex flex-col gap-1">
-          <span class="text-xs font-semibold uppercase text-base-content/50">
+    <div
+      :if={map_size(@grouped) > 0}
+      class="mt-8 pt-6 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(28%_0.025_280)]"
+    >
+      <span class="text-xs font-semibold uppercase tracking-wider text-muted mb-4 block">Tags</span>
+      <div class="flex flex-wrap gap-6">
+        <div :for={{category, values} <- @grouped} class="flex flex-col gap-2">
+          <span class="text-[0.7rem] font-medium uppercase text-muted">
             {category}
           </span>
-          <div class="flex flex-wrap gap-1">
+          <div class="flex flex-wrap gap-1.5">
             <span
               :for={value <- values}
-              class={"badge #{tag_color(category)}"}
+              class={"badge-chorus text-xs py-1 #{tag_color(category)}"}
             >
               {value}
             </span>
@@ -154,21 +184,55 @@ defmodule ChorusWeb.SolutionsLive.Show do
   end
 
   defp group_tags(nil), do: %{}
+
   defp group_tags(tags) when is_map(tags) do
     tags
     |> Enum.filter(fn {_k, v} -> is_list(v) and length(v) > 0 end)
     |> Enum.into(%{})
   end
 
-  defp tag_color("language"), do: "badge-primary"
-  defp tag_color(:language), do: "badge-primary"
-  defp tag_color("framework"), do: "badge-secondary"
-  defp tag_color(:framework), do: "badge-secondary"
-  defp tag_color("domain"), do: "badge-accent"
-  defp tag_color(:domain), do: "badge-accent"
-  defp tag_color("platform"), do: "badge-info"
-  defp tag_color(:platform), do: "badge-info"
-  defp tag_color(_), do: "badge-ghost"
+  defp flatten_tags(nil), do: []
+
+  defp flatten_tags(tags) when is_map(tags) do
+    Enum.flat_map(tags, fn {category, values} ->
+      values = if is_list(values), do: values, else: []
+      Enum.map(values, &%{category: category, value: &1})
+    end)
+  end
+
+  defp tag_color("language"),
+    do:
+      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
+
+  defp tag_color(:language),
+    do:
+      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
+
+  defp tag_color("framework"),
+    do:
+      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
+
+  defp tag_color(:framework),
+    do:
+      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
+
+  defp tag_color("domain"),
+    do:
+      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
+
+  defp tag_color(:domain),
+    do:
+      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
+
+  defp tag_color("platform"),
+    do:
+      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
+
+  defp tag_color(:platform),
+    do:
+      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
+
+  defp tag_color(_), do: ""
 
   defp vote_comments(assigns) do
     # Filter to only votes with comments (downvotes)
@@ -176,17 +240,27 @@ defmodule ChorusWeb.SolutionsLive.Show do
     assigns = assign(assigns, :comments, comments)
 
     ~H"""
-    <div :if={length(@comments) > 0} class="mt-6">
-      <div class="divider">Recent Feedback</div>
-      <div class="space-y-4">
-        <div :for={vote <- @comments} class="chat chat-start">
-          <div class="chat-bubble chat-bubble-error">
-            <div class="flex items-center gap-2 mb-1">
-              <span class="badge badge-sm">{reason_label(vote.reason)}</span>
-              <span class="text-xs opacity-70">{format_date(vote.inserted_at)}</span>
-            </div>
-            <p>{vote.comment}</p>
+    <div
+      :if={length(@comments) > 0}
+      class="mt-8 pt-6 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(28%_0.025_280)]"
+    >
+      <span class="text-xs font-semibold uppercase tracking-wider text-muted mb-4 block">
+        Feedback
+      </span>
+      <div class="space-y-3">
+        <div
+          :for={vote <- @comments}
+          class="p-4 rounded-xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] border-l-3 border-[oklch(60%_0.2_25)]"
+        >
+          <div class="flex items-center gap-2 mb-2">
+            <span class="badge-chorus text-[0.65rem] py-0.5 bg-[oklch(92%_0.03_25)] dark:bg-[oklch(30%_0.05_25)] text-[oklch(50%_0.15_25)] dark:text-[oklch(75%_0.12_25)]">
+              {reason_label(vote.reason)}
+            </span>
+            <span class="text-xs text-muted">{format_date(vote.inserted_at)}</span>
           </div>
+          <p class="text-sm text-[oklch(35%_0.02_280)] dark:text-[oklch(75%_0.02_280)]">
+            {vote.comment}
+          </p>
         </div>
       </div>
     </div>
@@ -201,12 +275,13 @@ defmodule ChorusWeb.SolutionsLive.Show do
   defp reason_label(:other), do: "Other"
   defp reason_label(_), do: "Feedback"
 
-  defp score_color(score) when score > 0, do: "text-success"
-  defp score_color(score) when score < 0, do: "text-error"
-  defp score_color(_), do: "text-base-content"
+  defp score_color(score) when score > 0, do: "text-[oklch(55%_0.15_145)]"
+  defp score_color(score) when score < 0, do: "text-[oklch(60%_0.2_25)]"
+  defp score_color(_), do: "text-muted"
 
   defp format_date(%DateTime{} = dt) do
     Calendar.strftime(dt, "%B %d, %Y")
   end
+
   defp format_date(_), do: ""
 end

@@ -33,12 +33,15 @@ defmodule ChorusWeb.Plugs.RateLimit do
         |> add_rate_limit_headers(action, :exceeded)
         |> put_resp_header("retry-after", to_string(retry_after_seconds))
         |> put_resp_content_type("application/json")
-        |> send_resp(429, Jason.encode!(%{
-          success: false,
-          error: "rate_limit_exceeded",
-          hint: "Too many requests. Please retry after #{retry_after_seconds} seconds.",
-          retry_after: retry_after_seconds
-        }))
+        |> send_resp(
+          429,
+          Jason.encode!(%{
+            success: false,
+            error: "rate_limit_exceeded",
+            hint: "Too many requests. Please retry after #{retry_after_seconds} seconds.",
+            retry_after: retry_after_seconds
+          })
+        )
         |> halt()
     end
   end

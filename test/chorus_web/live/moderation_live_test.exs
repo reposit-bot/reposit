@@ -15,16 +15,21 @@ defmodule ChorusWeb.ModerationLiveTest do
     end
 
     test "shows flagged solutions with more downvotes than upvotes", %{conn: conn} do
-      {:ok, solution} = create_solution("Flagged problem description", "This is the solution that got flagged with downvotes")
+      {:ok, solution} =
+        create_solution(
+          "Flagged problem description",
+          "This is the solution that got flagged with downvotes"
+        )
 
       # Add downvote to flag it
-      {:ok, _} = Votes.create_vote(%{
-        solution_id: solution.id,
-        agent_session_id: "session-1",
-        vote_type: :down,
-        reason: :incorrect,
-        comment: "This doesn't work at all"
-      })
+      {:ok, _} =
+        Votes.create_vote(%{
+          solution_id: solution.id,
+          agent_session_id: "session-1",
+          vote_type: :down,
+          reason: :incorrect,
+          comment: "This doesn't work at all"
+        })
 
       {:ok, view, _html} = live(conn, ~p"/moderation")
 
@@ -34,7 +39,11 @@ defmodule ChorusWeb.ModerationLiveTest do
     end
 
     test "shows flagged solutions with 3+ downvotes", %{conn: conn} do
-      {:ok, solution} = create_solution("Multi-downvote problem", "This solution got multiple downvotes from different agents")
+      {:ok, solution} =
+        create_solution(
+          "Multi-downvote problem",
+          "This solution got multiple downvotes from different agents"
+        )
 
       # Update upvotes to make downvotes > upvotes condition not apply
       solution
@@ -43,13 +52,14 @@ defmodule ChorusWeb.ModerationLiveTest do
 
       # Add 3 downvotes
       for i <- 1..3 do
-        {:ok, _} = Votes.create_vote(%{
-          solution_id: solution.id,
-          agent_session_id: "session-#{i}",
-          vote_type: :down,
-          reason: :outdated,
-          comment: "This is outdated #{i}"
-        })
+        {:ok, _} =
+          Votes.create_vote(%{
+            solution_id: solution.id,
+            agent_session_id: "session-#{i}",
+            vote_type: :down,
+            reason: :outdated,
+            comment: "This is outdated #{i}"
+          })
       end
 
       {:ok, view, _html} = live(conn, ~p"/moderation")
@@ -59,14 +69,19 @@ defmodule ChorusWeb.ModerationLiveTest do
     end
 
     test "does not show non-flagged solutions", %{conn: conn} do
-      {:ok, good_solution} = create_solution("Good solution problem here", "This is a good solution that everyone loves and finds very useful for their work")
+      {:ok, good_solution} =
+        create_solution(
+          "Good solution problem here",
+          "This is a good solution that everyone loves and finds very useful for their work"
+        )
 
       # Add upvotes
-      {:ok, _} = Votes.create_vote(%{
-        solution_id: good_solution.id,
-        agent_session_id: "session-happy",
-        vote_type: :up
-      })
+      {:ok, _} =
+        Votes.create_vote(%{
+          solution_id: good_solution.id,
+          agent_session_id: "session-happy",
+          vote_type: :up
+        })
 
       {:ok, view, _html} = live(conn, ~p"/moderation")
 
@@ -76,24 +91,35 @@ defmodule ChorusWeb.ModerationLiveTest do
     end
 
     test "can filter by downvote reason", %{conn: conn} do
-      {:ok, solution1} = create_solution("Incorrect solution problem here", "This solution is marked as incorrect and needs to be reviewed by the moderation team")
-      {:ok, solution2} = create_solution("Outdated solution problem here", "This solution is marked as outdated and needs to be reviewed by the moderation team")
+      {:ok, solution1} =
+        create_solution(
+          "Incorrect solution problem here",
+          "This solution is marked as incorrect and needs to be reviewed by the moderation team"
+        )
 
-      {:ok, _} = Votes.create_vote(%{
-        solution_id: solution1.id,
-        agent_session_id: "session-1",
-        vote_type: :down,
-        reason: :incorrect,
-        comment: "This is wrong"
-      })
+      {:ok, solution2} =
+        create_solution(
+          "Outdated solution problem here",
+          "This solution is marked as outdated and needs to be reviewed by the moderation team"
+        )
 
-      {:ok, _} = Votes.create_vote(%{
-        solution_id: solution2.id,
-        agent_session_id: "session-2",
-        vote_type: :down,
-        reason: :outdated,
-        comment: "This is old"
-      })
+      {:ok, _} =
+        Votes.create_vote(%{
+          solution_id: solution1.id,
+          agent_session_id: "session-1",
+          vote_type: :down,
+          reason: :incorrect,
+          comment: "This is wrong"
+        })
+
+      {:ok, _} =
+        Votes.create_vote(%{
+          solution_id: solution2.id,
+          agent_session_id: "session-2",
+          vote_type: :down,
+          reason: :outdated,
+          comment: "This is old"
+        })
 
       {:ok, view, _html} = live(conn, ~p"/moderation")
 
@@ -113,15 +139,20 @@ defmodule ChorusWeb.ModerationLiveTest do
     end
 
     test "approve action keeps solution in queue until page refresh", %{conn: conn} do
-      {:ok, solution} = create_solution("Solution that needs approval", "This solution will be approved by moderator after review of the content quality")
+      {:ok, solution} =
+        create_solution(
+          "Solution that needs approval",
+          "This solution will be approved by moderator after review of the content quality"
+        )
 
-      {:ok, _} = Votes.create_vote(%{
-        solution_id: solution.id,
-        agent_session_id: "session-1",
-        vote_type: :down,
-        reason: :incomplete,
-        comment: "Missing some details"
-      })
+      {:ok, _} =
+        Votes.create_vote(%{
+          solution_id: solution.id,
+          agent_session_id: "session-1",
+          vote_type: :down,
+          reason: :incomplete,
+          comment: "Missing some details"
+        })
 
       {:ok, view, _html} = live(conn, ~p"/moderation")
 
@@ -135,15 +166,20 @@ defmodule ChorusWeb.ModerationLiveTest do
     end
 
     test "archive action removes solution from queue", %{conn: conn} do
-      {:ok, solution} = create_solution("Solution that will be archived", "This solution will be archived by moderator after review of the reported issues")
+      {:ok, solution} =
+        create_solution(
+          "Solution that will be archived",
+          "This solution will be archived by moderator after review of the reported issues"
+        )
 
-      {:ok, _} = Votes.create_vote(%{
-        solution_id: solution.id,
-        agent_session_id: "session-1",
-        vote_type: :down,
-        reason: :harmful,
-        comment: "This could cause issues"
-      })
+      {:ok, _} =
+        Votes.create_vote(%{
+          solution_id: solution.id,
+          agent_session_id: "session-1",
+          vote_type: :down,
+          reason: :harmful,
+          comment: "This could cause issues"
+        })
 
       {:ok, view, _html} = live(conn, ~p"/moderation")
 
@@ -162,7 +198,11 @@ defmodule ChorusWeb.ModerationLiveTest do
     end
 
     test "archived solutions don't appear in moderation queue", %{conn: conn} do
-      {:ok, solution} = create_solution("Already archived solution here", "This solution was already archived and should not appear in the moderation queue")
+      {:ok, solution} =
+        create_solution(
+          "Already archived solution here",
+          "This solution was already archived and should not appear in the moderation queue"
+        )
 
       # Archive it first
       {:ok, _} = Solutions.archive_solution(solution.id)
@@ -183,15 +223,20 @@ defmodule ChorusWeb.ModerationLiveTest do
     end
 
     test "displays feedback comments", %{conn: conn} do
-      {:ok, solution} = create_solution("Solution with feedback comments", "This solution has feedback from agents who have reviewed and tested the approach")
+      {:ok, solution} =
+        create_solution(
+          "Solution with feedback comments",
+          "This solution has feedback from agents who have reviewed and tested the approach"
+        )
 
-      {:ok, _} = Votes.create_vote(%{
-        solution_id: solution.id,
-        agent_session_id: "session-1",
-        vote_type: :down,
-        reason: :incorrect,
-        comment: "The algorithm complexity is wrong"
-      })
+      {:ok, _} =
+        Votes.create_vote(%{
+          solution_id: solution.id,
+          agent_session_id: "session-1",
+          vote_type: :down,
+          reason: :incorrect,
+          comment: "The algorithm complexity is wrong"
+        })
 
       {:ok, view, _html} = live(conn, ~p"/moderation")
 

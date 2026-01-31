@@ -8,22 +8,25 @@ defmodule ChorusWeb.SolutionsLive.ShowTest do
 
   describe "Show" do
     test "renders solution details", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "How to implement binary search in Elixir",
-        "Use recursion with pattern matching for an elegant solution. Here's the approach:\n\n1. Check middle element\n2. Recurse left or right"
-      )
+      {:ok, solution} =
+        create_solution(
+          "How to implement binary search in Elixir",
+          "Use recursion with pattern matching for an elegant solution. Here's the approach:\n\n1. Check middle element\n2. Recurse left or right"
+        )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 
-      assert has_element?(view, "h1", "How to implement binary search in Elixir")
+      # Problem description is shown in the page content
+      assert render(view) =~ "How to implement binary search in Elixir"
       assert render(view) =~ "Use recursion with pattern matching"
     end
 
     test "renders markdown content", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem for markdown rendering",
-        "Here is some **bold** text and *italic* text. This needs to be at least fifty characters long."
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem for markdown rendering",
+          "Here is some **bold** text and *italic* text. This needs to be at least fifty characters long."
+        )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 
@@ -33,15 +36,16 @@ defmodule ChorusWeb.SolutionsLive.ShowTest do
     end
 
     test "displays tags grouped by category", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem with multiple tags",
-        "This is a detailed solution pattern that helps solve the problem effectively",
-        %{
-          language: ["elixir", "erlang"],
-          framework: ["phoenix"],
-          domain: ["api", "web"]
-        }
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem with multiple tags",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{
+            language: ["elixir", "erlang"],
+            framework: ["phoenix"],
+            domain: ["api", "web"]
+          }
+        )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 
@@ -55,10 +59,11 @@ defmodule ChorusWeb.SolutionsLive.ShowTest do
     end
 
     test "displays vote stats", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem for vote display",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem for vote display",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       # Update vote counts
       solution
@@ -68,18 +73,18 @@ defmodule ChorusWeb.SolutionsLive.ShowTest do
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 
       html = render(view)
-      # Check vote display
+      # Check vote display - shows upvotes, downvotes, and score
       assert html =~ "25"
       assert html =~ "5"
       assert html =~ "+20"
-      assert html =~ "30 total votes"
     end
 
     test "displays upvote percentage in radial progress", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem for percentage",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem for percentage",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       # 75% upvote rate (15 up, 5 down)
       solution
@@ -93,19 +98,21 @@ defmodule ChorusWeb.SolutionsLive.ShowTest do
     end
 
     test "displays vote comments from downvotes", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem for vote comments",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem for vote comments",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       # Create a downvote with comment
-      {:ok, _vote} = Votes.create_vote(%{
-        solution_id: solution.id,
-        agent_session_id: "test-session-1",
-        vote_type: :down,
-        comment: "This approach is deprecated since Phoenix 1.7",
-        reason: :outdated
-      })
+      {:ok, _vote} =
+        Votes.create_vote(%{
+          solution_id: solution.id,
+          agent_session_id: "test-session-1",
+          vote_type: :down,
+          comment: "This approach is deprecated since Phoenix 1.7",
+          reason: :outdated
+        })
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 
@@ -115,17 +122,19 @@ defmodule ChorusWeb.SolutionsLive.ShowTest do
     end
 
     test "does not display upvote comments (they don't have any)", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem for upvote display",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem for upvote display",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       # Create an upvote (no comment)
-      {:ok, _vote} = Votes.create_vote(%{
-        solution_id: solution.id,
-        agent_session_id: "test-session-2",
-        vote_type: :up
-      })
+      {:ok, _vote} =
+        Votes.create_vote(%{
+          solution_id: solution.id,
+          agent_session_id: "test-session-2",
+          vote_type: :up
+        })
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 
@@ -134,10 +143,11 @@ defmodule ChorusWeb.SolutionsLive.ShowTest do
     end
 
     test "back navigation link works", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem for navigation",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem for navigation",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 
@@ -154,10 +164,11 @@ defmodule ChorusWeb.SolutionsLive.ShowTest do
     end
 
     test "displays creation date", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem for date display",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem for date display",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 
@@ -169,11 +180,12 @@ defmodule ChorusWeb.SolutionsLive.ShowTest do
     end
 
     test "handles solution with no tags", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem with no tags",
-        "This is a detailed solution pattern that helps solve the problem effectively",
-        %{}
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem with no tags",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{}
+        )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 

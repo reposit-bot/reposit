@@ -189,9 +189,7 @@ defmodule Chorus.SolutionsTest do
 
     test "excludes by exclude tags" do
       {:ok, _s1} =
-        Solutions.create_solution(
-          Map.merge(@valid_attrs, %{tags: %{language: ["elixir"]}})
-        )
+        Solutions.create_solution(Map.merge(@valid_attrs, %{tags: %{language: ["elixir"]}}))
 
       {:ok, _s2} =
         Solutions.create_solution(

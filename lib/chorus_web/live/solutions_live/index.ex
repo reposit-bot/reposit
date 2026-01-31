@@ -93,34 +93,35 @@ defmodule ChorusWeb.SolutionsLive.Index do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div class="space-y-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 class="text-3xl font-bold">Solutions</h1>
-            <p class="text-base-content/70 mt-1">
+            <h1 class="page-title">Solutions</h1>
+            <p class="page-subtitle mt-1">
               {@total} solution{if @total != 1, do: "s"} shared by the community
             </p>
           </div>
 
-          <div class="flex items-center gap-2">
-            <span class="text-sm text-base-content/70">Sort by:</span>
-            <div class="join">
+          <div class="flex items-center gap-3">
+            <span class="text-xs text-muted">Sort:</span>
+            <div class="flex rounded-full bg-[oklch(96%_0.01_280)] dark:bg-[oklch(22%_0.02_280)] p-1 border border-[oklch(90%_0.02_280)] dark:border-[oklch(30%_0.025_280)]">
               <button
-                class={"join-item btn btn-sm #{if @sort == :score, do: "btn-primary", else: "btn-ghost"}"}
+                class={"px-3 py-1.5 text-xs font-medium rounded-full transition-all #{if @sort == :score, do: "bg-white dark:bg-[oklch(32%_0.03_280)] text-[oklch(35%_0.05_280)] dark:text-[oklch(90%_0.02_280)] shadow-sm", else: "text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)]"}"}
                 phx-click="sort"
                 phx-value-sort="score"
               >
                 Score
               </button>
               <button
-                class={"join-item btn btn-sm #{if @sort == :upvotes, do: "btn-primary", else: "btn-ghost"}"}
+                class={"px-3 py-1.5 text-xs font-medium rounded-full transition-all #{if @sort == :upvotes, do: "bg-white dark:bg-[oklch(32%_0.03_280)] text-[oklch(35%_0.05_280)] dark:text-[oklch(90%_0.02_280)] shadow-sm", else: "text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)]"}"}
                 phx-click="sort"
                 phx-value-sort="votes"
               >
                 Votes
               </button>
               <button
-                class={"join-item btn btn-sm #{if @sort == :inserted_at, do: "btn-primary", else: "btn-ghost"}"}
+                class={"px-3 py-1.5 text-xs font-medium rounded-full transition-all #{if @sort == :inserted_at, do: "bg-white dark:bg-[oklch(32%_0.03_280)] text-[oklch(35%_0.05_280)] dark:text-[oklch(90%_0.02_280)] shadow-sm", else: "text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)]"}"}
                 phx-click="sort"
                 phx-value-sort="newest"
               >
@@ -129,41 +130,65 @@ defmodule ChorusWeb.SolutionsLive.Index do
             </div>
           </div>
         </div>
-
+        
+    <!-- Empty State -->
         <div
           :if={@total == 0}
-          class="text-center py-16 bg-base-200 rounded-lg"
+          class="card-chorus p-16 text-center"
         >
-          <p class="text-xl text-base-content/70">No solutions yet</p>
-          <p class="text-sm text-base-content/50 mt-2">Be the first to contribute!</p>
+          <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[oklch(94%_0.02_280)] dark:bg-[oklch(28%_0.025_280)] flex items-center justify-center">
+            <.icon name="hero-light-bulb" class="size-8 text-muted" />
+          </div>
+          <p class="text-lg font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)]">
+            No solutions yet
+          </p>
+          <p class="text-sm text-muted mt-2">Be the first to contribute!</p>
         </div>
-
+        
+    <!-- Solutions List -->
         <div
+          :if={@total > 0}
           id="solutions"
           phx-update="stream"
-          class="flex flex-col divide-y divide-base-200"
+          class="card-chorus divide-y divide-[oklch(92%_0.02_280)] dark:divide-[oklch(28%_0.025_280)]"
         >
-          <.solution_row :for={{dom_id, solution} <- @streams.solutions} id={dom_id} solution={solution} />
+          <.solution_row
+            :for={{dom_id, solution} <- @streams.solutions}
+            id={dom_id}
+            solution={solution}
+          />
         </div>
-
-        <!-- Infinite scroll sentinel -->
+        
+    <!-- Infinite scroll sentinel -->
         <div
           :if={not @end_of_list and @total > 0}
           id="infinite-scroll-sentinel"
           phx-hook="InfiniteScroll"
           class="flex justify-center py-8"
         >
-          <span :if={@loading} class="loading loading-spinner loading-lg text-primary"></span>
-          <span :if={not @loading} class="text-base-content/50 text-sm">Scroll for more...</span>
+          <div :if={@loading} class="flex items-center gap-3 text-[oklch(55%_0.15_280)]">
+            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+              </circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              >
+              </path>
+            </svg>
+            <span class="text-sm font-medium">Loading...</span>
+          </div>
+          <span :if={not @loading} class="text-muted text-sm">Scroll for more...</span>
         </div>
-
-        <!-- End of list message -->
+        
+    <!-- End of list message -->
         <div
           :if={@end_of_list and @total > 0}
-          class="text-center py-8 text-base-content/50"
+          class="text-center py-8 text-muted"
         >
           <p>You've reached the end!</p>
-          <p class="text-sm mt-1">{@total} solutions total</p>
+          <p class="text-sm mt-1 mono">{@total} solutions total</p>
         </div>
       </div>
     </Layouts.app>
@@ -175,38 +200,38 @@ defmodule ChorusWeb.SolutionsLive.Index do
     assigns = assign(assigns, :score, score)
 
     ~H"""
-    <div id={@id} class="py-4 hover:bg-base-200/50 transition-colors">
-      <div class="flex gap-4">
-        <!-- Vote score on the left -->
-        <div class="flex flex-col items-center justify-start min-w-[60px] pt-1">
-          <span class={"text-lg font-bold #{score_color(@score)}"}>
-            {if @score >= 0, do: "+", else: ""}{@score}
-          </span>
-          <span class="text-xs text-base-content/50">
-            {@solution.upvotes}↑ {downvotes(@solution)}↓
-          </span>
-        </div>
+    <a
+      href={~p"/solutions/#{@solution.id}"}
+      id={@id}
+      class="flex gap-4 p-5 hover:bg-[oklch(97%_0.005_280)] dark:hover:bg-[oklch(24%_0.02_280)] transition-colors block"
+    >
+      <!-- Vote score on the left -->
+      <div class="flex flex-col items-center justify-start min-w-[56px] pt-0.5">
+        <span class={"text-lg font-bold mono #{score_color(@score)}"}>
+          {if @score >= 0, do: "+", else: ""}{@score}
+        </span>
+        <span class="text-[0.7rem] text-muted mono">
+          {@solution.upvotes}↑ {downvotes(@solution)}↓
+        </span>
+      </div>
+      
+    <!-- Main content -->
+      <div class="flex-1 min-w-0">
+        <h3 class="font-medium text-[oklch(25%_0.02_280)] dark:text-[oklch(92%_0.01_280)] line-clamp-1">
+          {truncate(@solution.problem_description, 100)}
+        </h3>
+        <p class="text-sm text-muted mt-1.5 line-clamp-2">
+          {truncate(@solution.solution_pattern, 180)}
+        </p>
 
-        <!-- Main content -->
-        <div class="flex-1 min-w-0">
-          <.link navigate={~p"/solutions/#{@solution.id}"} class="group">
-            <h3 class="font-medium text-base group-hover:text-primary transition-colors line-clamp-1">
-              {truncate(@solution.problem_description, 100)}
-            </h3>
-            <p class="text-sm text-base-content/60 mt-1 line-clamp-2">
-              {truncate(@solution.solution_pattern, 180)}
-            </p>
-          </.link>
-
-          <div class="flex items-center gap-3 mt-2">
-            <.inline_tags tags={@solution.tags} />
-            <span class="text-xs text-base-content/40">
-              {format_date(@solution.inserted_at)}
-            </span>
-          </div>
+        <div class="flex items-center gap-3 mt-3">
+          <.inline_tags tags={@solution.tags} />
+          <span class="text-xs text-muted">
+            {format_date(@solution.inserted_at)}
+          </span>
         </div>
       </div>
-    </div>
+    </a>
     """
   end
 
@@ -217,14 +242,14 @@ defmodule ChorusWeb.SolutionsLive.Index do
     assigns = assign(assigns, :all_tags, all_tags)
 
     ~H"""
-    <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1">
+    <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1.5">
       <span
         :for={tag <- Enum.take(@all_tags, 3)}
-        class={"badge badge-xs #{tag_color(tag.category)}"}
+        class={"badge-chorus text-[0.65rem] py-0.5 px-2 #{tag_color(tag.category)}"}
       >
         {tag.value}
       </span>
-      <span :if={length(@all_tags) > 3} class="badge badge-xs badge-ghost">
+      <span :if={length(@all_tags) > 3} class="badge-chorus text-[0.65rem] py-0.5 px-2">
         +{length(@all_tags) - 3}
       </span>
     </div>
@@ -232,6 +257,7 @@ defmodule ChorusWeb.SolutionsLive.Index do
   end
 
   defp flatten_tags(nil), do: []
+
   defp flatten_tags(tags) when is_map(tags) do
     Enum.flat_map(tags, fn {category, values} ->
       values = if is_list(values), do: values, else: []
@@ -239,27 +265,53 @@ defmodule ChorusWeb.SolutionsLive.Index do
     end)
   end
 
-  defp tag_color("language"), do: "badge-primary"
-  defp tag_color(:language), do: "badge-primary"
-  defp tag_color("framework"), do: "badge-secondary"
-  defp tag_color(:framework), do: "badge-secondary"
-  defp tag_color("domain"), do: "badge-accent"
-  defp tag_color(:domain), do: "badge-accent"
-  defp tag_color("platform"), do: "badge-info"
-  defp tag_color(:platform), do: "badge-info"
-  defp tag_color(_), do: "badge-ghost"
+  defp tag_color("language"),
+    do:
+      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
 
-  defp score_color(score) when score > 0, do: "text-success"
-  defp score_color(score) when score < 0, do: "text-error"
-  defp score_color(_), do: "text-base-content/70"
+  defp tag_color(:language),
+    do:
+      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
+
+  defp tag_color("framework"),
+    do:
+      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
+
+  defp tag_color(:framework),
+    do:
+      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
+
+  defp tag_color("domain"),
+    do:
+      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
+
+  defp tag_color(:domain),
+    do:
+      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
+
+  defp tag_color("platform"),
+    do:
+      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
+
+  defp tag_color(:platform),
+    do:
+      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
+
+  defp tag_color(_), do: ""
+
+  defp score_color(score) when score > 0, do: "text-[oklch(55%_0.15_145)]"
+  defp score_color(score) when score < 0, do: "text-[oklch(60%_0.2_25)]"
+  defp score_color(_), do: "text-muted"
 
   defp truncate(text, max_length) when is_binary(text) and byte_size(text) > max_length do
     String.slice(text, 0, max_length) <> "..."
   end
+
   defp truncate(text, _max_length), do: text
 
   defp format_date(%DateTime{} = dt) do
     Calendar.strftime(dt, "%b %d, %Y")
   end
+
   defp format_date(_), do: ""
 end

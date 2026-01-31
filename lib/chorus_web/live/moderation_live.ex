@@ -29,6 +29,7 @@ defmodule ChorusWeb.ModerationLive do
   @impl true
   def handle_event("filter_reason", %{"reason" => reason}, socket) do
     reason_atom = String.to_existing_atom(reason)
+
     {:noreply,
      socket
      |> assign(:reason_filter, reason_atom)
@@ -107,8 +108,17 @@ defmodule ChorusWeb.ModerationLive do
         </div>
 
         <div :if={length(@solutions) == 0} class="text-center py-16 bg-base-200 rounded-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-16 h-16 mx-auto text-success mb-4">
-            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="w-16 h-16 mx-auto text-success mb-4"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z"
+              clip-rule="evenodd"
+            />
           </svg>
           <p class="text-xl text-base-content/70">No flagged solutions</p>
           <p class="text-sm text-base-content/50 mt-2">
@@ -129,7 +139,10 @@ defmodule ChorusWeb.ModerationLive do
             <tbody>
               <tr :for={solution <- @solutions}>
                 <td class="max-w-md">
-                  <.link navigate={~p"/solutions/#{solution.id}"} class="hover:text-primary font-medium">
+                  <.link
+                    navigate={~p"/solutions/#{solution.id}"}
+                    class="hover:text-primary font-medium"
+                  >
                     {truncate(solution.problem_description, 60)}
                   </.link>
                   <.tags tags={solution.tags} />
@@ -222,6 +235,7 @@ defmodule ChorusWeb.ModerationLive do
   end
 
   defp flatten_tags(nil), do: []
+
   defp flatten_tags(tags) when is_map(tags) do
     Enum.flat_map(tags, fn {category, values} ->
       values = if is_list(values), do: values, else: []
@@ -240,5 +254,6 @@ defmodule ChorusWeb.ModerationLive do
   defp truncate(text, max_length) when is_binary(text) and byte_size(text) > max_length do
     String.slice(text, 0, max_length) <> "..."
   end
+
   defp truncate(text, _max_length), do: text
 end

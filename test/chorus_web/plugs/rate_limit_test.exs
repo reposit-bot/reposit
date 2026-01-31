@@ -3,13 +3,20 @@ defmodule ChorusWeb.Plugs.RateLimitTest do
 
   alias ChorusWeb.Plugs.RateLimit
 
+  # Generate unique but valid IP address (last octet must be 0-255)
+  defp unique_ip do
+    # Use rem to ensure valid octet range (0-255)
+    octet = rem(System.unique_integer([:positive]), 256)
+    {192, 168, 1, octet}
+  end
+
   describe "rate limit plug" do
     test "adds rate limit headers on allowed requests", %{conn: conn} do
       opts = RateLimit.init(action: :api)
 
       conn =
         conn
-        |> Map.put(:remote_ip, {192, 168, 1, System.unique_integer([:positive])})
+        |> Map.put(:remote_ip, unique_ip())
         |> RateLimit.call(opts)
 
       assert get_resp_header(conn, "x-ratelimit-limit") == ["100"]
@@ -35,7 +42,8 @@ defmodule ChorusWeb.Plugs.RateLimitTest do
 
     test "returns 429 when rate limit exceeded", %{conn: conn} do
       opts = RateLimit.init(action: :create_solution)
-      ip = {10, 0, 0, System.unique_integer([:positive])}
+      # Use a fixed unique IP for this test to ensure consistent rate limiting
+      ip = unique_ip()
 
       # Exhaust the limit (10 for create_solution)
       for _ <- 1..10 do

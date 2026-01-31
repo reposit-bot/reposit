@@ -21,10 +21,11 @@ defmodule ChorusWeb.SearchLiveTest do
     end
 
     test "performs search and shows results", %{conn: conn} do
-      {:ok, _solution} = create_solution(
-        "How to implement binary search in Elixir",
-        "Use recursion with pattern matching for an elegant divide and conquer solution"
-      )
+      {:ok, _solution} =
+        create_solution(
+          "How to implement binary search in Elixir",
+          "Use recursion with pattern matching for an elegant divide and conquer solution"
+        )
 
       {:ok, view, _html} = live(conn, ~p"/search")
 
@@ -42,10 +43,11 @@ defmodule ChorusWeb.SearchLiveTest do
     end
 
     test "shows loading state during search", %{conn: conn} do
-      {:ok, _solution} = create_solution(
-        "Test problem for loading state",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, _solution} =
+        create_solution(
+          "Test problem for loading state",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       {:ok, view, _html} = live(conn, ~p"/search")
 
@@ -76,10 +78,11 @@ defmodule ChorusWeb.SearchLiveTest do
     end
 
     test "clears results when query is emptied", %{conn: conn} do
-      {:ok, _solution} = create_solution(
-        "Test problem for clear",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, _solution} =
+        create_solution(
+          "Test problem for clear",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       {:ok, view, _html} = live(conn, ~p"/search")
 
@@ -100,10 +103,11 @@ defmodule ChorusWeb.SearchLiveTest do
     end
 
     test "displays similarity score", %{conn: conn} do
-      {:ok, _solution} = create_solution(
-        "How to implement GenServer in Elixir",
-        "Use the GenServer behaviour to create stateful processes with callbacks"
-      )
+      {:ok, _solution} =
+        create_solution(
+          "How to implement GenServer in Elixir",
+          "Use the GenServer behaviour to create stateful processes with callbacks"
+        )
 
       {:ok, view, _html} = live(conn, ~p"/search")
 
@@ -118,10 +122,11 @@ defmodule ChorusWeb.SearchLiveTest do
     end
 
     test "shows vote score", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem for vote display",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem for vote display",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       solution
       |> Ecto.Changeset.change(upvotes: 15, downvotes: 3)
@@ -140,10 +145,11 @@ defmodule ChorusWeb.SearchLiveTest do
     end
 
     test "links to solution details", %{conn: conn} do
-      {:ok, solution} = create_solution(
-        "Test problem with link to details",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, solution} =
+        create_solution(
+          "Test problem with link to details",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
 
       {:ok, view, _html} = live(conn, ~p"/search")
 
@@ -157,14 +163,17 @@ defmodule ChorusWeb.SearchLiveTest do
     end
 
     test "can sort results by different criteria", %{conn: conn} do
-      {:ok, _solution1} = create_solution(
-        "First solution for sorting test",
-        "This is a detailed solution pattern that helps solve the problem effectively"
-      )
-      {:ok, _solution2} = create_solution(
-        "Second solution for sorting test",
-        "Another detailed solution pattern that helps solve the problem effectively"
-      )
+      {:ok, _solution1} =
+        create_solution(
+          "First solution for sorting test",
+          "This is a detailed solution pattern that helps solve the problem effectively"
+        )
+
+      {:ok, _solution2} =
+        create_solution(
+          "Second solution for sorting test",
+          "Another detailed solution pattern that helps solve the problem effectively"
+        )
 
       {:ok, view, _html} = live(conn, ~p"/search")
 
@@ -179,17 +188,20 @@ defmodule ChorusWeb.SearchLiveTest do
 
       :timer.sleep(50)
 
-      # Sort button should be active
+      # Sort button should be present and clickable
       html = render(view)
-      assert html =~ "btn-primary"
+      assert html =~ "Top Voted"
+      # The active button gets shadow-sm styling
+      assert html =~ "shadow-sm"
     end
 
     test "displays tags in results", %{conn: conn} do
-      {:ok, _solution} = create_solution(
-        "Test problem with tags for search",
-        "This is a detailed solution pattern that helps solve the problem effectively",
-        %{language: ["elixir"], framework: ["phoenix"]}
-      )
+      {:ok, _solution} =
+        create_solution(
+          "Test problem with tags for search",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{language: ["elixir"], framework: ["phoenix"]}
+        )
 
       {:ok, view, _html} = live(conn, ~p"/search")
 
