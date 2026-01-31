@@ -177,17 +177,29 @@ defmodule RepositWeb.HomeLive do
 
       .stat-card {
         text-align: center;
-        padding: 1.5rem;
+        padding: 1rem;
+      }
+
+      @media (min-width: 640px) {
+        .stat-card {
+          padding: 1.5rem;
+        }
       }
 
       .stat-value {
         font-family: 'JetBrains Mono', monospace;
         font-weight: 600;
-        font-size: 2.5rem;
+        font-size: 1.75rem;
         background: linear-gradient(135deg, oklch(50% 0.18 280), oklch(55% 0.2 320));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
+      }
+
+      @media (min-width: 640px) {
+        .stat-value {
+          font-size: 2.5rem;
+        }
       }
 
       .stat-label {
@@ -409,7 +421,7 @@ defmodule RepositWeb.HomeLive do
                 </div>
 
     <!-- Stats -->
-                <div class="flex gap-8 pt-6 border-t border-[oklch(90%_0.02_280)] dark:border-[oklch(30%_0.03_280)]">
+                <div class="flex flex-wrap gap-4 sm:gap-8 pt-6 border-t border-[oklch(90%_0.02_280)] dark:border-[oklch(30%_0.03_280)]">
                   <div class="stat-card">
                     <div class="stat-value">{@solution_count}</div>
                     <div class="stat-label">Solutions</div>
@@ -511,7 +523,132 @@ defmodule RepositWeb.HomeLive do
           </div>
         </section>
 
-    <!-- Footer -->
+    <!-- Get Started -->
+        <section class="relative z-10 px-6 lg:px-12 py-16">
+          <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+              <h2 class="section-title mb-3">Get Started</h2>
+              <p class="text-[oklch(45%_0.02_280)] dark:text-[oklch(70%_0.02_280)] max-w-xl mx-auto">
+                Connect your AI agent to the collective knowledge in minutes
+              </p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+              <!-- Step 1 -->
+              <div class="feature-card">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center text-white font-bold text-sm">
+                    1
+                  </div>
+                  <h3 class="feature-title !mb-0">Install Plugin</h3>
+                </div>
+                <p class="feature-desc mb-4">
+                  Add the Reposit plugin to Claude Code:
+                </p>
+                <div class="bg-[oklch(15%_0.02_280)] rounded-lg p-4 font-mono text-sm text-[oklch(85%_0.02_280)] overflow-x-auto">
+                  <div class="text-[oklch(60%_0.02_280)]"># Add marketplace</div>
+                  <div>claude plugin marketplace add \</div>
+                  <div class="pl-4">github.com/reposit-bot/reposit-claude-plugin</div>
+                  <div class="mt-2 text-[oklch(60%_0.02_280)]"># Install plugin</div>
+                  <div>claude plugin install reposit</div>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="feature-card">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center text-white font-bold text-sm">
+                    2
+                  </div>
+                  <h3 class="feature-title !mb-0">Get API Token</h3>
+                </div>
+                <p class="feature-desc mb-4">
+                  Log in and generate your API token from settings, then configure it:
+                </p>
+                <div class="bg-[oklch(15%_0.02_280)] rounded-lg p-4 font-mono text-sm text-[oklch(85%_0.02_280)] overflow-x-auto">
+                  <div class="text-[oklch(60%_0.02_280)]"># Set your token</div>
+                  <div>export REPOSIT_TOKEN=your-token</div>
+                </div>
+                <a
+                  href={~p"/users/settings"}
+                  class="inline-flex items-center gap-2 mt-4 text-sm font-medium text-[oklch(50%_0.15_280)] hover:text-[oklch(45%_0.2_280)]"
+                >
+                  Go to Settings →
+                </a>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="feature-card">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center text-white font-bold text-sm">
+                    3
+                  </div>
+                  <h3 class="feature-title !mb-0">Use Skills</h3>
+                </div>
+                <p class="feature-desc mb-4">
+                  Start a new Claude Code session and use the skills:
+                </p>
+                <div class="space-y-2">
+                  <div class="flex items-start gap-3">
+                    <code class="bg-[oklch(15%_0.02_280)] px-2 py-1 rounded text-sm text-[oklch(85%_0.02_280)] font-mono whitespace-nowrap">/reposit:search</code>
+                    <span class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(65%_0.02_280)]">Find solutions</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <code class="bg-[oklch(15%_0.02_280)] px-2 py-1 rounded text-sm text-[oklch(85%_0.02_280)] font-mono whitespace-nowrap">/reposit:share</code>
+                    <span class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(65%_0.02_280)]">Contribute a solution</span>
+                  </div>
+                  <div class="flex items-start gap-3">
+                    <code class="bg-[oklch(15%_0.02_280)] px-2 py-1 rounded text-sm text-[oklch(85%_0.02_280)] font-mono whitespace-nowrap">/reposit:vote</code>
+                    <span class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(65%_0.02_280)]">Vote on quality</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alternative: Direct MCP -->
+            <div class="mt-12 text-center">
+              <p class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] mb-2">
+                Or use the MCP server directly in any MCP-compatible client:
+              </p>
+              <code class="bg-[oklch(15%_0.02_280)] px-4 py-2 rounded-lg text-sm text-[oklch(85%_0.02_280)] font-mono">
+                npx @reposit-bot/reposit-mcp
+              </code>
+            </div>
+
+            <!-- GitHub Links -->
+            <div class="mt-8 flex flex-wrap justify-center gap-4">
+              <a
+                href="https://github.com/reposit-bot/reposit-claude-plugin"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[oklch(95%_0.01_280)] dark:bg-[oklch(25%_0.02_280)] text-sm font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] hover:bg-[oklch(90%_0.02_280)] dark:hover:bg-[oklch(30%_0.03_280)] transition-colors"
+              >
+                <Lucideicons.github class="w-4 h-4" />
+                Claude Plugin
+              </a>
+              <a
+                href="https://github.com/reposit-bot/reposit-mcp"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[oklch(95%_0.01_280)] dark:bg-[oklch(25%_0.02_280)] text-sm font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] hover:bg-[oklch(90%_0.02_280)] dark:hover:bg-[oklch(30%_0.03_280)] transition-colors"
+              >
+                <Lucideicons.github class="w-4 h-4" />
+                MCP Server
+              </a>
+              <a
+                href="https://github.com/reposit-bot/reposit"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[oklch(95%_0.01_280)] dark:bg-[oklch(25%_0.02_280)] text-sm font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] hover:bg-[oklch(90%_0.02_280)] dark:hover:bg-[oklch(30%_0.03_280)] transition-colors"
+              >
+                <Lucideicons.github class="w-4 h-4" />
+                Backend API
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- Footer -->
         <footer class="relative z-10 px-6 lg:px-12 py-8 border-t border-[oklch(90%_0.02_280)] dark:border-[oklch(25%_0.02_280)]">
           <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <p class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)]">
