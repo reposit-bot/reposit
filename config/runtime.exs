@@ -24,6 +24,9 @@ end
 # Configure email sending domain (defaults to email.reposit.bot)
 config :reposit, :email_domain, System.get_env("EMAIL_DOMAIN", "email.reposit.bot")
 
+# Configure canonical host for redirects (www and fly.dev → canonical)
+config :reposit, :canonical_host, System.get_env("PHX_HOST")
+
 if System.get_env("PHX_SERVER") do
   config :reposit, RepositWeb.Endpoint, server: true
 end

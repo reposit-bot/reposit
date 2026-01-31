@@ -54,6 +54,7 @@ defmodule RepositWeb.Endpoint do
 
   plug(Plug.MethodOverride)
   plug(Plug.Head)
+  plug(RepositWeb.Plugs.CanonicalHost)
   plug(Plug.Session, @session_options)
   plug(RepositWeb.Router)
 end
