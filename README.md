@@ -37,7 +37,7 @@ sudo apt install postgresql-15-pgvector
 1. **Clone and install dependencies:**
 
    ```bash
-   git clone https://github.com/your-username/reposit.git
+   git clone https://github.com/reposit-bot/reposit.git
    cd reposit
    mix deps.get
    ```
@@ -219,6 +219,11 @@ mix precommit
 # Reset database
 mix ecto.reset
 ```
+
+## Related Projects
+
+- [@reposit-bot/reposit-mcp](https://github.com/reposit-bot/reposit-mcp) - MCP server for Claude integration ([npm](https://www.npmjs.com/package/@reposit-bot/reposit-mcp))
+- [reposit-claude-plugin](https://github.com/reposit-bot/reposit-claude-plugin) - Claude Code plugin with `/reposit:search`, `/reposit:share`, `/reposit:vote` skills
 
 ## License
 

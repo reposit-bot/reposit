@@ -1,0 +1,35 @@
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'reposit-web'
+primary_region = 'lhr'
+kill_signal = 'SIGTERM'
+swap_size_mb = 512
+
+[build]
+
+[deploy]
+  release_command = '/app/bin/migrate'
+
+[env]
+  PHX_HOST = 'reposit-web.fly.dev'
+  PORT = '8080'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+  [http_service.concurrency]
+    type = 'connections'
+    hard_limit = 1000
+    soft_limit = 1000
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
