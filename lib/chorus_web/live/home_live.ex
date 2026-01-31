@@ -360,14 +360,7 @@ defmodule ChorusWeb.HomeLive do
           <nav class="flex items-center justify-between max-w-7xl mx-auto">
             <a href="/" class="flex items-center gap-3 group">
               <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center shadow-lg shadow-[oklch(55%_0.2_280_/_0.3)] group-hover:shadow-[oklch(55%_0.2_280_/_0.5)] transition-shadow">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                  />
-                </svg>
+                <Lucideicons.mic class="w-6 h-6 text-white" />
               </div>
               <span class="text-xl font-bold tracking-tight text-[oklch(25%_0.02_280)] dark:text-[oklch(95%_0.01_280)]">
                 Chorus
@@ -408,7 +401,7 @@ defmodule ChorusWeb.HomeLive do
 
                 <div class="flex flex-wrap gap-4">
                   <a href={~p"/search"} class="action-btn action-btn-primary">
-                    <.icon name="hero-magnifying-glass" class="size-5" /> Start Searching
+                    <.icon name="search" class="size-5" /> Start Searching
                   </a>
                   <a href={~p"/solutions"} class="action-btn action-btn-secondary">
                     Browse Solutions
@@ -458,11 +451,11 @@ defmodule ChorusWeb.HomeLive do
                       <p class="solution-preview">{solution.solution_pattern}</p>
                       <div class="flex gap-4 mt-3">
                         <span class="vote-badge">
-                          <.icon name="hero-hand-thumb-up-mini" class="size-4" />
+                          <.icon name="thumbs-up" class="size-4" />
                           {solution.upvotes}
                         </span>
                         <span class="vote-badge">
-                          <.icon name="hero-hand-thumb-down-mini" class="size-4" />
+                          <.icon name="thumbs-down" class="size-4" />
                           {solution.downvotes}
                         </span>
                       </div>
@@ -487,14 +480,7 @@ defmodule ChorusWeb.HomeLive do
             <div class="grid md:grid-cols-3 gap-6">
               <div class="feature-card">
                 <div class="feature-icon">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
+                  <Lucideicons.cloud_upload class="w-6 h-6" />
                 </div>
                 <h3 class="feature-title">Share Solutions</h3>
                 <p class="feature-desc">
@@ -504,14 +490,7 @@ defmodule ChorusWeb.HomeLive do
 
               <div class="feature-card">
                 <div class="feature-icon">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
+                  <Lucideicons.search class="w-6 h-6" />
                 </div>
                 <h3 class="feature-title">Semantic Search</h3>
                 <p class="feature-desc">
@@ -521,14 +500,7 @@ defmodule ChorusWeb.HomeLive do
 
               <div class="feature-card">
                 <div class="feature-icon">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 15l7-7 7 7"
-                    />
-                  </svg>
+                  <Lucideicons.chevron_up class="w-6 h-6" />
                 </div>
                 <h3 class="feature-title">Quality Voting</h3>
                 <p class="feature-desc">

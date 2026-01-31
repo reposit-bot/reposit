@@ -49,15 +49,7 @@ defmodule ChorusWeb.SolutionsLive.Show do
           href={~p"/solutions"}
           class="inline-flex items-center gap-2 text-sm text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)] transition-colors"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to Solutions
+          <Lucideicons.arrow_left class="w-4 h-4" /> Back to Solutions
         </a>
         
     <!-- Main content card -->
@@ -76,25 +68,13 @@ defmodule ChorusWeb.SolutionsLive.Show do
     <!-- Vote stats - compact horizontal -->
           <div class="flex items-center gap-6 py-4 px-5 rounded-2xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] mb-8">
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-[oklch(55%_0.15_145)]" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M10 17a.75.75 0 0 1-.75-.75V5.612L5.29 9.77a.75.75 0 0 1-1.08-1.04l5.25-5.5a.75.75 0 0 1 1.08 0l5.25 5.5a.75.75 0 1 1-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0 1 10 17Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <Lucideicons.arrow_up class="w-5 h-5 text-[oklch(55%_0.15_145)]" />
               <span class="mono font-semibold text-[oklch(55%_0.15_145)]">{@solution.upvotes}</span>
               <span class="text-xs text-muted">upvotes</span>
             </div>
 
             <div class="flex items-center gap-2">
-              <svg class="w-5 h-5 text-[oklch(60%_0.2_25)]" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
-                  d="M10 3a.75.75 0 0 1 .75.75v10.638l3.96-4.158a.75.75 0 1 1 1.08 1.04l-5.25 5.5a.75.75 0 0 1-1.08 0l-5.25-5.5a.75.75 0 1 1 1.08-1.04l3.96 4.158V3.75A.75.75 0 0 1 10 3Z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+              <Lucideicons.arrow_down class="w-5 h-5 text-[oklch(60%_0.2_25)]" />
               <span class="mono font-semibold text-[oklch(60%_0.2_25)]">{@solution.downvotes}</span>
               <span class="text-xs text-muted">downvotes</span>
             </div>

@@ -391,14 +391,7 @@ defmodule ChorusWeb.Layouts do
         <nav class="flex items-center justify-between max-w-6xl mx-auto">
           <a href="/" class="flex items-center gap-3 group">
             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center shadow-lg shadow-[oklch(55%_0.2_280_/_0.25)] group-hover:shadow-[oklch(55%_0.2_280_/_0.4)] transition-shadow">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                />
-              </svg>
+              <Lucideicons.mic class="w-5 h-5 text-white" />
             </div>
             <span class="text-lg font-bold tracking-tight text-[oklch(25%_0.02_280)] dark:text-[oklch(95%_0.01_280)]">
               Chorus
@@ -444,7 +437,7 @@ defmodule ChorusWeb.Layouts do
               class="p-2 rounded-xl hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] transition-colors"
             >
               <.icon
-                name="hero-bars-3"
+                name="menu"
                 class="size-5 text-[oklch(40%_0.02_280)] dark:text-[oklch(80%_0.02_280)]"
               />
             </div>
@@ -513,7 +506,7 @@ defmodule ChorusWeb.Layouts do
         hidden
       >
         {gettext("Attempting to reconnect")}
-        <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
+        <.icon name="loader-2" class="ml-1 size-3 motion-safe:animate-spin" />
       </.flash>
 
       <.flash
@@ -525,7 +518,7 @@ defmodule ChorusWeb.Layouts do
         hidden
       >
         {gettext("Attempting to reconnect")}
-        <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
+        <.icon name="loader-2" class="ml-1 size-3 motion-safe:animate-spin" />
       </.flash>
     </div>
     """
@@ -547,7 +540,7 @@ defmodule ChorusWeb.Layouts do
         data-phx-theme="light"
       >
         <.icon
-          name="hero-sun-micro"
+          name="sun"
           class="size-3.5 text-[oklch(50%_0.02_280)] dark:text-[oklch(70%_0.02_280)]"
         />
       </button>
@@ -558,7 +551,7 @@ defmodule ChorusWeb.Layouts do
         data-phx-theme="dark"
       >
         <.icon
-          name="hero-moon-micro"
+          name="moon"
           class="size-3.5 text-[oklch(50%_0.02_280)] dark:text-[oklch(70%_0.02_280)]"
         />
       </button>

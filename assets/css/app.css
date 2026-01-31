@@ -6,9 +6,6 @@
 @source "../js";
 @source "../../lib/chorus_web";
 
-/* A Tailwind plugin that makes "hero-#{ICON}" classes available.
-   The heroicons installation itself is managed by your mix.exs */
-@plugin "../vendor/heroicons";
 @plugin "@tailwindcss/typography";
 
 /* daisyUI Tailwind Plugin. You can update this file by fetching the latest version with:

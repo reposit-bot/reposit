@@ -137,7 +137,7 @@ defmodule ChorusWeb.SolutionsLive.Index do
           class="card-chorus p-16 text-center"
         >
           <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[oklch(94%_0.02_280)] dark:bg-[oklch(28%_0.025_280)] flex items-center justify-center">
-            <.icon name="hero-light-bulb" class="size-8 text-muted" />
+            <.icon name="lightbulb" class="size-8 text-muted" />
           </div>
           <p class="text-lg font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)]">
             No solutions yet
@@ -167,16 +167,7 @@ defmodule ChorusWeb.SolutionsLive.Index do
           class="flex justify-center py-8"
         >
           <div :if={@loading} class="flex items-center gap-3 text-[oklch(55%_0.15_280)]">
-            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-              </circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              >
-              </path>
-            </svg>
+            <Lucideicons.loader_2 class="animate-spin h-5 w-5" />
             <span class="text-sm font-medium">Loading...</span>
           </div>
           <span :if={not @loading} class="text-muted text-sm">Scroll for more...</span>
