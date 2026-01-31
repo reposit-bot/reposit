@@ -4,20 +4,21 @@ defmodule RepositWeb.Api.V1.VotesControllerTest do
   import Reposit.AccountsFixtures
 
   alias Reposit.Solutions
+  alias Reposit.Accounts.Scope
 
   setup do
     user = user_fixture()
-    {:ok, solution_owner: user}
+    scope = Scope.for_user(user)
+    {:ok, solution_owner: user, owner_scope: scope}
   end
 
   describe "POST /api/v1/solutions/:id/upvote" do
     setup ctx do
       {:ok, solution} =
-        Solutions.create_solution(%{
+        Solutions.create_solution(ctx.owner_scope, %{
           problem_description: "How to implement binary search in Elixir efficiently",
           solution_pattern:
-            "Use recursion with pattern matching. Split the list in half and compare the middle element with the target.",
-          user_id: ctx.solution_owner.id
+            "Use recursion with pattern matching. Split the list in half and compare the middle element with the target."
         })
 
       ctx = create_api_user(ctx)
@@ -127,11 +128,10 @@ defmodule RepositWeb.Api.V1.VotesControllerTest do
   describe "POST /api/v1/solutions/:id/downvote" do
     setup ctx do
       {:ok, solution} =
-        Solutions.create_solution(%{
+        Solutions.create_solution(ctx.owner_scope, %{
           problem_description: "How to implement binary search in Elixir efficiently",
           solution_pattern:
-            "Use recursion with pattern matching. Split the list in half and compare the middle element with the target.",
-          user_id: ctx.solution_owner.id
+            "Use recursion with pattern matching. Split the list in half and compare the middle element with the target."
         })
 
       ctx = create_api_user(ctx)

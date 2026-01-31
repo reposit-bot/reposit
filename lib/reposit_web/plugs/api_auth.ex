@@ -4,13 +4,14 @@ defmodule RepositWeb.Plugs.ApiAuth do
 
   Extracts the token from the Authorization header (Bearer scheme) or
   the `api_token` query parameter. Validates the token and assigns
-  the user to the connection.
+  the user and scope to the connection.
 
   Returns 401 Unauthorized for invalid or missing tokens.
   """
   import Plug.Conn
 
   alias Reposit.Accounts
+  alias Reposit.Accounts.Scope
 
   @behaviour Plug
 
@@ -21,7 +22,9 @@ defmodule RepositWeb.Plugs.ApiAuth do
   def call(conn, _opts) do
     with {:ok, token} <- extract_token(conn),
          %Accounts.User{} = user <- Accounts.get_user_by_api_token(token) do
-      assign(conn, :current_user, user)
+      conn
+      |> assign(:current_user, user)
+      |> assign(:current_scope, Scope.for_user(user))
     else
       _ ->
         conn

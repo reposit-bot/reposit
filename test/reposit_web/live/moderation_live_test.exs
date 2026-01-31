@@ -6,6 +6,7 @@ defmodule RepositWeb.ModerationLiveTest do
 
   alias Reposit.Solutions
   alias Reposit.Votes
+  alias Reposit.Accounts.Scope
 
   describe "ModerationLive" do
     setup :register_and_log_in_admin
@@ -13,8 +14,10 @@ defmodule RepositWeb.ModerationLiveTest do
     setup do
       # Create users for voting
       voters = for i <- 1..5, do: user_fixture(%{email: "voter#{i}@example.com"})
+      voter_scopes = Enum.map(voters, &Scope.for_user/1)
       solution_author = user_fixture(%{email: "author@example.com"})
-      {:ok, voters: voters, solution_author: solution_author}
+      author_scope = Scope.for_user(solution_author)
+      {:ok, voters: voters, voter_scopes: voter_scopes, solution_author: solution_author, author_scope: author_scope}
     end
 
     test "renders empty state when no flagged solutions", %{conn: conn} do
@@ -26,21 +29,20 @@ defmodule RepositWeb.ModerationLiveTest do
 
     test "shows flagged solutions with more downvotes than upvotes", %{
       conn: conn,
-      voters: [voter | _],
-      solution_author: author
+      voter_scopes: [voter_scope | _],
+      author_scope: author_scope
     } do
       {:ok, solution} =
         create_solution(
           "Flagged problem description",
           "This is the solution that got flagged with downvotes",
-          author.id
+          author_scope
         )
 
       # Add downvote to flag it
       {:ok, _} =
-        Votes.create_vote(%{
+        Votes.create_vote(voter_scope, %{
           solution_id: solution.id,
-          user_id: voter.id,
           vote_type: :down,
           reason: :incorrect,
           comment: "This doesn't work at all"
@@ -55,14 +57,14 @@ defmodule RepositWeb.ModerationLiveTest do
 
     test "shows flagged solutions with 3+ downvotes", %{
       conn: conn,
-      voters: voters,
-      solution_author: author
+      voter_scopes: voter_scopes,
+      author_scope: author_scope
     } do
       {:ok, solution} =
         create_solution(
           "Multi-downvote problem",
           "This solution got multiple downvotes from different agents",
-          author.id
+          author_scope
         )
 
       # Update upvotes to make downvotes > upvotes condition not apply
@@ -71,11 +73,10 @@ defmodule RepositWeb.ModerationLiveTest do
       |> Reposit.Repo.update!()
 
       # Add 3 downvotes from different users
-      for {voter, i} <- Enum.with_index(Enum.take(voters, 3), 1) do
+      for {voter_scope, i} <- Enum.with_index(Enum.take(voter_scopes, 3), 1) do
         {:ok, _} =
-          Votes.create_vote(%{
+          Votes.create_vote(voter_scope, %{
             solution_id: solution.id,
-            user_id: voter.id,
             vote_type: :down,
             reason: :outdated,
             comment: "This is outdated #{i}"
@@ -90,21 +91,20 @@ defmodule RepositWeb.ModerationLiveTest do
 
     test "does not show non-flagged solutions", %{
       conn: conn,
-      voters: [voter | _],
-      solution_author: author
+      voter_scopes: [voter_scope | _],
+      author_scope: author_scope
     } do
       {:ok, good_solution} =
         create_solution(
           "Good solution problem here",
           "This is a good solution that everyone loves and finds very useful for their work",
-          author.id
+          author_scope
         )
 
       # Add upvotes
       {:ok, _} =
-        Votes.create_vote(%{
+        Votes.create_vote(voter_scope, %{
           solution_id: good_solution.id,
-          user_id: voter.id,
           vote_type: :up
         })
 
@@ -117,36 +117,34 @@ defmodule RepositWeb.ModerationLiveTest do
 
     test "can filter by downvote reason", %{
       conn: conn,
-      voters: [voter1, voter2 | _],
-      solution_author: author
+      voter_scopes: [voter_scope1, voter_scope2 | _],
+      author_scope: author_scope
     } do
       {:ok, solution1} =
         create_solution(
           "Incorrect solution problem here",
           "This solution is marked as incorrect and needs to be reviewed by the moderation team",
-          author.id
+          author_scope
         )
 
       {:ok, solution2} =
         create_solution(
           "Outdated solution problem here",
           "This solution is marked as outdated and needs to be reviewed by the moderation team",
-          author.id
+          author_scope
         )
 
       {:ok, _} =
-        Votes.create_vote(%{
+        Votes.create_vote(voter_scope1, %{
           solution_id: solution1.id,
-          user_id: voter1.id,
           vote_type: :down,
           reason: :incorrect,
           comment: "This is wrong"
         })
 
       {:ok, _} =
-        Votes.create_vote(%{
+        Votes.create_vote(voter_scope2, %{
           solution_id: solution2.id,
-          user_id: voter2.id,
           vote_type: :down,
           reason: :outdated,
           comment: "This is old"
@@ -171,20 +169,19 @@ defmodule RepositWeb.ModerationLiveTest do
 
     test "approve action keeps solution in queue until page refresh", %{
       conn: conn,
-      voters: [voter | _],
-      solution_author: author
+      voter_scopes: [voter_scope | _],
+      author_scope: author_scope
     } do
       {:ok, solution} =
         create_solution(
           "Solution that needs approval",
           "This solution will be approved by moderator after review of the content quality",
-          author.id
+          author_scope
         )
 
       {:ok, _} =
-        Votes.create_vote(%{
+        Votes.create_vote(voter_scope, %{
           solution_id: solution.id,
-          user_id: voter.id,
           vote_type: :down,
           reason: :incomplete,
           comment: "Missing some details"
@@ -203,20 +200,19 @@ defmodule RepositWeb.ModerationLiveTest do
 
     test "archive action removes solution from queue", %{
       conn: conn,
-      voters: [voter | _],
-      solution_author: author
+      voter_scopes: [voter_scope | _],
+      author_scope: author_scope
     } do
       {:ok, solution} =
         create_solution(
           "Solution that will be archived",
           "This solution will be archived by moderator after review of the reported issues",
-          author.id
+          author_scope
         )
 
       {:ok, _} =
-        Votes.create_vote(%{
+        Votes.create_vote(voter_scope, %{
           solution_id: solution.id,
-          user_id: voter.id,
           vote_type: :down,
           reason: :harmful,
           comment: "This could cause issues"
@@ -241,13 +237,13 @@ defmodule RepositWeb.ModerationLiveTest do
     test "archived solutions don't appear in moderation queue", %{
       conn: conn,
       voters: [voter | _],
-      solution_author: author
+      author_scope: author_scope
     } do
       {:ok, solution} =
         create_solution(
           "Already archived solution here",
           "This solution was already archived and should not appear in the moderation queue",
-          author.id
+          author_scope
         )
 
       # Archive it first
@@ -270,20 +266,19 @@ defmodule RepositWeb.ModerationLiveTest do
 
     test "displays feedback comments", %{
       conn: conn,
-      voters: [voter | _],
-      solution_author: author
+      voter_scopes: [voter_scope | _],
+      author_scope: author_scope
     } do
       {:ok, solution} =
         create_solution(
           "Solution with feedback comments",
           "This solution has feedback from agents who have reviewed and tested the approach",
-          author.id
+          author_scope
         )
 
       {:ok, _} =
-        Votes.create_vote(%{
+        Votes.create_vote(voter_scope, %{
           solution_id: solution.id,
-          user_id: voter.id,
           vote_type: :down,
           reason: :incorrect,
           comment: "The algorithm complexity is wrong"
@@ -296,11 +291,10 @@ defmodule RepositWeb.ModerationLiveTest do
     end
   end
 
-  defp create_solution(problem, solution, user_id) do
-    Solutions.create_solution(%{
+  defp create_solution(problem, solution, scope) do
+    Solutions.create_solution(scope, %{
       problem_description: problem,
-      solution_pattern: solution,
-      user_id: user_id
+      solution_pattern: solution
     })
   end
 end

@@ -8,6 +8,7 @@ defmodule Reposit.Solutions do
   alias Reposit.Solutions.Solution
   alias Reposit.Embeddings
   alias Reposit.ContentSafety
+  alias Reposit.Accounts.Scope
 
   @doc """
   Creates a solution with automatic embedding generation.
@@ -17,15 +18,18 @@ defmodule Reposit.Solutions do
 
   ## Examples
 
-      {:ok, solution} = create_solution(%{
+      {:ok, solution} = create_solution(scope, %{
         problem_description: "How to implement binary search",
         solution_pattern: "Use divide and conquer..."
       })
 
   """
-  @spec create_solution(map()) ::
+  @spec create_solution(Scope.t(), map()) ::
           {:ok, Solution.t()} | {:error, Ecto.Changeset.t() | :content_unsafe}
-  def create_solution(attrs) do
+  def create_solution(%Scope{user: %{id: user_id}}, attrs) do
+    # Add user_id with the same key type as the attrs map
+    attrs = put_with_matching_key_type(attrs, :user_id, user_id)
+
     # Check content safety before processing
     case check_content_safety(attrs) do
       :ok ->
@@ -34,6 +38,19 @@ defmodule Reposit.Solutions do
       {:error, :content_unsafe} = error ->
         error
     end
+  end
+
+  # Puts a key-value pair using the same key type (atom or string) as the existing map
+  defp put_with_matching_key_type(map, key, value) when is_atom(key) do
+    if has_string_keys?(map) do
+      Map.put(map, Atom.to_string(key), value)
+    else
+      Map.put(map, key, value)
+    end
+  end
+
+  defp has_string_keys?(map) do
+    map |> Map.keys() |> Enum.any?(&is_binary/1)
   end
 
   defp create_solution_unsafe(attrs) do
@@ -455,14 +472,14 @@ defmodule Reposit.Solutions do
 
   ## Examples
 
-      {:ok, solution} = delete_solution(solution_id, user_id)
-      {:error, :not_found} = delete_solution(nonexistent_id, user_id)
-      {:error, :unauthorized} = delete_solution(solution_id, wrong_user_id)
+      {:ok, solution} = delete_solution(scope, solution_id)
+      {:error, :not_found} = delete_solution(scope, nonexistent_id)
+      {:error, :unauthorized} = delete_solution(scope, other_users_solution_id)
 
   """
-  @spec delete_solution(binary(), integer()) ::
+  @spec delete_solution(Scope.t(), binary()) ::
           {:ok, Solution.t()} | {:error, :not_found | :unauthorized}
-  def delete_solution(solution_id, user_id) do
+  def delete_solution(%Scope{user: %{id: user_id}}, solution_id) do
     case Repo.get(Solution, solution_id) do
       nil ->
         {:error, :not_found}

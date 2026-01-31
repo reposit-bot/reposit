@@ -18,6 +18,8 @@ defmodule Reposit.Accounts.Scope do
 
   alias Reposit.Accounts.User
 
+  @type t :: %__MODULE__{user: User.t() | nil}
+
   defstruct user: nil
 
   @doc """

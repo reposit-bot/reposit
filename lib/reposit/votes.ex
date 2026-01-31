@@ -8,6 +8,7 @@ defmodule Reposit.Votes do
   alias Reposit.Votes.Vote
   alias Reposit.Solutions.Solution
   alias Reposit.ContentSafety
+  alias Reposit.Accounts.Scope
 
   @doc """
   Creates a vote on a solution.
@@ -16,16 +17,17 @@ defmodule Reposit.Votes do
 
   ## Examples
 
-      {:ok, vote} = create_vote(%{
+      {:ok, vote} = create_vote(scope, %{
         solution_id: "uuid",
-        user_id: 123,
         vote_type: :up
       })
 
   """
-  @spec create_vote(map()) ::
+  @spec create_vote(Scope.t(), map()) ::
           {:ok, Vote.t()} | {:error, Ecto.Changeset.t() | :solution_not_found | :content_unsafe}
-  def create_vote(attrs) do
+  def create_vote(%Scope{user: %{id: user_id}}, attrs) do
+    attrs = Map.put(attrs, :user_id, user_id)
+
     # Check content safety on comment if present
     case check_comment_safety(attrs) do
       :ok ->
@@ -38,7 +40,7 @@ defmodule Reposit.Votes do
 
   defp create_vote_unsafe(attrs) do
     solution_id = Map.get(attrs, :solution_id) || Map.get(attrs, "solution_id")
-    user_id = Map.get(attrs, :user_id) || Map.get(attrs, "user_id")
+    user_id = Map.get(attrs, :user_id)
 
     # Verify solution exists
     case Repo.get(Solution, solution_id) do
@@ -132,18 +134,18 @@ defmodule Reposit.Votes do
   end
 
   @doc """
-  Deletes a vote by solution and user ID.
+  Deletes a vote by solution ID for the current user.
 
   Adjusts the solution's vote count atomically.
 
   ## Examples
 
-      {:ok, vote} = delete_vote(solution_id, user_id)
-      {:error, :not_found} = delete_vote(solution_id, nonexistent_user_id)
+      {:ok, vote} = delete_vote(scope, solution_id)
+      {:error, :not_found} = delete_vote(scope, solution_id)
 
   """
-  @spec delete_vote(binary(), integer()) :: {:ok, Vote.t()} | {:error, :not_found}
-  def delete_vote(solution_id, user_id) do
+  @spec delete_vote(Scope.t(), binary()) :: {:ok, Vote.t()} | {:error, :not_found}
+  def delete_vote(%Scope{user: %{id: user_id}}, solution_id) do
     case get_vote(solution_id, user_id) do
       nil ->
         {:error, :not_found}

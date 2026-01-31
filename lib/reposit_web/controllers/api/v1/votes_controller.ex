@@ -10,15 +10,14 @@ defmodule RepositWeb.Api.V1.VotesController do
   POST /api/v1/solutions/:solution_id/upvote
   """
   def upvote(conn, %{"solution_id" => solution_id}) do
-    %{id: user_id} = conn.assigns.current_user
+    scope = conn.assigns.current_scope
 
     attrs = %{
       solution_id: solution_id,
-      user_id: user_id,
       vote_type: :up
     }
 
-    case Votes.create_vote(attrs) do
+    case Votes.create_vote(scope, attrs) do
       {:ok, _vote} ->
         {:ok, solution} = Solutions.get_solution(solution_id)
 
@@ -58,17 +57,16 @@ defmodule RepositWeb.Api.V1.VotesController do
   POST /api/v1/solutions/:solution_id/downvote
   """
   def downvote(conn, %{"solution_id" => solution_id} = params) do
-    %{id: user_id} = conn.assigns.current_user
+    scope = conn.assigns.current_scope
 
     attrs = %{
       solution_id: solution_id,
-      user_id: user_id,
       vote_type: :down,
       comment: Map.get(params, "comment"),
       reason: parse_reason(Map.get(params, "reason"))
     }
 
-    case Votes.create_vote(attrs) do
+    case Votes.create_vote(scope, attrs) do
       {:ok, _vote} ->
         {:ok, solution} = Solutions.get_solution(solution_id)
 

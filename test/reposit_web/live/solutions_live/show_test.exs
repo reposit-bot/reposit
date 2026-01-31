@@ -6,21 +6,24 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
 
   alias Reposit.Solutions
   alias Reposit.Votes
+  alias Reposit.Accounts.Scope
 
   setup do
     user = user_fixture()
     voter = user_fixture()
-    {:ok, user: user, voter: voter}
+    user_scope = Scope.for_user(user)
+    voter_scope = Scope.for_user(voter)
+    {:ok, user: user, voter: voter, user_scope: user_scope, voter_scope: voter_scope}
   end
 
   describe "Show" do
-    test "renders solution details", %{conn: conn, user: user} do
+    test "renders solution details", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "How to implement binary search in Elixir",
           "Use recursion with pattern matching for an elegant solution. Here's the approach:\n\n1. Check middle element\n2. Recurse left or right",
           %{},
-          user.id
+          user_scope
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -30,13 +33,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert render(view) =~ "Use recursion with pattern matching"
     end
 
-    test "renders markdown content", %{conn: conn, user: user} do
+    test "renders markdown content", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for markdown rendering",
           "Here is some **bold** text and *italic* text. This needs to be at least fifty characters long.",
           %{},
-          user.id
+          user_scope
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -46,7 +49,7 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "<em>italic</em>"
     end
 
-    test "displays tags grouped by category", %{conn: conn, user: user} do
+    test "displays tags grouped by category", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem with multiple tags",
@@ -56,7 +59,7 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
             framework: ["phoenix"],
             domain: ["api", "web"]
           },
-          user.id
+          user_scope
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -70,13 +73,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "web"
     end
 
-    test "displays vote stats", %{conn: conn, user: user} do
+    test "displays vote stats", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for vote display",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       # Update vote counts
@@ -93,13 +96,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "+20"
     end
 
-    test "displays upvote percentage in radial progress", %{conn: conn, user: user} do
+    test "displays upvote percentage in radial progress", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for percentage",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       # 75% upvote rate (15 up, 5 down)
@@ -113,20 +116,19 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "75%"
     end
 
-    test "displays vote comments from downvotes", %{conn: conn, user: user, voter: voter} do
+    test "displays vote comments from downvotes", %{conn: conn, user_scope: user_scope, voter_scope: voter_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for vote comments",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       # Create a downvote with comment
       {:ok, _vote} =
-        Votes.create_vote(%{
+        Votes.create_vote(voter_scope, %{
           solution_id: solution.id,
-          user_id: voter.id,
           vote_type: :down,
           comment: "This approach is deprecated since Phoenix 1.7",
           reason: :outdated
@@ -139,20 +141,19 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "Outdated"
     end
 
-    test "does not display upvote comments (they don't have any)", %{conn: conn, user: user, voter: voter} do
+    test "does not display upvote comments (they don't have any)", %{conn: conn, user_scope: user_scope, voter_scope: voter_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for upvote display",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       # Create an upvote (no comment)
       {:ok, _vote} =
-        Votes.create_vote(%{
+        Votes.create_vote(voter_scope, %{
           solution_id: solution.id,
-          user_id: voter.id,
           vote_type: :up
         })
 
@@ -162,13 +163,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       refute render(view) =~ "Recent Feedback"
     end
 
-    test "back navigation link works", %{conn: conn, user: user} do
+    test "back navigation link works", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for navigation",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -185,13 +186,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert flash["error"] == "Solution not found"
     end
 
-    test "displays creation date", %{conn: conn, user: user} do
+    test "displays creation date", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for date display",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -203,13 +204,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ ~r/\w+ \d+, \d{4}/
     end
 
-    test "handles solution with no tags", %{conn: conn, user: user} do
+    test "handles solution with no tags", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem with no tags",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -220,13 +221,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
   end
 
   describe "delete solution" do
-    test "author sees delete button", %{conn: conn, user: user} do
+    test "author sees delete button", %{conn: conn, user: user, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for delete",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       conn = log_in_user(conn, user)
@@ -235,13 +236,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert has_element?(view, "button[phx-click='show-delete-confirm']")
     end
 
-    test "non-author does not see delete button", %{conn: conn, user: user, voter: other_user} do
+    test "non-author does not see delete button", %{conn: conn, user_scope: user_scope, voter: other_user} do
       {:ok, solution} =
         create_solution(
           "Test problem for delete visibility",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       conn = log_in_user(conn, other_user)
@@ -250,13 +251,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       refute has_element?(view, "button[phx-click='show-delete-confirm']")
     end
 
-    test "guest does not see delete button", %{conn: conn, user: user} do
+    test "guest does not see delete button", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for guest delete",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -264,13 +265,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       refute has_element?(view, "button[phx-click='show-delete-confirm']")
     end
 
-    test "author can delete their solution", %{conn: conn, user: user} do
+    test "author can delete their solution", %{conn: conn, user: user, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem to delete",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       conn = log_in_user(conn, user)
@@ -292,13 +293,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert {:error, :not_found} = Solutions.get_solution(solution.id)
     end
 
-    test "can cancel delete", %{conn: conn, user: user} do
+    test "can cancel delete", %{conn: conn, user: user, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for cancel delete",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       conn = log_in_user(conn, user)
@@ -320,13 +321,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
   end
 
   describe "voting" do
-    test "shows login prompt for guests", %{conn: conn, user: user} do
+    test "shows login prompt for guests", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for guest voting",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -336,13 +337,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "to vote"
     end
 
-    test "logged in user can upvote", %{conn: conn, user: user, voter: voter} do
+    test "logged in user can upvote", %{conn: conn, user_scope: user_scope, voter: voter} do
       {:ok, solution} =
         create_solution(
           "Test problem for upvoting",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       conn = log_in_user(conn, voter)
@@ -356,13 +357,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ ">1</span>"
     end
 
-    test "logged in user can downvote with comment", %{conn: conn, user: user, voter: voter} do
+    test "logged in user can downvote with comment", %{conn: conn, user_scope: user_scope, voter: voter} do
       {:ok, solution} =
         create_solution(
           "Test problem for downvoting",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       conn = log_in_user(conn, voter)
@@ -388,13 +389,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ ">1</span>"
     end
 
-    test "user can change vote from up to down", %{conn: conn, user: user, voter: voter} do
+    test "user can change vote from up to down", %{conn: conn, user_scope: user_scope, voter: voter} do
       {:ok, solution} =
         create_solution(
           "Test problem for changing vote",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       conn = log_in_user(conn, voter)
@@ -418,17 +419,17 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert updated_solution.downvotes == 1
     end
 
-    test "user can remove their upvote", %{conn: conn, user: user, voter: voter} do
+    test "user can remove their upvote", %{conn: conn, user_scope: user_scope, voter: voter, voter_scope: voter_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for removing upvote",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       # Create an upvote
-      {:ok, _} = Votes.create_vote(%{solution_id: solution.id, user_id: voter.id, vote_type: :up})
+      {:ok, _} = Votes.create_vote(voter_scope, %{solution_id: solution.id, vote_type: :up})
 
       conn = log_in_user(conn, voter)
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -447,19 +448,18 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert updated.upvotes == 0
     end
 
-    test "user can remove their downvote", %{conn: conn, user: user, voter: voter} do
+    test "user can remove their downvote", %{conn: conn, user_scope: user_scope, voter: voter, voter_scope: voter_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for removing downvote",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       # Create a downvote
-      {:ok, _} = Votes.create_vote(%{
+      {:ok, _} = Votes.create_vote(voter_scope, %{
         solution_id: solution.id,
-        user_id: voter.id,
         vote_type: :down,
         comment: "This has issues with the approach",
         reason: :incorrect
@@ -476,13 +476,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert updated.downvotes == 0
     end
 
-    test "remove vote button not shown when no vote", %{conn: conn, user: user, voter: voter} do
+    test "remove vote button not shown when no vote", %{conn: conn, user_scope: user_scope, voter: voter} do
       {:ok, solution} =
         create_solution(
           "Test problem for no vote",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       conn = log_in_user(conn, voter)
@@ -492,19 +492,18 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       refute has_element?(view, "button[phx-click='remove-vote']")
     end
 
-    test "shows user's existing vote", %{conn: conn, user: user, voter: voter} do
+    test "shows user's existing vote", %{conn: conn, user_scope: user_scope, voter: voter, voter_scope: voter_scope} do
       {:ok, solution} =
         create_solution(
           "Test problem for existing vote",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
-          user.id
+          user_scope
         )
 
       # Create an existing upvote
-      {:ok, _vote} = Votes.create_vote(%{
+      {:ok, _vote} = Votes.create_vote(voter_scope, %{
         solution_id: solution.id,
-        user_id: voter.id,
         vote_type: :up
       })
 
@@ -517,12 +516,11 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
     end
   end
 
-  defp create_solution(problem, solution, tags, user_id) do
-    Solutions.create_solution(%{
+  defp create_solution(problem, solution, tags, scope) do
+    Solutions.create_solution(scope, %{
       problem_description: problem,
       solution_pattern: solution,
-      tags: tags,
-      user_id: user_id
+      tags: tags
     })
   end
 end

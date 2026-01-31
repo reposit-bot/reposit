@@ -278,14 +278,13 @@ defmodule RepositWeb.SolutionsLive.Show do
 
   @impl true
   def handle_event("upvote", _params, socket) do
-    user = socket.assigns.current_scope.user
+    scope = socket.assigns.current_scope
     solution = socket.assigns.solution
 
     socket = assign(socket, :voting, true)
 
-    case Votes.create_vote(%{
+    case Votes.create_vote(scope, %{
            solution_id: solution.id,
-           user_id: user.id,
            vote_type: :up
          }) do
       {:ok, _vote} ->
@@ -323,12 +322,12 @@ defmodule RepositWeb.SolutionsLive.Show do
   end
 
   def handle_event("remove-vote", _params, socket) do
-    user = socket.assigns.current_scope.user
+    scope = socket.assigns.current_scope
     solution = socket.assigns.solution
 
     socket = assign(socket, :voting, true)
 
-    case Votes.delete_vote(solution.id, user.id) do
+    case Votes.delete_vote(scope, solution.id) do
       {:ok, _} ->
         # Reload solution to get updated counts
         {:ok, updated_solution} = Solutions.get_solution_with_votes(solution.id, votes_limit: 10)
@@ -348,10 +347,10 @@ defmodule RepositWeb.SolutionsLive.Show do
   end
 
   def handle_event("delete-solution", _params, socket) do
-    user = socket.assigns.current_scope.user
+    scope = socket.assigns.current_scope
     solution = socket.assigns.solution
 
-    case Solutions.delete_solution(solution.id, user.id) do
+    case Solutions.delete_solution(scope, solution.id) do
       {:ok, _} ->
         {:noreply,
          socket
@@ -373,14 +372,13 @@ defmodule RepositWeb.SolutionsLive.Show do
   end
 
   def handle_event("downvote", %{"comment" => comment, "reason" => reason}, socket) do
-    user = socket.assigns.current_scope.user
+    scope = socket.assigns.current_scope
     solution = socket.assigns.solution
 
     socket = assign(socket, :voting, true)
 
-    case Votes.create_vote(%{
+    case Votes.create_vote(scope, %{
            solution_id: solution.id,
-           user_id: user.id,
            vote_type: :down,
            comment: comment,
            reason: String.to_existing_atom(reason)

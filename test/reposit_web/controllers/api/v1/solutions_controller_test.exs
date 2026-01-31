@@ -4,6 +4,7 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
   import Reposit.AccountsFixtures
 
   alias Reposit.Solutions
+  alias Reposit.Accounts.Scope
 
   @valid_attrs %{
     "problem_description" => "How to implement binary search in Elixir efficiently",
@@ -18,7 +19,8 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
 
   setup do
     user = user_fixture()
-    {:ok, solution_owner: user}
+    scope = Scope.for_user(user)
+    {:ok, solution_owner: user, owner_scope: scope}
   end
 
   describe "POST /api/v1/solutions" do
@@ -123,9 +125,9 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
   end
 
   describe "GET /api/v1/solutions/:id" do
-    test "returns solution when found", %{conn: conn, solution_owner: user} do
+    test "returns solution when found", %{conn: conn, owner_scope: scope} do
       {:ok, solution} =
-        Solutions.create_solution(atomize_keys(@valid_attrs) |> Map.put(:user_id, user.id))
+        Solutions.create_solution(scope, atomize_keys(@valid_attrs))
 
       conn = get(conn, ~p"/api/v1/solutions/#{solution.id}")
 
@@ -176,9 +178,9 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
              } = json_response(conn, 200)
     end
 
-    test "returns matching solutions with similarity scores", %{conn: conn, solution_owner: user} do
+    test "returns matching solutions with similarity scores", %{conn: conn, owner_scope: scope} do
       {:ok, _solution} =
-        Solutions.create_solution(atomize_keys(@valid_attrs) |> Map.put(:user_id, user.id))
+        Solutions.create_solution(scope, atomize_keys(@valid_attrs))
 
       conn = get(conn, ~p"/api/v1/solutions/search?q=binary+search")
 
@@ -197,12 +199,11 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
       assert result["downvotes"] == 0
     end
 
-    test "respects limit parameter", %{conn: conn, solution_owner: user} do
+    test "respects limit parameter", %{conn: conn, owner_scope: scope} do
       for i <- 1..5 do
-        Solutions.create_solution(%{
+        Solutions.create_solution(scope, %{
           problem_description: "Problem #{i} - " <> String.duplicate("algorithm", 5),
-          solution_pattern: @valid_attrs["solution_pattern"],
-          user_id: user.id
+          solution_pattern: @valid_attrs["solution_pattern"]
         })
       end
 
@@ -218,21 +219,19 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
       assert length(results) == 2
     end
 
-    test "filters by required_tags", %{conn: conn, solution_owner: user} do
+    test "filters by required_tags", %{conn: conn, owner_scope: scope} do
       {:ok, _s1} =
-        Solutions.create_solution(%{
+        Solutions.create_solution(scope, %{
           problem_description: "How to implement binary search in Elixir",
           solution_pattern: @valid_attrs["solution_pattern"],
-          tags: %{language: ["elixir"]},
-          user_id: user.id
+          tags: %{language: ["elixir"]}
         })
 
       {:ok, _s2} =
-        Solutions.create_solution(%{
+        Solutions.create_solution(scope, %{
           problem_description: "How to implement binary search in Python",
           solution_pattern: @valid_attrs["solution_pattern"],
-          tags: %{language: ["python"]},
-          user_id: user.id
+          tags: %{language: ["python"]}
         })
 
       conn = get(conn, ~p"/api/v1/solutions/search?q=binary+search&required_tags=language:elixir")
@@ -247,9 +246,9 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
       assert hd(results)["tags"]["language"] == ["elixir"]
     end
 
-    test "sorts by sort parameter", %{conn: conn, solution_owner: user} do
+    test "sorts by sort parameter", %{conn: conn, owner_scope: scope} do
       {:ok, _} =
-        Solutions.create_solution(atomize_keys(@valid_attrs) |> Map.put(:user_id, user.id))
+        Solutions.create_solution(scope, atomize_keys(@valid_attrs))
 
       conn = get(conn, ~p"/api/v1/solutions/search?q=binary&sort=newest")
 
