@@ -26,7 +26,8 @@ defmodule RepositWeb.SolutionsLive.Show do
          |> assign(:voting, false)
          |> assign(:show_downvote_form, false)
          |> assign(:downvote_comment, "")
-         |> assign(:downvote_reason, nil)}
+         |> assign(:downvote_reason, nil)
+         |> assign(:show_delete_confirm, false)}
 
       {:error, :not_found} ->
         {:ok,
@@ -39,6 +40,10 @@ defmodule RepositWeb.SolutionsLive.Show do
   defp logged_in?(nil), do: false
   defp logged_in?(%{user: nil}), do: false
   defp logged_in?(%{user: _}), do: true
+
+  defp is_author?(nil, _solution), do: false
+  defp is_author?(%{user: nil}, _solution), do: false
+  defp is_author?(%{user: %{id: user_id}}, %{user_id: solution_user_id}), do: user_id == solution_user_id
 
   defp get_user_vote(socket, solution_id) do
     case socket.assigns[:current_scope] do
@@ -215,11 +220,45 @@ defmodule RepositWeb.SolutionsLive.Show do
           <.vote_comments votes={@solution.votes} />
           
     <!-- Metadata footer -->
-          <div class="mt-8 pt-6 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(28%_0.025_280)] flex flex-wrap gap-4 text-xs text-muted">
+          <div class="mt-8 pt-6 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(28%_0.025_280)] flex flex-wrap items-center gap-4 text-xs text-muted">
             <span>Created {format_date(@solution.inserted_at)}</span>
             <span :if={@solution.updated_at != @solution.inserted_at}>
               · Updated {format_date(@solution.updated_at)}
             </span>
+
+            <!-- Delete button for author -->
+            <button
+              :if={is_author?(@current_scope, @solution)}
+              phx-click="show-delete-confirm"
+              class="ml-auto btn btn-ghost btn-xs text-error hover:bg-error/10"
+            >
+              <Lucideicons.trash_2 class="w-4 h-4" /> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+    <!-- Delete confirmation modal -->
+      <div
+        :if={@show_delete_confirm}
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        phx-click="cancel-delete"
+      >
+        <div
+          class="bg-base-100 rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl"
+          phx-click-away="cancel-delete"
+        >
+          <h3 class="text-lg font-semibold mb-2">Delete this solution?</h3>
+          <p class="text-sm text-muted mb-6">
+            This action cannot be undone. All votes on this solution will also be deleted.
+          </p>
+          <div class="flex gap-3 justify-end">
+            <button phx-click="cancel-delete" class="btn btn-ghost">
+              Cancel
+            </button>
+            <button phx-click="delete-solution" class="btn btn-error">
+              Delete
+            </button>
           </div>
         </div>
       </div>
@@ -263,6 +302,39 @@ defmodule RepositWeb.SolutionsLive.Show do
 
   def handle_event("cancel-downvote", _params, socket) do
     {:noreply, assign(socket, :show_downvote_form, false)}
+  end
+
+  def handle_event("show-delete-confirm", _params, socket) do
+    {:noreply, assign(socket, :show_delete_confirm, true)}
+  end
+
+  def handle_event("cancel-delete", _params, socket) do
+    {:noreply, assign(socket, :show_delete_confirm, false)}
+  end
+
+  def handle_event("delete-solution", _params, socket) do
+    user = socket.assigns.current_scope.user
+    solution = socket.assigns.solution
+
+    case Solutions.delete_solution(solution.id, user.id) do
+      {:ok, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Solution deleted successfully")
+         |> redirect(to: ~p"/solutions")}
+
+      {:error, :unauthorized} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "You can only delete your own solutions")
+         |> assign(:show_delete_confirm, false)}
+
+      {:error, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to delete solution")
+         |> assign(:show_delete_confirm, false)}
+    end
   end
 
   def handle_event("downvote", %{"comment" => comment, "reason" => reason}, socket) do

@@ -447,4 +447,32 @@ defmodule Reposit.Solutions do
       solution -> {:ok, solution}
     end
   end
+
+  @doc """
+  Deletes a solution if the user is the owner.
+
+  This is a hard delete that also removes all associated votes.
+
+  ## Examples
+
+      {:ok, solution} = delete_solution(solution_id, user_id)
+      {:error, :not_found} = delete_solution(nonexistent_id, user_id)
+      {:error, :unauthorized} = delete_solution(solution_id, wrong_user_id)
+
+  """
+  @spec delete_solution(binary(), integer()) ::
+          {:ok, Solution.t()} | {:error, :not_found | :unauthorized}
+  def delete_solution(solution_id, user_id) do
+    case Repo.get(Solution, solution_id) do
+      nil ->
+        {:error, :not_found}
+
+      %Solution{user_id: ^user_id} = solution ->
+        # User owns this solution - delete it (votes cascade due to FK)
+        Repo.delete(solution)
+
+      _solution ->
+        {:error, :unauthorized}
+    end
+  end
 end

@@ -219,6 +219,106 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
     end
   end
 
+  describe "delete solution" do
+    test "author sees delete button", %{conn: conn, user: user} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for delete",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      conn = log_in_user(conn, user)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      assert has_element?(view, "button[phx-click='show-delete-confirm']")
+    end
+
+    test "non-author does not see delete button", %{conn: conn, user: user, voter: other_user} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for delete visibility",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      conn = log_in_user(conn, other_user)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      refute has_element?(view, "button[phx-click='show-delete-confirm']")
+    end
+
+    test "guest does not see delete button", %{conn: conn, user: user} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for guest delete",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      refute has_element?(view, "button[phx-click='show-delete-confirm']")
+    end
+
+    test "author can delete their solution", %{conn: conn, user: user} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem to delete",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      conn = log_in_user(conn, user)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      # Click delete button to show confirmation
+      view |> element("button[phx-click='show-delete-confirm']") |> render_click()
+
+      # Confirmation modal should appear
+      assert render(view) =~ "Delete this solution?"
+
+      # Confirm delete
+      view |> element("button[phx-click='delete-solution']") |> render_click()
+
+      # Should redirect to solutions list
+      assert_redirect(view, "/solutions")
+
+      # Solution should be deleted
+      assert {:error, :not_found} = Solutions.get_solution(solution.id)
+    end
+
+    test "can cancel delete", %{conn: conn, user: user} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for cancel delete",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      conn = log_in_user(conn, user)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      # Show confirmation
+      view |> element("button[phx-click='show-delete-confirm']") |> render_click()
+      assert render(view) =~ "Delete this solution?"
+
+      # Cancel
+      view |> element("button[phx-click='cancel-delete']") |> render_click()
+
+      # Modal should be gone
+      refute render(view) =~ "Delete this solution?"
+
+      # Solution should still exist
+      assert {:ok, _} = Solutions.get_solution(solution.id)
+    end
+  end
+
   describe "voting" do
     test "shows login prompt for guests", %{conn: conn, user: user} do
       {:ok, solution} =

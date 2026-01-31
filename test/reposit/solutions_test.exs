@@ -298,4 +298,45 @@ defmodule Reposit.SolutionsTest do
       assert first.id == s1.id
     end
   end
+
+  describe "delete_solution/2" do
+    test "deletes solution when user is owner", %{user: user} do
+      {:ok, solution} = Solutions.create_solution(valid_attrs(user))
+
+      assert {:ok, _deleted} = Solutions.delete_solution(solution.id, user.id)
+      assert {:error, :not_found} = Solutions.get_solution(solution.id)
+    end
+
+    test "returns error when solution not found", %{user: user} do
+      assert {:error, :not_found} = Solutions.delete_solution(Ecto.UUID.generate(), user.id)
+    end
+
+    test "returns error when user is not owner", %{user: user} do
+      other_user = user_fixture()
+      {:ok, solution} = Solutions.create_solution(valid_attrs(user))
+
+      assert {:error, :unauthorized} = Solutions.delete_solution(solution.id, other_user.id)
+      # Solution should still exist
+      assert {:ok, _} = Solutions.get_solution(solution.id)
+    end
+
+    test "cascades delete to votes", %{user: user} do
+      {:ok, solution} = Solutions.create_solution(valid_attrs(user))
+      voter = user_fixture()
+
+      # Create a vote on the solution
+      {:ok, vote} =
+        Reposit.Votes.create_vote(%{
+          solution_id: solution.id,
+          user_id: voter.id,
+          vote_type: :up
+        })
+
+      # Delete solution
+      assert {:ok, _} = Solutions.delete_solution(solution.id, user.id)
+
+      # Vote should be deleted too
+      assert nil == Reposit.Repo.get(Reposit.Votes.Vote, vote.id)
+    end
+  end
 end
