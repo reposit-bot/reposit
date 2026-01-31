@@ -95,11 +95,11 @@ defmodule RepositWeb.Router do
 
   ## Authentication routes
 
-  scope "/", RepositWeb do
-    pipe_through [:browser, :redirect_if_user_is_authenticated]
+  # Redirect old registration routes to sign-in
+  scope "/" do
+    pipe_through [:browser]
 
-    get "/users/register", UserRegistrationController, :new
-    post "/users/register", UserRegistrationController, :create
+    get "/users/register", RepositWeb.Plugs.Redirect, to: "/users/log-in"
   end
 
   scope "/", RepositWeb do

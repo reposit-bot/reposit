@@ -29,46 +29,6 @@ defmodule RepositWeb.UserSettingsControllerTest do
     end
   end
 
-  describe "PUT /users/settings (change password form)" do
-    test "updates the user password and resets tokens", %{conn: conn, user: user} do
-      new_password_conn =
-        put(conn, ~p"/users/settings", %{
-          "action" => "update_password",
-          "user" => %{
-            "password" => "new valid password",
-            "password_confirmation" => "new valid password"
-          }
-        })
-
-      assert redirected_to(new_password_conn) == ~p"/users/settings"
-
-      assert get_session(new_password_conn, :user_token) != get_session(conn, :user_token)
-
-      assert Phoenix.Flash.get(new_password_conn.assigns.flash, :info) =~
-               "Password updated successfully"
-
-      assert Accounts.get_user_by_email_and_password(user.email, "new valid password")
-    end
-
-    test "does not update password on invalid data", %{conn: conn} do
-      old_password_conn =
-        put(conn, ~p"/users/settings", %{
-          "action" => "update_password",
-          "user" => %{
-            "password" => "too short",
-            "password_confirmation" => "does not match"
-          }
-        })
-
-      response = html_response(old_password_conn, 200)
-      assert response =~ "Settings"
-      assert response =~ "should be at least 12 character(s)"
-      assert response =~ "does not match password"
-
-      assert get_session(old_password_conn, :user_token) == get_session(conn, :user_token)
-    end
-  end
-
   describe "PUT /users/settings (change email form)" do
     @tag :capture_log
     test "updates the user email", %{conn: conn, user: user} do
