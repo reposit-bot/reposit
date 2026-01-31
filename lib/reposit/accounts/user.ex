@@ -2,6 +2,8 @@ defmodule Reposit.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @roles [:user, :admin]
+
   schema "users" do
     field(:email, :string)
     field(:password, :string, virtual: true, redact: true)
@@ -9,9 +11,16 @@ defmodule Reposit.Accounts.User do
     field(:confirmed_at, :utc_datetime)
     field(:authenticated_at, :utc_datetime, virtual: true)
     field(:api_token_hash, :binary, redact: true)
+    field(:role, Ecto.Enum, values: @roles, default: :user)
 
     timestamps(type: :utc_datetime)
   end
+
+  @doc """
+  Returns true if the user has the admin role.
+  """
+  def admin?(%__MODULE__{role: :admin}), do: true
+  def admin?(_), do: false
 
   @doc """
   A user changeset for registering or changing the email.

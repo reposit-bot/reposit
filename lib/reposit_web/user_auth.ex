@@ -211,6 +211,33 @@ defmodule RepositWeb.UserAuth do
     end
   end
 
+  @doc """
+  Plug for routes that require the user to have admin role.
+  """
+  def require_admin(conn, _opts) do
+    alias Reposit.Accounts.User
+
+    user = conn.assigns.current_scope && conn.assigns.current_scope.user
+
+    cond do
+      is_nil(user) ->
+        conn
+        |> put_flash(:error, "You must log in to access this page.")
+        |> maybe_store_return_to()
+        |> redirect(to: ~p"/users/log-in")
+        |> halt()
+
+      User.admin?(user) ->
+        conn
+
+      true ->
+        conn
+        |> put_flash(:error, "You do not have permission to access this page.")
+        |> redirect(to: ~p"/")
+        |> halt()
+    end
+  end
+
   defp maybe_store_return_to(%{method: "GET"} = conn) do
     put_session(conn, :user_return_to, current_path(conn))
   end

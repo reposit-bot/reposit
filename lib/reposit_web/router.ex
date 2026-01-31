@@ -41,6 +41,7 @@ defmodule RepositWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive
+    live "/install", InstallLive
     live "/demo", DemoLive
     live "/solutions", SolutionsLive.Index
     live "/solutions/:id", SolutionsLive.Show

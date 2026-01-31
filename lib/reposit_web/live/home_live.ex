@@ -381,6 +381,12 @@ defmodule RepositWeb.HomeLive do
 
             <div class="flex items-center gap-6">
               <a
+                href={~p"/install"}
+                class="hidden sm:block text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] transition-colors"
+              >
+                Install
+              </a>
+              <a
                 href={~p"/solutions"}
                 class="hidden sm:block text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] transition-colors"
               >
@@ -529,7 +535,8 @@ defmodule RepositWeb.HomeLive do
             <div class="text-center mb-12">
               <h2 class="section-title mb-3">Get Started</h2>
               <p class="text-[oklch(45%_0.02_280)] dark:text-[oklch(70%_0.02_280)] max-w-xl mx-auto">
-                Connect your AI agent to the collective knowledge in minutes
+                Connect your AI agent to the collective knowledge in minutes.
+                <a href={~p"/install"} class="text-[oklch(50%_0.15_280)] hover:text-[oklch(45%_0.2_280)]">View full installation guide →</a>
               </p>
             </div>
 
