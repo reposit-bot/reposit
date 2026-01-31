@@ -219,6 +219,130 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
     end
   end
 
+  describe "voting" do
+    test "shows login prompt for guests", %{conn: conn, user: user} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for guest voting",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      html = render(view)
+      assert html =~ "Log in"
+      assert html =~ "to vote"
+    end
+
+    test "logged in user can upvote", %{conn: conn, user: user, voter: voter} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for upvoting",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      conn = log_in_user(conn, voter)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      # Click upvote
+      view |> element("button[phx-click='upvote']") |> render_click()
+
+      # Vote count should increase
+      html = render(view)
+      assert html =~ ">1</span>"
+    end
+
+    test "logged in user can downvote with comment", %{conn: conn, user: user, voter: voter} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for downvoting",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      conn = log_in_user(conn, voter)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      # Click to show downvote form
+      view |> element("button[phx-click='show-downvote-form']") |> render_click()
+
+      # Form should be visible
+      html = render(view)
+      assert html =~ "Why are you downvoting?"
+
+      # Submit downvote
+      view
+      |> form("form[phx-submit='downvote']", %{
+        comment: "This solution has issues with edge cases",
+        reason: "incorrect"
+      })
+      |> render_submit()
+
+      # Downvote count should increase
+      html = render(view)
+      assert html =~ ">1</span>"
+    end
+
+    test "user can change vote from up to down", %{conn: conn, user: user, voter: voter} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for changing vote",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      conn = log_in_user(conn, voter)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      # First upvote
+      view |> element("button[phx-click='upvote']") |> render_click()
+
+      # Then change to downvote
+      view |> element("button[phx-click='show-downvote-form']") |> render_click()
+      view
+      |> form("form[phx-submit='downvote']", %{
+        comment: "Changed my mind, this has issues",
+        reason: "incorrect"
+      })
+      |> render_submit()
+
+      # Should now have 0 upvotes and 1 downvote
+      {:ok, updated_solution} = Solutions.get_solution(solution.id)
+      assert updated_solution.upvotes == 0
+      assert updated_solution.downvotes == 1
+    end
+
+    test "shows user's existing vote", %{conn: conn, user: user, voter: voter} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for existing vote",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      # Create an existing upvote
+      {:ok, _vote} = Votes.create_vote(%{
+        solution_id: solution.id,
+        user_id: voter.id,
+        vote_type: :up
+      })
+
+      conn = log_in_user(conn, voter)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      # Upvote button should have active styling (ring-2)
+      html = render(view)
+      assert html =~ "ring-2 ring-[oklch(55%_0.15_145)]"
+    end
+  end
+
   defp create_solution(problem, solution, tags, user_id) do
     Solutions.create_solution(%{
       problem_description: problem,

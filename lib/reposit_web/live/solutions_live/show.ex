@@ -9,21 +9,47 @@ defmodule RepositWeb.SolutionsLive.Show do
 
   alias Reposit.Solutions
   alias Reposit.Solutions.Solution
+  alias Reposit.Votes
 
   @impl true
   def mount(%{"id" => id}, _session, socket) do
     case Solutions.get_solution_with_votes(id, votes_limit: 10) do
       {:ok, solution} ->
+        # Get user's existing vote if logged in
+        user_vote = get_user_vote(socket, solution.id)
+
         {:ok,
          socket
          |> assign(:solution, solution)
-         |> assign(:markdown_html, render_markdown(solution.solution_pattern))}
+         |> assign(:markdown_html, render_markdown(solution.solution_pattern))
+         |> assign(:user_vote, user_vote)
+         |> assign(:voting, false)
+         |> assign(:show_downvote_form, false)
+         |> assign(:downvote_comment, "")
+         |> assign(:downvote_reason, nil)}
 
       {:error, :not_found} ->
         {:ok,
          socket
          |> put_flash(:error, "Solution not found")
          |> redirect(to: ~p"/solutions")}
+    end
+  end
+
+  defp logged_in?(nil), do: false
+  defp logged_in?(%{user: nil}), do: false
+  defp logged_in?(%{user: _}), do: true
+
+  defp get_user_vote(socket, solution_id) do
+    case socket.assigns[:current_scope] do
+      %{user: %{id: user_id}} ->
+        case Votes.get_vote(solution_id, user_id) do
+          nil -> nil
+          vote -> vote.vote_type
+        end
+
+      _ ->
+        nil
     end
   end
 
@@ -65,15 +91,37 @@ defmodule RepositWeb.SolutionsLive.Show do
             </p>
           </div>
           
-    <!-- Vote stats - compact horizontal -->
+    <!-- Vote stats with interactive buttons -->
           <div class="flex flex-wrap items-center gap-4 sm:gap-6 py-4 px-4 sm:px-5 rounded-2xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] mb-8">
-            <div class="flex items-center gap-2">
+            <!-- Upvote button -->
+            <button
+              :if={logged_in?(@current_scope)}
+              phx-click="upvote"
+              disabled={@voting}
+              class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :up, do: "bg-[oklch(55%_0.15_145)]/15 ring-2 ring-[oklch(55%_0.15_145)]", else: "hover:bg-[oklch(55%_0.15_145)]/10"}"}
+            >
+              <Lucideicons.arrow_up class={"w-5 h-5 #{if @user_vote == :up, do: "text-[oklch(45%_0.15_145)]", else: "text-[oklch(55%_0.15_145)]"}"} />
+              <span class="mono font-semibold text-[oklch(55%_0.15_145)]">{@solution.upvotes}</span>
+            </button>
+            <!-- Static upvote display for logged out users -->
+            <div :if={!logged_in?(@current_scope)} class="flex items-center gap-2">
               <Lucideicons.arrow_up class="w-4 h-4 sm:w-5 sm:h-5 text-[oklch(55%_0.15_145)]" />
               <span class="mono font-semibold text-[oklch(55%_0.15_145)]">{@solution.upvotes}</span>
               <span class="text-xs text-muted">upvotes</span>
             </div>
 
-            <div class="flex items-center gap-2">
+            <!-- Downvote button -->
+            <button
+              :if={logged_in?(@current_scope)}
+              phx-click="show-downvote-form"
+              disabled={@voting}
+              class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :down, do: "bg-[oklch(60%_0.2_25)]/15 ring-2 ring-[oklch(60%_0.2_25)]", else: "hover:bg-[oklch(60%_0.2_25)]/10"}"}
+            >
+              <Lucideicons.arrow_down class={"w-5 h-5 #{if @user_vote == :down, do: "text-[oklch(50%_0.2_25)]", else: "text-[oklch(60%_0.2_25)]"}"} />
+              <span class="mono font-semibold text-[oklch(60%_0.2_25)]">{@solution.downvotes}</span>
+            </button>
+            <!-- Static downvote display for logged out users -->
+            <div :if={!logged_in?(@current_scope)} class="flex items-center gap-2">
               <Lucideicons.arrow_down class="w-4 h-4 sm:w-5 sm:h-5 text-[oklch(60%_0.2_25)]" />
               <span class="mono font-semibold text-[oklch(60%_0.2_25)]">{@solution.downvotes}</span>
               <span class="text-xs text-muted">downvotes</span>
@@ -87,6 +135,66 @@ defmodule RepositWeb.SolutionsLive.Show do
                 {if @score >= 0, do: "+", else: ""}{@score}
               </span>
               <span class="text-xs text-muted">score</span>
+            </div>
+
+            <!-- Login prompt for guests -->
+            <div :if={!logged_in?(@current_scope)} class="text-xs text-muted">
+              <a href={~p"/users/log-in"} class="text-primary hover:underline">Log in</a>
+              to vote
+            </div>
+          </div>
+
+    <!-- Downvote form modal -->
+          <div
+            :if={@show_downvote_form}
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            phx-click="cancel-downvote"
+          >
+            <div
+              class="bg-base-100 rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl"
+              phx-click-away="cancel-downvote"
+            >
+              <h3 class="text-lg font-semibold mb-4">Why are you downvoting?</h3>
+              <form phx-submit="downvote" class="space-y-4">
+                <div>
+                  <label class="label">
+                    <span class="label-text">Reason</span>
+                  </label>
+                  <select
+                    name="reason"
+                    class="select select-bordered w-full"
+                    required
+                  >
+                    <option value="">Select a reason...</option>
+                    <option value="incorrect">Incorrect - Contains errors</option>
+                    <option value="outdated">Outdated - No longer relevant</option>
+                    <option value="incomplete">Incomplete - Missing key info</option>
+                    <option value="harmful">Harmful - Could cause issues</option>
+                    <option value="duplicate">Duplicate - Already exists</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="label">
+                    <span class="label-text">Comment (min 10 characters)</span>
+                  </label>
+                  <textarea
+                    name="comment"
+                    class="textarea textarea-bordered w-full h-24"
+                    placeholder="Explain why this solution should be downvoted..."
+                    required
+                    minlength="10"
+                  ></textarea>
+                </div>
+                <div class="flex gap-3 justify-end">
+                  <button type="button" phx-click="cancel-downvote" class="btn btn-ghost">
+                    Cancel
+                  </button>
+                  <button type="submit" class="btn btn-error" disabled={@voting}>
+                    {if @voting, do: "Submitting...", else: "Submit Downvote"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
           
@@ -117,6 +225,91 @@ defmodule RepositWeb.SolutionsLive.Show do
       </div>
     </Layouts.app>
     """
+  end
+
+  @impl true
+  def handle_event("upvote", _params, socket) do
+    user = socket.assigns.current_scope.user
+    solution = socket.assigns.solution
+
+    socket = assign(socket, :voting, true)
+
+    case Votes.create_vote(%{
+           solution_id: solution.id,
+           user_id: user.id,
+           vote_type: :up
+         }) do
+      {:ok, _vote} ->
+        # Reload solution to get updated counts
+        {:ok, updated_solution} = Solutions.get_solution_with_votes(solution.id, votes_limit: 10)
+
+        {:noreply,
+         socket
+         |> assign(:solution, updated_solution)
+         |> assign(:user_vote, :up)
+         |> assign(:voting, false)}
+
+      {:error, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to vote")
+         |> assign(:voting, false)}
+    end
+  end
+
+  def handle_event("show-downvote-form", _params, socket) do
+    {:noreply, assign(socket, :show_downvote_form, true)}
+  end
+
+  def handle_event("cancel-downvote", _params, socket) do
+    {:noreply, assign(socket, :show_downvote_form, false)}
+  end
+
+  def handle_event("downvote", %{"comment" => comment, "reason" => reason}, socket) do
+    user = socket.assigns.current_scope.user
+    solution = socket.assigns.solution
+
+    socket = assign(socket, :voting, true)
+
+    case Votes.create_vote(%{
+           solution_id: solution.id,
+           user_id: user.id,
+           vote_type: :down,
+           comment: comment,
+           reason: String.to_existing_atom(reason)
+         }) do
+      {:ok, _vote} ->
+        # Reload solution to get updated counts
+        {:ok, updated_solution} = Solutions.get_solution_with_votes(solution.id, votes_limit: 10)
+
+        {:noreply,
+         socket
+         |> assign(:solution, updated_solution)
+         |> assign(:user_vote, :down)
+         |> assign(:voting, false)
+         |> assign(:show_downvote_form, false)}
+
+      {:error, :content_unsafe} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Comment contains unsafe content")
+         |> assign(:voting, false)}
+
+      {:error, changeset} when is_struct(changeset, Ecto.Changeset) ->
+        errors = Ecto.Changeset.traverse_errors(changeset, fn {msg, _} -> msg end)
+        error_msg = errors |> Map.values() |> List.flatten() |> Enum.join(", ")
+
+        {:noreply,
+         socket
+         |> put_flash(:error, "Validation error: #{error_msg}")
+         |> assign(:voting, false)}
+
+      {:error, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to vote")
+         |> assign(:voting, false)}
+    end
   end
 
   defp inline_tags(assigns) do
