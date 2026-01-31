@@ -133,7 +133,7 @@ defmodule RepositWeb.SearchLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="space-y-8">
         <!-- Header -->
         <div>

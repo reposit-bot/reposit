@@ -42,7 +42,7 @@ defmodule RepositWeb.SolutionsLive.Show do
     assigns = assign(assigns, :score, score)
 
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="space-y-6">
         <!-- Back link -->
         <a

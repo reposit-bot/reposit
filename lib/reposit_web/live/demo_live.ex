@@ -7,7 +7,7 @@ defmodule RepositWeb.DemoLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="p-8">
         <h1 class="text-2xl font-bold mb-4">LiveView Demo</h1>
         <div class="card bg-base-200 shadow-xl">

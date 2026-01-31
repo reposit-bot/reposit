@@ -40,18 +40,21 @@ defmodule RepositWeb.Router do
   scope "/", RepositWeb do
     pipe_through :browser
 
-    live "/", HomeLive
-    live "/install", InstallLive
-    live "/demo", DemoLive
-    live "/solutions", SolutionsLive.Index
-    live "/solutions/:id", SolutionsLive.Show
-    live "/search", SearchLive
-  end
+    live_session :public, on_mount: [{RepositWeb.UserAuth, :mount_current_scope}] do
+      live "/", HomeLive
+      live "/install", InstallLive
+      live "/demo", DemoLive
+      live "/solutions", SolutionsLive.Index
+      live "/solutions/:id", SolutionsLive.Show
+      live "/search", SearchLive
+    end
 
-  scope "/", RepositWeb do
-    pipe_through [:browser, :require_admin]
-
-    live "/moderation", ModerationLive
+    live_session :admin,
+      on_mount: [
+        {RepositWeb.UserAuth, :require_admin}
+      ] do
+      live "/moderation", ModerationLive
+    end
   end
 
   # API endpoints with rate limiting

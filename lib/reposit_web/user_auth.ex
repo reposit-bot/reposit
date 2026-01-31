@@ -243,4 +243,89 @@ defmodule RepositWeb.UserAuth do
   end
 
   defp maybe_store_return_to(conn), do: conn
+
+  @doc """
+  Handles mounting and authenticating the current_scope in LiveViews.
+
+  ## `on_mount` arguments
+
+    * `:mount_current_scope` - Assigns current_scope to socket assigns based
+      on user_token, or nil if there's no user_token or no matching user.
+
+    * `:require_authenticated` - Authenticates the user from the session,
+      and assigns the current_scope to socket assigns.
+      Redirects to login page if there's no logged user.
+
+    * `:require_admin` - Requires the user to be an admin.
+      Redirects to login page if not logged in, or to home page if not an admin.
+
+  ## Examples
+
+  Use the `live_session` in your router to invoke the on_mount callback:
+
+      live_session :authenticated, on_mount: [{RepositWeb.UserAuth, :require_authenticated}] do
+        live "/profile", ProfileLive, :index
+      end
+
+      live_session :admin, on_mount: [{RepositWeb.UserAuth, :require_admin}] do
+        live "/moderation", ModerationLive, :index
+      end
+  """
+  def on_mount(:mount_current_scope, _params, session, socket) do
+    {:cont, mount_current_scope(socket, session)}
+  end
+
+  def on_mount(:require_authenticated, _params, session, socket) do
+    socket = mount_current_scope(socket, session)
+
+    if socket.assigns.current_scope && socket.assigns.current_scope.user do
+      {:cont, socket}
+    else
+      socket =
+        socket
+        |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
+        |> Phoenix.LiveView.redirect(to: ~p"/users/log-in")
+
+      {:halt, socket}
+    end
+  end
+
+  def on_mount(:require_admin, _params, session, socket) do
+    alias Reposit.Accounts.User
+
+    socket = mount_current_scope(socket, session)
+    user = socket.assigns.current_scope && socket.assigns.current_scope.user
+
+    cond do
+      is_nil(user) ->
+        socket =
+          socket
+          |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
+          |> Phoenix.LiveView.redirect(to: ~p"/users/log-in")
+
+        {:halt, socket}
+
+      User.admin?(user) ->
+        {:cont, socket}
+
+      true ->
+        socket =
+          socket
+          |> Phoenix.LiveView.put_flash(:error, "You do not have permission to access this page.")
+          |> Phoenix.LiveView.redirect(to: ~p"/")
+
+        {:halt, socket}
+    end
+  end
+
+  defp mount_current_scope(socket, session) do
+    Phoenix.Component.assign_new(socket, :current_scope, fn ->
+      {user, _} =
+        if user_token = session["user_token"] do
+          Accounts.get_user_by_session_token(user_token)
+        end || {nil, nil}
+
+      Scope.for_user(user)
+    end)
+  end
 end

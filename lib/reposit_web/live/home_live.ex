@@ -368,39 +368,8 @@ defmodule RepositWeb.HomeLive do
         <div class="floating-node"></div>
 
     <!-- Header -->
-        <header class="relative z-10 px-6 py-6 lg:px-12">
-          <nav class="flex items-center justify-between max-w-7xl mx-auto">
-            <a href="/" class="flex items-center gap-3 group">
-              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center shadow-lg shadow-[oklch(55%_0.2_280_/_0.3)] group-hover:shadow-[oklch(55%_0.2_280_/_0.5)] transition-shadow">
-                <Lucideicons.mic class="w-6 h-6 text-white" />
-              </div>
-              <span class="text-xl font-bold tracking-tight text-[oklch(25%_0.02_280)] dark:text-[oklch(95%_0.01_280)]">
-                Reposit
-              </span>
-            </a>
-
-            <div class="flex items-center gap-6">
-              <a
-                href={~p"/install"}
-                class="hidden sm:block text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] transition-colors"
-              >
-                Install
-              </a>
-              <a
-                href={~p"/solutions"}
-                class="hidden sm:block text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] transition-colors"
-              >
-                Browse
-              </a>
-              <a
-                href={~p"/search"}
-                class="hidden sm:block text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] transition-colors"
-              >
-                Search
-              </a>
-              <Layouts.theme_toggle />
-            </div>
-          </nav>
+        <header class="relative z-50 px-6 py-6 lg:px-12">
+          <Layouts.navbar current_scope={@current_scope} max_width="max-w-7xl" />
         </header>
 
     <!-- Hero -->

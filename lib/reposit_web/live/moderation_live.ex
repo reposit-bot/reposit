@@ -78,7 +78,7 @@ defmodule RepositWeb.ModerationLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="container mx-auto px-4 py-8 max-w-6xl">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>

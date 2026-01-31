@@ -359,6 +359,127 @@ defmodule RepositWeb.Layouts do
   end
 
   @doc """
+  Reusable navigation bar component with desktop and mobile menus.
+  """
+  attr :current_scope, :map, default: nil
+  attr :class, :string, default: ""
+  attr :max_width, :string, default: "max-w-6xl"
+
+  def navbar(assigns) do
+    ~H"""
+    <nav class={"flex items-center justify-between mx-auto #{@max_width} #{@class}"}>
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center shadow-lg shadow-[oklch(55%_0.2_280_/_0.25)] group-hover:shadow-[oklch(55%_0.2_280_/_0.4)] transition-shadow">
+          <Lucideicons.mic class="w-5 h-5 text-white" />
+        </div>
+        <span class="text-lg font-bold tracking-tight text-[oklch(25%_0.02_280)] dark:text-[oklch(95%_0.01_280)]">
+          Reposit
+        </span>
+      </a>
+
+      <!-- Desktop navigation -->
+      <div class="hidden md:flex items-center gap-1">
+        <a
+          href={~p"/"}
+          class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+        >
+          Home
+        </a>
+        <a
+          href={~p"/install"}
+          class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+        >
+          Install
+        </a>
+        <a
+          href={~p"/solutions"}
+          class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+        >
+          Browse
+        </a>
+        <a
+          href={~p"/search"}
+          class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+        >
+          Search
+        </a>
+
+        <div class="h-5 w-px bg-[oklch(88%_0.02_280)] dark:bg-[oklch(32%_0.03_280)] mx-2"></div>
+
+        <%= if @current_scope do %>
+          <a
+            href={~p"/users/settings"}
+            class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+          >
+            Settings
+          </a>
+          <.link
+            href={~p"/users/log-out"}
+            method="delete"
+            class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+          >
+            Log out
+          </.link>
+        <% else %>
+          <a
+            href={~p"/users/log-in"}
+            class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+          >
+            Sign in
+          </a>
+        <% end %>
+
+        <div class="ml-2">
+          <.theme_toggle />
+        </div>
+      </div>
+
+      <!-- Mobile menu dropdown -->
+      <div class="dropdown dropdown-end md:hidden">
+        <div
+          tabindex="0"
+          role="button"
+          class="btn btn-ghost btn-sm p-2"
+        >
+          <.icon
+            name="menu"
+            class="size-5 text-[oklch(40%_0.02_280)] dark:text-[oklch(80%_0.02_280)]"
+          />
+        </div>
+        <ul
+          tabindex="0"
+          class="dropdown-content menu bg-base-100 rounded-box z-50 w-56 p-2 shadow-xl border border-base-200 mt-2"
+        >
+          <li><a href={~p"/"}>Home</a></li>
+          <li><a href={~p"/install"}>Install</a></li>
+          <li><a href={~p"/solutions"}>Browse Solutions</a></li>
+          <li><a href={~p"/search"}>Search</a></li>
+          <li class="mt-2 pt-2 border-t border-base-200">
+            <%= if @current_scope do %>
+              <a href={~p"/users/settings"}>Settings</a>
+            <% end %>
+          </li>
+          <%= if @current_scope do %>
+            <li>
+              <.link href={~p"/users/log-out"} method="delete">Log out</.link>
+            </li>
+          <% else %>
+            <li>
+              <a href={~p"/users/log-in"}>Sign in</a>
+            </li>
+          <% end %>
+          <li class="mt-2 pt-2 border-t border-base-200">
+            <div class="flex justify-center py-1">
+              <.theme_toggle />
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    """
+  end
+
+  @doc """
   Renders your app layout.
 
   This function is typically invoked from every template,
@@ -388,116 +509,8 @@ defmodule RepositWeb.Layouts do
     <div class="reposit-page min-h-screen flex flex-col">
       <div class="page-bg"></div>
 
-      <header class="relative z-10 px-6 py-5 lg:px-12 border-b border-[oklch(92%_0.02_280)] dark:border-[oklch(25%_0.02_280)]">
-        <nav class="flex items-center justify-between max-w-6xl mx-auto">
-          <a href="/" class="flex items-center gap-3 group">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center shadow-lg shadow-[oklch(55%_0.2_280_/_0.25)] group-hover:shadow-[oklch(55%_0.2_280_/_0.4)] transition-shadow">
-              <Lucideicons.mic class="w-5 h-5 text-white" />
-            </div>
-            <span class="text-lg font-bold tracking-tight text-[oklch(25%_0.02_280)] dark:text-[oklch(95%_0.01_280)]">
-              Reposit
-            </span>
-          </a>
-
-    <!-- Desktop navigation -->
-          <div class="hidden md:flex items-center gap-1">
-            <a
-              href={~p"/"}
-              class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
-            >
-              Home
-            </a>
-            <a
-              href={~p"/install"}
-              class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
-            >
-              Install
-            </a>
-            <a
-              href={~p"/solutions"}
-              class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
-            >
-              Browse
-            </a>
-            <a
-              href={~p"/search"}
-              class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
-            >
-              Search
-            </a>
-
-            <div class="h-5 w-px bg-[oklch(88%_0.02_280)] dark:bg-[oklch(32%_0.03_280)] mx-2"></div>
-
-            <%= if @current_scope do %>
-              <a
-                href={~p"/users/settings"}
-                class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
-              >
-                Settings
-              </a>
-              <.link
-                href={~p"/users/log-out"}
-                method="delete"
-                class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
-              >
-                Log out
-              </.link>
-            <% else %>
-              <a
-                href={~p"/users/log-in"}
-                class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
-              >
-                Sign in
-              </a>
-            <% end %>
-
-            <div class="ml-2">
-              <.theme_toggle />
-            </div>
-          </div>
-
-    <!-- Mobile menu dropdown -->
-          <div class="dropdown dropdown-end md:hidden">
-            <div
-              tabindex="0"
-              role="button"
-              class="btn btn-ghost btn-sm p-2"
-            >
-              <.icon
-                name="menu"
-                class="size-5 text-[oklch(40%_0.02_280)] dark:text-[oklch(80%_0.02_280)]"
-              />
-            </div>
-            <ul
-              tabindex="0"
-              class="dropdown-content menu bg-base-100 rounded-box z-50 w-56 p-2 shadow-xl border border-base-200 mt-2"
-            >
-              <li><a href={~p"/"}>Home</a></li>
-              <li><a href={~p"/install"}>Install</a></li>
-              <li><a href={~p"/solutions"}>Browse Solutions</a></li>
-              <li><a href={~p"/search"}>Search</a></li>
-              <li class="mt-2 pt-2 border-t border-base-200">
-                <%= if @current_scope do %>
-                  <a href={~p"/users/settings"}>Settings</a>
-                <% end %>
-              </li>
-              <%= if @current_scope do %>
-                <li>
-                  <.link href={~p"/users/log-out"} method="delete">Log out</.link>
-                </li>
-              <% else %>
-                <li>
-                  <a href={~p"/users/log-in"}>Sign in</a>
-                </li>
-              <% end %>
-              <li class="mt-2 pt-2 border-t border-base-200">
-                <div class="flex justify-center py-1">
-                  <.theme_toggle />
-                </div>
-              </li>
-            </ul>
-          </div>
-        </nav>
+      <header class="relative z-50 px-6 py-5 lg:px-12 border-b border-[oklch(92%_0.02_280)] dark:border-[oklch(25%_0.02_280)]">
+        <.navbar current_scope={@current_scope} />
       </header>
 
       <main class="relative z-10 flex-1 px-6 py-10 lg:px-12">
