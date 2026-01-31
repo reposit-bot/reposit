@@ -74,7 +74,8 @@ defmodule Reposit.MixProject do
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:mdex, "~> 0.11.3"},
-      {:hammer, "~> 7.1"}
+      {:hammer, "~> 7.1"},
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -97,7 +98,13 @@ defmodule Reposit.MixProject do
         "esbuild reposit --minify",
         "phx.digest"
       ],
-      precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
+      precommit: [
+        "compile --warnings-as-errors",
+        "deps.unlock --unused",
+        "format",
+        "sobelow --config",
+        "test"
+      ]
     ]
   end
 end
