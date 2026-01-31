@@ -1,51 +1,102 @@
 defmodule Reposit.Solutions.SolutionTest do
   use Reposit.DataCase, async: true
 
+  import Reposit.AccountsFixtures
+
   alias Reposit.Solutions.Solution
 
-  @valid_attrs %{
-    problem_description:
-      "This is a valid problem description that is at least 20 characters long.",
-    solution_pattern:
-      "This is a valid solution pattern that explains how to solve the problem in at least 50 characters."
-  }
+  setup do
+    user = user_fixture()
+    {:ok, user: user}
+  end
 
   describe "changeset/2" do
-    test "valid attributes create a valid changeset" do
-      changeset = Solution.changeset(%Solution{}, @valid_attrs)
+    test "valid attributes create a valid changeset", %{user: user} do
+      attrs = %{
+        problem_description:
+          "This is a valid problem description that is at least 20 characters long.",
+        solution_pattern:
+          "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
+        user_id: user.id
+      }
+
+      changeset = Solution.changeset(%Solution{}, attrs)
       assert changeset.valid?
     end
 
-    test "problem_description is required" do
-      attrs = Map.delete(@valid_attrs, :problem_description)
+    test "user_id is required" do
+      attrs = %{
+        problem_description:
+          "This is a valid problem description that is at least 20 characters long.",
+        solution_pattern:
+          "This is a valid solution pattern that explains how to solve the problem in at least 50 characters."
+      }
+
+      changeset = Solution.changeset(%Solution{}, attrs)
+      refute changeset.valid?
+      assert "can't be blank" in errors_on(changeset).user_id
+    end
+
+    test "problem_description is required", %{user: user} do
+      attrs = %{
+        solution_pattern:
+          "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
+        user_id: user.id
+      }
+
       changeset = Solution.changeset(%Solution{}, attrs)
       refute changeset.valid?
       assert "can't be blank" in errors_on(changeset).problem_description
     end
 
-    test "solution_pattern is required" do
-      attrs = Map.delete(@valid_attrs, :solution_pattern)
+    test "solution_pattern is required", %{user: user} do
+      attrs = %{
+        problem_description:
+          "This is a valid problem description that is at least 20 characters long.",
+        user_id: user.id
+      }
+
       changeset = Solution.changeset(%Solution{}, attrs)
       refute changeset.valid?
       assert "can't be blank" in errors_on(changeset).solution_pattern
     end
 
-    test "problem_description must be at least 20 characters" do
-      attrs = Map.put(@valid_attrs, :problem_description, "too short")
+    test "problem_description must be at least 20 characters", %{user: user} do
+      attrs = %{
+        problem_description: "too short",
+        solution_pattern:
+          "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
+        user_id: user.id
+      }
+
       changeset = Solution.changeset(%Solution{}, attrs)
       refute changeset.valid?
       assert "should be at least 20 character(s)" in errors_on(changeset).problem_description
     end
 
-    test "solution_pattern must be at least 50 characters" do
-      attrs = Map.put(@valid_attrs, :solution_pattern, "too short")
+    test "solution_pattern must be at least 50 characters", %{user: user} do
+      attrs = %{
+        problem_description:
+          "This is a valid problem description that is at least 20 characters long.",
+        solution_pattern: "too short",
+        user_id: user.id
+      }
+
       changeset = Solution.changeset(%Solution{}, attrs)
       refute changeset.valid?
       assert "should be at least 50 character(s)" in errors_on(changeset).solution_pattern
     end
 
-    test "tags default to empty arrays" do
-      changeset = Solution.changeset(%Solution{}, @valid_attrs)
+    test "tags default to empty arrays", %{user: user} do
+      attrs = %{
+        problem_description:
+          "This is a valid problem description that is at least 20 characters long.",
+        solution_pattern:
+          "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
+        user_id: user.id
+      }
+
+      changeset = Solution.changeset(%Solution{}, attrs)
 
       assert get_field(changeset, :tags) == %{
                language: [],
@@ -55,21 +106,46 @@ defmodule Reposit.Solutions.SolutionTest do
              }
     end
 
-    test "tags can be set with valid keys" do
-      attrs = Map.put(@valid_attrs, :tags, %{language: ["elixir"], framework: ["phoenix"]})
+    test "tags can be set with valid keys", %{user: user} do
+      attrs = %{
+        problem_description:
+          "This is a valid problem description that is at least 20 characters long.",
+        solution_pattern:
+          "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
+        user_id: user.id,
+        tags: %{language: ["elixir"], framework: ["phoenix"]}
+      }
+
       changeset = Solution.changeset(%Solution{}, attrs)
       assert changeset.valid?
     end
 
-    test "upvotes and downvotes default to 0" do
-      changeset = Solution.changeset(%Solution{}, @valid_attrs)
+    test "upvotes and downvotes default to 0", %{user: user} do
+      attrs = %{
+        problem_description:
+          "This is a valid problem description that is at least 20 characters long.",
+        solution_pattern:
+          "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
+        user_id: user.id
+      }
+
+      changeset = Solution.changeset(%Solution{}, attrs)
       assert get_field(changeset, :upvotes) == 0
       assert get_field(changeset, :downvotes) == 0
     end
 
-    test "embedding can be set with a vector" do
+    test "embedding can be set with a vector", %{user: user} do
       vector = List.duplicate(0.1, 1536)
-      attrs = Map.put(@valid_attrs, :embedding, vector)
+
+      attrs = %{
+        problem_description:
+          "This is a valid problem description that is at least 20 characters long.",
+        solution_pattern:
+          "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
+        user_id: user.id,
+        embedding: vector
+      }
+
       changeset = Solution.changeset(%Solution{}, attrs)
       assert changeset.valid?
     end

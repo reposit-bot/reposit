@@ -12,6 +12,9 @@ defmodule RepositWeb.Api.V1.SolutionsController do
   POST /api/v1/solutions
   """
   def create(conn, params) do
+    %{id: user_id} = conn.assigns.current_user
+    params = Map.put(params, "user_id", user_id)
+
     case Solutions.create_solution(params) do
       {:ok, solution} ->
         conn

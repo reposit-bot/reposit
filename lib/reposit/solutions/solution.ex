@@ -13,6 +13,7 @@ defmodule Reposit.Solutions.Solution do
     field(:downvotes, :integer, default: 0)
     field(:status, Ecto.Enum, values: @statuses, default: :active)
 
+    belongs_to(:user, Reposit.Accounts.User, type: :id)
     has_many(:votes, Reposit.Votes.Vote)
 
     timestamps(type: :utc_datetime_usec)
@@ -23,7 +24,7 @@ defmodule Reposit.Solutions.Solution do
   """
   def statuses, do: @statuses
 
-  @required_fields [:problem_description, :solution_pattern]
+  @required_fields [:problem_description, :solution_pattern, :user_id]
   @optional_fields [:context_requirements, :embedding, :tags]
 
   @doc """
@@ -36,6 +37,7 @@ defmodule Reposit.Solutions.Solution do
     |> validate_length(:problem_description, min: 20)
     |> validate_length(:solution_pattern, min: 50)
     |> validate_tags()
+    |> foreign_key_constraint(:user_id)
   end
 
   @doc """

@@ -2,12 +2,21 @@ defmodule RepositWeb.ModerationLiveTest do
   use RepositWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
+  import Reposit.AccountsFixtures
 
   alias Reposit.Solutions
   alias Reposit.Votes
 
   describe "ModerationLive" do
     setup :register_and_log_in_admin
+
+    setup do
+      # Create users for voting
+      voters = for i <- 1..5, do: user_fixture(%{email: "voter#{i}@example.com"})
+      solution_author = user_fixture(%{email: "author@example.com"})
+      {:ok, voters: voters, solution_author: solution_author}
+    end
+
     test "renders empty state when no flagged solutions", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/moderation")
 
@@ -15,18 +24,23 @@ defmodule RepositWeb.ModerationLiveTest do
       assert render(view) =~ "No flagged solutions"
     end
 
-    test "shows flagged solutions with more downvotes than upvotes", %{conn: conn} do
+    test "shows flagged solutions with more downvotes than upvotes", %{
+      conn: conn,
+      voters: [voter | _],
+      solution_author: author
+    } do
       {:ok, solution} =
         create_solution(
           "Flagged problem description",
-          "This is the solution that got flagged with downvotes"
+          "This is the solution that got flagged with downvotes",
+          author.id
         )
 
       # Add downvote to flag it
       {:ok, _} =
         Votes.create_vote(%{
           solution_id: solution.id,
-          agent_session_id: "session-1",
+          user_id: voter.id,
           vote_type: :down,
           reason: :incorrect,
           comment: "This doesn't work at all"
@@ -39,11 +53,16 @@ defmodule RepositWeb.ModerationLiveTest do
       assert html =~ "Incorrect"
     end
 
-    test "shows flagged solutions with 3+ downvotes", %{conn: conn} do
+    test "shows flagged solutions with 3+ downvotes", %{
+      conn: conn,
+      voters: voters,
+      solution_author: author
+    } do
       {:ok, solution} =
         create_solution(
           "Multi-downvote problem",
-          "This solution got multiple downvotes from different agents"
+          "This solution got multiple downvotes from different agents",
+          author.id
         )
 
       # Update upvotes to make downvotes > upvotes condition not apply
@@ -51,12 +70,12 @@ defmodule RepositWeb.ModerationLiveTest do
       |> Ecto.Changeset.change(upvotes: 5)
       |> Reposit.Repo.update!()
 
-      # Add 3 downvotes
-      for i <- 1..3 do
+      # Add 3 downvotes from different users
+      for {voter, i} <- Enum.with_index(Enum.take(voters, 3), 1) do
         {:ok, _} =
           Votes.create_vote(%{
             solution_id: solution.id,
-            agent_session_id: "session-#{i}",
+            user_id: voter.id,
             vote_type: :down,
             reason: :outdated,
             comment: "This is outdated #{i}"
@@ -69,18 +88,23 @@ defmodule RepositWeb.ModerationLiveTest do
       assert html =~ "Multi-downvote problem"
     end
 
-    test "does not show non-flagged solutions", %{conn: conn} do
+    test "does not show non-flagged solutions", %{
+      conn: conn,
+      voters: [voter | _],
+      solution_author: author
+    } do
       {:ok, good_solution} =
         create_solution(
           "Good solution problem here",
-          "This is a good solution that everyone loves and finds very useful for their work"
+          "This is a good solution that everyone loves and finds very useful for their work",
+          author.id
         )
 
       # Add upvotes
       {:ok, _} =
         Votes.create_vote(%{
           solution_id: good_solution.id,
-          agent_session_id: "session-happy",
+          user_id: voter.id,
           vote_type: :up
         })
 
@@ -91,23 +115,29 @@ defmodule RepositWeb.ModerationLiveTest do
       assert html =~ "No flagged solutions"
     end
 
-    test "can filter by downvote reason", %{conn: conn} do
+    test "can filter by downvote reason", %{
+      conn: conn,
+      voters: [voter1, voter2 | _],
+      solution_author: author
+    } do
       {:ok, solution1} =
         create_solution(
           "Incorrect solution problem here",
-          "This solution is marked as incorrect and needs to be reviewed by the moderation team"
+          "This solution is marked as incorrect and needs to be reviewed by the moderation team",
+          author.id
         )
 
       {:ok, solution2} =
         create_solution(
           "Outdated solution problem here",
-          "This solution is marked as outdated and needs to be reviewed by the moderation team"
+          "This solution is marked as outdated and needs to be reviewed by the moderation team",
+          author.id
         )
 
       {:ok, _} =
         Votes.create_vote(%{
           solution_id: solution1.id,
-          agent_session_id: "session-1",
+          user_id: voter1.id,
           vote_type: :down,
           reason: :incorrect,
           comment: "This is wrong"
@@ -116,7 +146,7 @@ defmodule RepositWeb.ModerationLiveTest do
       {:ok, _} =
         Votes.create_vote(%{
           solution_id: solution2.id,
-          agent_session_id: "session-2",
+          user_id: voter2.id,
           vote_type: :down,
           reason: :outdated,
           comment: "This is old"
@@ -139,17 +169,22 @@ defmodule RepositWeb.ModerationLiveTest do
       refute html =~ "Outdated solution problem"
     end
 
-    test "approve action keeps solution in queue until page refresh", %{conn: conn} do
+    test "approve action keeps solution in queue until page refresh", %{
+      conn: conn,
+      voters: [voter | _],
+      solution_author: author
+    } do
       {:ok, solution} =
         create_solution(
           "Solution that needs approval",
-          "This solution will be approved by moderator after review of the content quality"
+          "This solution will be approved by moderator after review of the content quality",
+          author.id
         )
 
       {:ok, _} =
         Votes.create_vote(%{
           solution_id: solution.id,
-          agent_session_id: "session-1",
+          user_id: voter.id,
           vote_type: :down,
           reason: :incomplete,
           comment: "Missing some details"
@@ -166,17 +201,22 @@ defmodule RepositWeb.ModerationLiveTest do
       assert has_element?(view, "[role='alert']")
     end
 
-    test "archive action removes solution from queue", %{conn: conn} do
+    test "archive action removes solution from queue", %{
+      conn: conn,
+      voters: [voter | _],
+      solution_author: author
+    } do
       {:ok, solution} =
         create_solution(
           "Solution that will be archived",
-          "This solution will be archived by moderator after review of the reported issues"
+          "This solution will be archived by moderator after review of the reported issues",
+          author.id
         )
 
       {:ok, _} =
         Votes.create_vote(%{
           solution_id: solution.id,
-          agent_session_id: "session-1",
+          user_id: voter.id,
           vote_type: :down,
           reason: :harmful,
           comment: "This could cause issues"
@@ -198,11 +238,16 @@ defmodule RepositWeb.ModerationLiveTest do
       assert html =~ "Solution archived"
     end
 
-    test "archived solutions don't appear in moderation queue", %{conn: conn} do
+    test "archived solutions don't appear in moderation queue", %{
+      conn: conn,
+      voters: [voter | _],
+      solution_author: author
+    } do
       {:ok, solution} =
         create_solution(
           "Already archived solution here",
-          "This solution was already archived and should not appear in the moderation queue"
+          "This solution was already archived and should not appear in the moderation queue",
+          author.id
         )
 
       # Archive it first
@@ -211,10 +256,10 @@ defmodule RepositWeb.ModerationLiveTest do
       # Add downvote (wouldn't normally happen but testing the filter)
       Reposit.Repo.insert!(%Reposit.Votes.Vote{
         solution_id: solution.id,
-        agent_session_id: "session-1",
+        user_id: voter.id,
         vote_type: :down,
         reason: :incorrect,
-        comment: "test"
+        comment: "test comment"
       })
 
       {:ok, view, _html} = live(conn, ~p"/moderation")
@@ -223,17 +268,22 @@ defmodule RepositWeb.ModerationLiveTest do
       refute html =~ "Already archived solution"
     end
 
-    test "displays feedback comments", %{conn: conn} do
+    test "displays feedback comments", %{
+      conn: conn,
+      voters: [voter | _],
+      solution_author: author
+    } do
       {:ok, solution} =
         create_solution(
           "Solution with feedback comments",
-          "This solution has feedback from agents who have reviewed and tested the approach"
+          "This solution has feedback from agents who have reviewed and tested the approach",
+          author.id
         )
 
       {:ok, _} =
         Votes.create_vote(%{
           solution_id: solution.id,
-          agent_session_id: "session-1",
+          user_id: voter.id,
           vote_type: :down,
           reason: :incorrect,
           comment: "The algorithm complexity is wrong"
@@ -246,10 +296,11 @@ defmodule RepositWeb.ModerationLiveTest do
     end
   end
 
-  defp create_solution(problem, solution) do
+  defp create_solution(problem, solution, user_id) do
     Solutions.create_solution(%{
       problem_description: problem,
-      solution_pattern: solution
+      solution_pattern: solution,
+      user_id: user_id
     })
   end
 end

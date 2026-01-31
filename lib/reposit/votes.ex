@@ -18,7 +18,7 @@ defmodule Reposit.Votes do
 
       {:ok, vote} = create_vote(%{
         solution_id: "uuid",
-        agent_session_id: "agent-123",
+        user_id: 123,
         vote_type: :up
       })
 
@@ -74,11 +74,11 @@ defmodule Reposit.Votes do
   end
 
   @doc """
-  Gets a vote by solution and agent session ID.
+  Gets a vote by solution and user ID.
   """
-  @spec get_vote(binary(), binary()) :: Vote.t() | nil
-  def get_vote(solution_id, agent_session_id) do
-    Repo.get_by(Vote, solution_id: solution_id, agent_session_id: agent_session_id)
+  @spec get_vote(binary(), integer()) :: Vote.t() | nil
+  def get_vote(solution_id, user_id) do
+    Repo.get_by(Vote, solution_id: solution_id, user_id: user_id)
   end
 
   # Updates the solution vote counts atomically.

@@ -1,28 +1,34 @@
 defmodule Reposit.Votes.VoteTest do
   use Reposit.DataCase, async: true
 
+  import Reposit.AccountsFixtures
+
   alias Reposit.Votes.Vote
   alias Reposit.Solutions.Solution
 
   setup do
+    user = user_fixture()
+    other_user = user_fixture()
+
     # Create a solution for testing votes
     {:ok, solution} =
       %Solution{}
       |> Solution.changeset(%{
         problem_description: "This is a valid problem description for testing purposes.",
         solution_pattern:
-          "This is a valid solution pattern that explains how to solve the problem in detail."
+          "This is a valid solution pattern that explains how to solve the problem in detail.",
+        user_id: user.id
       })
       |> Repo.insert()
 
-    %{solution: solution}
+    %{solution: solution, user: user, other_user: other_user}
   end
 
   describe "changeset/2 for upvotes" do
-    test "valid upvote creates a valid changeset", %{solution: solution} do
+    test "valid upvote creates a valid changeset", %{solution: solution, other_user: user} do
       attrs = %{
         solution_id: solution.id,
-        agent_session_id: "agent-123",
+        user_id: user.id,
         vote_type: :up
       }
 
@@ -30,10 +36,10 @@ defmodule Reposit.Votes.VoteTest do
       assert changeset.valid?
     end
 
-    test "upvote cannot have a comment", %{solution: solution} do
+    test "upvote cannot have a comment", %{solution: solution, other_user: user} do
       attrs = %{
         solution_id: solution.id,
-        agent_session_id: "agent-123",
+        user_id: user.id,
         vote_type: :up,
         comment: "This is a comment"
       }
@@ -43,10 +49,10 @@ defmodule Reposit.Votes.VoteTest do
       assert "cannot be set for upvotes" in errors_on(changeset).comment
     end
 
-    test "upvote cannot have a reason", %{solution: solution} do
+    test "upvote cannot have a reason", %{solution: solution, other_user: user} do
       attrs = %{
         solution_id: solution.id,
-        agent_session_id: "agent-123",
+        user_id: user.id,
         vote_type: :up,
         reason: :incorrect
       }
@@ -58,10 +64,10 @@ defmodule Reposit.Votes.VoteTest do
   end
 
   describe "changeset/2 for downvotes" do
-    test "valid downvote requires comment and reason", %{solution: solution} do
+    test "valid downvote requires comment and reason", %{solution: solution, other_user: user} do
       attrs = %{
         solution_id: solution.id,
-        agent_session_id: "agent-123",
+        user_id: user.id,
         vote_type: :down,
         comment: "This solution is incorrect because it doesn't handle edge cases.",
         reason: :incorrect
@@ -71,10 +77,10 @@ defmodule Reposit.Votes.VoteTest do
       assert changeset.valid?
     end
 
-    test "downvote requires a comment", %{solution: solution} do
+    test "downvote requires a comment", %{solution: solution, other_user: user} do
       attrs = %{
         solution_id: solution.id,
-        agent_session_id: "agent-123",
+        user_id: user.id,
         vote_type: :down,
         reason: :incorrect
       }
@@ -84,10 +90,10 @@ defmodule Reposit.Votes.VoteTest do
       assert "is required for downvotes" in errors_on(changeset).comment
     end
 
-    test "downvote requires a reason", %{solution: solution} do
+    test "downvote requires a reason", %{solution: solution, other_user: user} do
       attrs = %{
         solution_id: solution.id,
-        agent_session_id: "agent-123",
+        user_id: user.id,
         vote_type: :down,
         comment: "This solution is incorrect."
       }
@@ -97,10 +103,13 @@ defmodule Reposit.Votes.VoteTest do
       assert "is required for downvotes" in errors_on(changeset).reason
     end
 
-    test "downvote comment must be at least 10 characters", %{solution: solution} do
+    test "downvote comment must be at least 10 characters", %{
+      solution: solution,
+      other_user: user
+    } do
       attrs = %{
         solution_id: solution.id,
-        agent_session_id: "agent-123",
+        user_id: user.id,
         vote_type: :down,
         comment: "too short",
         reason: :incorrect
@@ -111,11 +120,11 @@ defmodule Reposit.Votes.VoteTest do
       assert "must be at least 10 characters" in errors_on(changeset).comment
     end
 
-    test "all downvote reasons are valid", %{solution: solution} do
+    test "all downvote reasons are valid", %{solution: solution, other_user: user} do
       for reason <- Vote.downvote_reasons() do
         attrs = %{
           solution_id: solution.id,
-          agent_session_id: "agent-#{reason}",
+          user_id: user.id,
           vote_type: :down,
           comment: "This is a valid comment for #{reason}.",
           reason: reason
@@ -128,22 +137,22 @@ defmodule Reposit.Votes.VoteTest do
   end
 
   describe "changeset/2 required fields" do
-    test "solution_id is required" do
-      attrs = %{agent_session_id: "agent-123", vote_type: :up}
+    test "solution_id is required", %{other_user: user} do
+      attrs = %{user_id: user.id, vote_type: :up}
       changeset = Vote.changeset(%Vote{}, attrs)
       refute changeset.valid?
       assert "can't be blank" in errors_on(changeset).solution_id
     end
 
-    test "agent_session_id is required", %{solution: solution} do
+    test "user_id is required", %{solution: solution} do
       attrs = %{solution_id: solution.id, vote_type: :up}
       changeset = Vote.changeset(%Vote{}, attrs)
       refute changeset.valid?
-      assert "can't be blank" in errors_on(changeset).agent_session_id
+      assert "can't be blank" in errors_on(changeset).user_id
     end
 
-    test "vote_type is required", %{solution: solution} do
-      attrs = %{solution_id: solution.id, agent_session_id: "agent-123"}
+    test "vote_type is required", %{solution: solution, other_user: user} do
+      attrs = %{solution_id: solution.id, user_id: user.id}
       changeset = Vote.changeset(%Vote{}, attrs)
       refute changeset.valid?
       assert "can't be blank" in errors_on(changeset).vote_type
@@ -151,10 +160,13 @@ defmodule Reposit.Votes.VoteTest do
   end
 
   describe "unique constraint" do
-    test "same agent cannot vote twice on the same solution", %{solution: solution} do
+    test "same user cannot vote twice on the same solution", %{
+      solution: solution,
+      other_user: user
+    } do
       attrs = %{
         solution_id: solution.id,
-        agent_session_id: "agent-123",
+        user_id: user.id,
         vote_type: :up
       }
 

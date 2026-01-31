@@ -2,8 +2,14 @@ defmodule RepositWeb.SearchLiveTest do
   use RepositWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
+  import Reposit.AccountsFixtures
 
   alias Reposit.Solutions
+
+  setup do
+    user = user_fixture()
+    {:ok, user: user}
+  end
 
   describe "SearchLive" do
     test "renders search form", %{conn: conn} do
@@ -20,11 +26,13 @@ defmodule RepositWeb.SearchLiveTest do
       assert render(view) =~ "Enter a problem description to search"
     end
 
-    test "performs search and shows results", %{conn: conn} do
+    test "performs search and shows results", %{conn: conn, user: user} do
       {:ok, _solution} =
         create_solution(
           "How to implement binary search in Elixir",
-          "Use recursion with pattern matching for an elegant divide and conquer solution"
+          "Use recursion with pattern matching for an elegant divide and conquer solution",
+          %{},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/search")
@@ -42,11 +50,13 @@ defmodule RepositWeb.SearchLiveTest do
       assert html =~ "match"
     end
 
-    test "shows loading state during search", %{conn: conn} do
+    test "shows loading state during search", %{conn: conn, user: user} do
       {:ok, _solution} =
         create_solution(
           "Test problem for loading state",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/search")
@@ -77,11 +87,13 @@ defmodule RepositWeb.SearchLiveTest do
       assert html =~ "something very specific"
     end
 
-    test "clears results when query is emptied", %{conn: conn} do
+    test "clears results when query is emptied", %{conn: conn, user: user} do
       {:ok, _solution} =
         create_solution(
           "Test problem for clear",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/search")
@@ -102,11 +114,13 @@ defmodule RepositWeb.SearchLiveTest do
       assert html =~ "Enter a problem description to search"
     end
 
-    test "displays similarity score", %{conn: conn} do
+    test "displays similarity score", %{conn: conn, user: user} do
       {:ok, _solution} =
         create_solution(
           "How to implement GenServer in Elixir",
-          "Use the GenServer behaviour to create stateful processes with callbacks"
+          "Use the GenServer behaviour to create stateful processes with callbacks",
+          %{},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/search")
@@ -121,11 +135,13 @@ defmodule RepositWeb.SearchLiveTest do
       assert html =~ "% match"
     end
 
-    test "shows vote score", %{conn: conn} do
+    test "shows vote score", %{conn: conn, user: user} do
       {:ok, solution} =
         create_solution(
           "Test problem for vote display",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       solution
@@ -144,11 +160,13 @@ defmodule RepositWeb.SearchLiveTest do
       assert html =~ "+12"
     end
 
-    test "links to solution details", %{conn: conn} do
+    test "links to solution details", %{conn: conn, user: user} do
       {:ok, solution} =
         create_solution(
           "Test problem with link to details",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/search")
@@ -162,17 +180,21 @@ defmodule RepositWeb.SearchLiveTest do
       assert has_element?(view, "a[href='/solutions/#{solution.id}']")
     end
 
-    test "can sort results by different criteria", %{conn: conn} do
+    test "can sort results by different criteria", %{conn: conn, user: user} do
       {:ok, _solution1} =
         create_solution(
           "First solution for sorting test",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, _solution2} =
         create_solution(
           "Second solution for sorting test",
-          "Another detailed solution pattern that helps solve the problem effectively"
+          "Another detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/search")
@@ -195,12 +217,13 @@ defmodule RepositWeb.SearchLiveTest do
       assert html =~ "shadow-sm"
     end
 
-    test "displays tags in results", %{conn: conn} do
+    test "displays tags in results", %{conn: conn, user: user} do
       {:ok, _solution} =
         create_solution(
           "Test problem with tags for search",
           "This is a detailed solution pattern that helps solve the problem effectively",
-          %{language: ["elixir"], framework: ["phoenix"]}
+          %{language: ["elixir"], framework: ["phoenix"]},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/search")
@@ -217,11 +240,12 @@ defmodule RepositWeb.SearchLiveTest do
     end
   end
 
-  defp create_solution(problem, solution, tags \\ %{}) do
+  defp create_solution(problem, solution, tags, user_id) do
     Solutions.create_solution(%{
       problem_description: problem,
       solution_pattern: solution,
-      tags: tags
+      tags: tags,
+      user_id: user_id
     })
   end
 end

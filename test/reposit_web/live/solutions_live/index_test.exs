@@ -2,8 +2,14 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
   use RepositWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
+  import Reposit.AccountsFixtures
 
   alias Reposit.Solutions
+
+  setup do
+    user = user_fixture()
+    {:ok, user: user}
+  end
 
   describe "Index" do
     test "renders empty state when no solutions exist", %{conn: conn} do
@@ -14,11 +20,13 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       assert has_element?(view, "p", "No solutions yet")
     end
 
-    test "renders solutions list", %{conn: conn} do
+    test "renders solutions list", %{conn: conn, user: user} do
       {:ok, _solution} =
         create_solution(
           "Test problem description here",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions")
@@ -28,12 +36,13 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       assert render(view) =~ "Test problem description here"
     end
 
-    test "displays tags as badges", %{conn: conn} do
+    test "displays tags as badges", %{conn: conn, user: user} do
       {:ok, _solution} =
         create_solution(
           "Test problem with tags here",
           "This is a detailed solution pattern that helps solve the problem effectively",
-          %{language: ["elixir"], framework: ["phoenix"]}
+          %{language: ["elixir"], framework: ["phoenix"]},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions")
@@ -44,11 +53,13 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       assert html =~ "badge"
     end
 
-    test "displays vote counts", %{conn: conn} do
+    test "displays vote counts", %{conn: conn, user: user} do
       {:ok, solution} =
         create_solution(
           "Test problem for voting",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       # Manually update vote counts for testing display
@@ -64,17 +75,21 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       assert html =~ "+8"
     end
 
-    test "sorts by score by default", %{conn: conn} do
+    test "sorts by score by default", %{conn: conn, user: user} do
       {:ok, low_score} =
         create_solution(
           "Low score problem desc",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, high_score} =
         create_solution(
           "High score problem desc",
-          "Another detailed solution pattern that helps solve the problem effectively"
+          "Another detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       Ecto.Changeset.change(low_score, upvotes: 5, downvotes: 3)
@@ -93,11 +108,13 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       assert elem(high_pos, 0) < elem(low_pos, 0)
     end
 
-    test "can sort by newest", %{conn: conn} do
+    test "can sort by newest", %{conn: conn, user: user} do
       {:ok, _older} =
         create_solution(
           "Older problem description",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       Process.sleep(10)
@@ -105,7 +122,9 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       {:ok, _newer} =
         create_solution(
           "Newer problem description",
-          "Another detailed solution pattern that helps solve the problem effectively"
+          "Another detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions")
@@ -124,17 +143,21 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       assert elem(newer_pos, 0) < elem(older_pos, 0)
     end
 
-    test "can sort by votes", %{conn: conn} do
+    test "can sort by votes", %{conn: conn, user: user} do
       {:ok, low_votes} =
         create_solution(
           "Low votes problem desc",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, high_votes} =
         create_solution(
           "High votes problem desc",
-          "Another detailed solution pattern that helps solve the problem effectively"
+          "Another detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       Ecto.Changeset.change(low_votes, upvotes: 5)
@@ -156,12 +179,14 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       assert elem(high_pos, 0) < elem(low_pos, 0)
     end
 
-    test "infinite scroll loads more solutions", %{conn: conn} do
+    test "infinite scroll loads more solutions", %{conn: conn, user: user} do
       # Create more than one page of solutions (12 per page)
       for i <- 1..15 do
         create_solution(
           "Problem number #{i} description",
-          "This is a detailed solution pattern number #{i} that helps solve the problem"
+          "This is a detailed solution pattern number #{i} that helps solve the problem",
+          %{},
+          user.id
         )
       end
 
@@ -180,12 +205,14 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       assert has_element?(view, "p", "15 solutions total")
     end
 
-    test "shows end message when all solutions are loaded", %{conn: conn} do
+    test "shows end message when all solutions are loaded", %{conn: conn, user: user} do
       # Create fewer than one page of solutions
       for i <- 1..5 do
         create_solution(
           "Problem number #{i} description",
-          "This is a detailed solution pattern number #{i} that helps solve the problem"
+          "This is a detailed solution pattern number #{i} that helps solve the problem",
+          %{},
+          user.id
         )
       end
 
@@ -197,11 +224,13 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
       refute has_element?(view, "#infinite-scroll-sentinel")
     end
 
-    test "handles invalid sort param gracefully", %{conn: conn} do
+    test "handles invalid sort param gracefully", %{conn: conn, user: user} do
       {:ok, _} =
         create_solution(
           "Test problem description",
-          "This is a detailed solution pattern that helps solve the problem effectively"
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
         )
 
       {:ok, view, _html} = live(conn, ~p"/solutions?sort=invalid")
@@ -214,11 +243,12 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
     end
   end
 
-  defp create_solution(problem, solution, tags \\ %{}) do
+  defp create_solution(problem, solution, tags, user_id) do
     Solutions.create_solution(%{
       problem_description: problem,
       solution_pattern: solution,
-      tags: tags
+      tags: tags,
+      user_id: user_id
     })
   end
 end

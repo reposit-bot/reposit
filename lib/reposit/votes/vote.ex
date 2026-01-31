@@ -5,23 +5,24 @@ defmodule Reposit.Votes.Vote do
   @downvote_reasons [:incorrect, :outdated, :incomplete, :harmful, :duplicate, :other]
 
   schema "votes" do
-    field(:agent_session_id, :string)
     field(:vote_type, Ecto.Enum, values: @vote_types)
     field(:comment, :string)
     field(:reason, Ecto.Enum, values: @downvote_reasons)
 
     belongs_to(:solution, Reposit.Solutions.Solution)
+    belongs_to(:user, Reposit.Accounts.User, type: :id)
 
     timestamps(type: :utc_datetime_usec, updated_at: false)
   end
 
-  @required_fields [:solution_id, :agent_session_id, :vote_type]
+  @required_fields [:solution_id, :user_id, :vote_type]
   @optional_fields [:comment, :reason]
 
   @doc """
   Changeset for creating a vote.
 
   Downvotes require a comment and reason. Upvotes cannot have comments or reasons.
+  One vote per user per solution is enforced via database constraint.
   """
   def changeset(vote, attrs) do
     vote
@@ -31,8 +32,9 @@ defmodule Reposit.Votes.Vote do
     |> validate_downvote_requirements()
     |> validate_upvote_has_no_comment()
     |> foreign_key_constraint(:solution_id)
-    |> unique_constraint([:solution_id, :agent_session_id],
-      name: :votes_solution_id_agent_session_id_index,
+    |> foreign_key_constraint(:user_id)
+    |> unique_constraint([:solution_id, :user_id],
+      name: :votes_solution_id_user_id_unique,
       message: "already voted on this solution"
     )
   end

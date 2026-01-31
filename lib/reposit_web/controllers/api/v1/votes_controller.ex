@@ -9,12 +9,12 @@ defmodule RepositWeb.Api.V1.VotesController do
 
   POST /api/v1/solutions/:solution_id/upvote
   """
-  def upvote(conn, %{"solution_id" => solution_id} = params) do
-    agent_session_id = get_agent_session_id(conn, params)
+  def upvote(conn, %{"solution_id" => solution_id}) do
+    %{id: user_id} = conn.assigns.current_user
 
     attrs = %{
       solution_id: solution_id,
-      agent_session_id: agent_session_id,
+      user_id: user_id,
       vote_type: :up
     }
 
@@ -58,11 +58,11 @@ defmodule RepositWeb.Api.V1.VotesController do
   POST /api/v1/solutions/:solution_id/downvote
   """
   def downvote(conn, %{"solution_id" => solution_id} = params) do
-    agent_session_id = get_agent_session_id(conn, params)
+    %{id: user_id} = conn.assigns.current_user
 
     attrs = %{
       solution_id: solution_id,
-      agent_session_id: agent_session_id,
+      user_id: user_id,
       vote_type: :down,
       comment: Map.get(params, "comment"),
       reason: parse_reason(Map.get(params, "reason"))
@@ -109,18 +109,6 @@ defmodule RepositWeb.Api.V1.VotesController do
           hint: format_changeset_errors(changeset)
         })
     end
-  end
-
-  # Get agent session ID from header or body
-  defp get_agent_session_id(conn, params) do
-    case get_req_header(conn, "x-agent-session-id") do
-      [session_id | _] -> session_id
-      [] -> Map.get(params, "agent_session_id", generate_session_id())
-    end
-  end
-
-  defp generate_session_id do
-    "anon-" <> Base.encode16(:crypto.strong_rand_bytes(8), case: :lower)
   end
 
   defp parse_reason(nil), do: nil
