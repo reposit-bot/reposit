@@ -156,9 +156,9 @@ defmodule RepositWeb.ModerationLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/moderation")
 
-      # Click approve
+      # Click approve (target the desktop table button with join-item class)
       view
-      |> element("button", "Approve")
+      |> element("button.join-item", "Approve")
       |> render_click()
 
       # Should show flash
@@ -186,9 +186,9 @@ defmodule RepositWeb.ModerationLiveTest do
       # Verify solution is shown
       assert render(view) =~ "Solution that will be archived"
 
-      # Click archive
+      # Click archive (target the desktop table button with join-item class)
       view
-      |> element("button", "Archive")
+      |> element("button.join-item", "Archive")
       |> render_click()
 
       # Solution should be removed from queue

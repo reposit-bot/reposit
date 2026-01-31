@@ -103,25 +103,28 @@ defmodule RepositWeb.SolutionsLive.Index do
             </p>
           </div>
 
-          <div class="flex items-center gap-3">
-            <span class="text-xs text-muted">Sort:</span>
-            <div class="flex rounded-full bg-[oklch(96%_0.01_280)] dark:bg-[oklch(22%_0.02_280)] p-1 border border-[oklch(90%_0.02_280)] dark:border-[oklch(30%_0.025_280)]">
+          <div class="flex items-center gap-2 sm:gap-3">
+            <span class="text-xs text-muted hidden sm:inline">Sort:</span>
+            <div role="tablist" class="tabs tabs-boxed tabs-sm">
               <button
-                class={"px-3 py-1.5 text-xs font-medium rounded-full transition-all #{if @sort == :score, do: "bg-white dark:bg-[oklch(32%_0.03_280)] text-[oklch(35%_0.05_280)] dark:text-[oklch(90%_0.02_280)] shadow-sm", else: "text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)]"}"}
+                role="tab"
+                class={"tab #{if @sort == :score, do: "tab-active"}"}
                 phx-click="sort"
                 phx-value-sort="score"
               >
                 Score
               </button>
               <button
-                class={"px-3 py-1.5 text-xs font-medium rounded-full transition-all #{if @sort == :upvotes, do: "bg-white dark:bg-[oklch(32%_0.03_280)] text-[oklch(35%_0.05_280)] dark:text-[oklch(90%_0.02_280)] shadow-sm", else: "text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)]"}"}
+                role="tab"
+                class={"tab #{if @sort == :upvotes, do: "tab-active"}"}
                 phx-click="sort"
                 phx-value-sort="votes"
               >
                 Votes
               </button>
               <button
-                class={"px-3 py-1.5 text-xs font-medium rounded-full transition-all #{if @sort == :inserted_at, do: "bg-white dark:bg-[oklch(32%_0.03_280)] text-[oklch(35%_0.05_280)] dark:text-[oklch(90%_0.02_280)] shadow-sm", else: "text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)]"}"}
+                role="tab"
+                class={"tab #{if @sort == :inserted_at, do: "tab-active"}"}
                 phx-click="sort"
                 phx-value-sort="newest"
               >
@@ -134,15 +137,15 @@ defmodule RepositWeb.SolutionsLive.Index do
     <!-- Empty State -->
         <div
           :if={@total == 0}
-          class="card-reposit p-16 text-center"
+          class="card bg-base-100 shadow-lg"
         >
-          <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[oklch(94%_0.02_280)] dark:bg-[oklch(28%_0.025_280)] flex items-center justify-center">
-            <.icon name="lightbulb" class="size-8 text-muted" />
+          <div class="card-body items-center text-center py-16">
+            <div class="w-16 h-16 mb-2 rounded-2xl bg-base-200 flex items-center justify-center">
+              <.icon name="lightbulb" class="size-8 text-base-content/40" />
+            </div>
+            <p class="text-lg font-semibold">No solutions yet</p>
+            <p class="text-base-content/60">Be the first to contribute!</p>
           </div>
-          <p class="text-lg font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)]">
-            No solutions yet
-          </p>
-          <p class="text-sm text-muted mt-2">Be the first to contribute!</p>
         </div>
 
     <!-- Solutions List -->
@@ -166,8 +169,8 @@ defmodule RepositWeb.SolutionsLive.Index do
           phx-hook="InfiniteScroll"
           class="flex justify-center py-8"
         >
-          <div :if={@loading} class="flex items-center gap-3 text-[oklch(55%_0.15_280)]">
-            <Lucideicons.loader_2 class="animate-spin h-5 w-5" />
+          <div :if={@loading} class="flex items-center gap-3 text-primary">
+            <span class="loading loading-spinner loading-sm"></span>
             <span class="text-sm font-medium">Loading...</span>
           </div>
           <span :if={not @loading} class="text-muted text-sm">Scroll for more...</span>
@@ -194,28 +197,28 @@ defmodule RepositWeb.SolutionsLive.Index do
     <a
       href={~p"/solutions/#{@solution.id}"}
       id={@id}
-      class="flex gap-4 p-5 hover:bg-[oklch(97%_0.005_280)] dark:hover:bg-[oklch(24%_0.02_280)] transition-colors block"
+      class="flex gap-3 sm:gap-4 p-4 sm:p-5 hover:bg-[oklch(97%_0.005_280)] dark:hover:bg-[oklch(24%_0.02_280)] transition-colors block"
     >
       <!-- Vote score on the left -->
-      <div class="flex flex-col items-center justify-start min-w-[56px] pt-0.5">
-        <span class={"text-lg font-bold mono #{score_color(@score)}"}>
+      <div class="flex flex-col items-center justify-start min-w-[44px] sm:min-w-[56px] pt-0.5">
+        <span class={"text-base sm:text-lg font-bold mono #{score_color(@score)}"}>
           {if @score >= 0, do: "+", else: ""}{@score}
         </span>
-        <span class="text-[0.7rem] text-muted mono">
+        <span class="text-[0.65rem] sm:text-[0.7rem] text-muted mono">
           {@solution.upvotes}↑ {downvotes(@solution)}↓
         </span>
       </div>
 
     <!-- Main content -->
       <div class="flex-1 min-w-0">
-        <h3 class="font-medium text-[oklch(25%_0.02_280)] dark:text-[oklch(92%_0.01_280)] line-clamp-1">
+        <h3 class="font-medium text-[oklch(25%_0.02_280)] dark:text-[oklch(92%_0.01_280)] line-clamp-2 sm:line-clamp-1">
           {truncate(@solution.problem_description, 100)}
         </h3>
-        <p class="text-sm text-muted mt-1.5 line-clamp-2">
+        <p class="text-sm text-muted mt-1.5 line-clamp-2 hidden sm:block">
           {truncate(@solution.solution_pattern, 180)}
         </p>
 
-        <div class="flex items-center gap-3 mt-3">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
           <.inline_tags tags={@solution.tags} />
           <span class="text-xs text-muted">
             {format_date(@solution.inserted_at)}

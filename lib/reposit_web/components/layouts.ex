@@ -435,7 +435,7 @@ defmodule RepositWeb.Layouts do
             <div
               tabindex="0"
               role="button"
-              class="p-2 rounded-xl hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] transition-colors"
+              class="btn btn-ghost btn-sm p-2"
             >
               <.icon
                 name="menu"
@@ -444,13 +444,13 @@ defmodule RepositWeb.Layouts do
             </div>
             <ul
               tabindex="0"
-              class="dropdown-content menu bg-[oklch(99%_0.005_280)] dark:bg-[oklch(22%_0.015_280)] rounded-2xl z-[1] w-56 p-3 shadow-xl border border-[oklch(92%_0.02_280)] dark:border-[oklch(30%_0.025_280)] mt-2"
+              class="dropdown-content menu bg-base-100 rounded-box z-50 w-56 p-2 shadow-xl border border-base-200 mt-2"
             >
-              <li><a href={~p"/"} class="rounded-xl">Home</a></li>
-              <li><a href={~p"/solutions"} class="rounded-xl">Browse Solutions</a></li>
-              <li><a href={~p"/search"} class="rounded-xl">Search</a></li>
-              <li><a href={~p"/moderation"} class="rounded-xl">Moderate</a></li>
-              <li class="mt-2 pt-2 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(30%_0.025_280)]">
+              <li><a href={~p"/"}>Home</a></li>
+              <li><a href={~p"/solutions"}>Browse Solutions</a></li>
+              <li><a href={~p"/search"}>Search</a></li>
+              <li><a href={~p"/moderation"}>Moderate</a></li>
+              <li class="mt-2 pt-2 border-t border-base-200">
                 <div class="flex justify-center py-1">
                   <.theme_toggle />
                 </div>

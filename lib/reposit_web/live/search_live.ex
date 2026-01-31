@@ -142,108 +142,117 @@ defmodule RepositWeb.SearchLive do
         </div>
 
     <!-- Search Card -->
-        <div class="card-reposit p-6">
-          <form id="search-form" phx-change="search" phx-submit="search">
-            <label class="block text-sm font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] mb-2">
-              Describe your problem
-            </label>
-            <textarea
-              name="query"
-              class="input-reposit w-full h-28 resize-none"
-              placeholder="e.g., How to implement rate limiting in Phoenix..."
-              phx-debounce="300"
-            >{@query}</textarea>
-          </form>
+        <div class="card bg-base-100 shadow-lg">
+          <div class="card-body p-4 sm:p-6">
+            <form id="search-form" phx-change="search" phx-submit="search">
+              <label class="label">
+                <span class="label-text font-medium">Describe your problem</span>
+              </label>
+              <textarea
+                name="query"
+                class="textarea textarea-bordered w-full h-28 resize-none"
+                placeholder="e.g., How to implement rate limiting in Phoenix..."
+                phx-debounce="300"
+              >{@query}</textarea>
+            </form>
 
-          <div class="flex items-center gap-4 my-6">
-            <div class="flex-1 h-px bg-[oklch(90%_0.02_280)] dark:bg-[oklch(30%_0.025_280)]"></div>
-            <span class="text-sm text-muted">Filters</span>
-            <div class="flex-1 h-px bg-[oklch(90%_0.02_280)] dark:bg-[oklch(30%_0.025_280)]"></div>
+            <div class="divider text-sm text-base-content/60">Filters</div>
+
+            <form phx-change="update_filter" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div class="form-control">
+                <label class="label py-1">
+                  <span class="label-text text-xs">Language</span>
+                </label>
+                <input
+                  type="text"
+                  name="filter[language]"
+                  class="input input-bordered input-sm w-full"
+                  placeholder="elixir, python..."
+                  value={Enum.join(@tag_filters.language, ", ")}
+                />
+              </div>
+
+              <div class="form-control">
+                <label class="label py-1">
+                  <span class="label-text text-xs">Framework</span>
+                </label>
+                <input
+                  type="text"
+                  name="filter[framework]"
+                  class="input input-bordered input-sm w-full"
+                  placeholder="phoenix, django..."
+                  value={Enum.join(@tag_filters.framework, ", ")}
+                />
+              </div>
+
+              <div class="form-control">
+                <label class="label py-1">
+                  <span class="label-text text-xs">Domain</span>
+                </label>
+                <input
+                  type="text"
+                  name="filter[domain]"
+                  class="input input-bordered input-sm w-full"
+                  placeholder="api, database..."
+                  value={Enum.join(@tag_filters.domain, ", ")}
+                />
+              </div>
+
+              <div class="form-control">
+                <label class="label py-1">
+                  <span class="label-text text-xs">Platform</span>
+                </label>
+                <input
+                  type="text"
+                  name="filter[platform]"
+                  class="input input-bordered input-sm w-full"
+                  placeholder="aws, docker..."
+                  value={Enum.join(@tag_filters.platform, ", ")}
+                />
+              </div>
+            </form>
           </div>
-
-          <form phx-change="update_filter" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div>
-              <label class="block text-xs font-medium text-muted mb-1.5">Language</label>
-              <input
-                type="text"
-                name="filter[language]"
-                class="input-reposit w-full text-sm py-2.5"
-                placeholder="elixir, python..."
-                value={Enum.join(@tag_filters.language, ", ")}
-              />
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-muted mb-1.5">Framework</label>
-              <input
-                type="text"
-                name="filter[framework]"
-                class="input-reposit w-full text-sm py-2.5"
-                placeholder="phoenix, django..."
-                value={Enum.join(@tag_filters.framework, ", ")}
-              />
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-muted mb-1.5">Domain</label>
-              <input
-                type="text"
-                name="filter[domain]"
-                class="input-reposit w-full text-sm py-2.5"
-                placeholder="api, database..."
-                value={Enum.join(@tag_filters.domain, ", ")}
-              />
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-muted mb-1.5">Platform</label>
-              <input
-                type="text"
-                name="filter[platform]"
-                class="input-reposit w-full text-sm py-2.5"
-                placeholder="aws, docker..."
-                value={Enum.join(@tag_filters.platform, ", ")}
-              />
-            </div>
-          </form>
         </div>
 
     <!-- Loading State -->
         <div :if={@searching} class="flex justify-center py-12">
-          <div class="flex items-center gap-3 text-[oklch(55%_0.15_280)]">
-            <Lucideicons.loader_2 class="animate-spin h-5 w-5" />
+          <div class="flex items-center gap-3 text-primary">
+            <span class="loading loading-spinner loading-md"></span>
             <span class="text-sm font-medium">Searching...</span>
           </div>
         </div>
 
     <!-- Results -->
         <div :if={not @searching and @searched}>
-          <div class="flex justify-between items-center mb-6">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
             <p class="text-muted">
               {if @total == 0,
                 do: "No results found",
                 else: "#{@total} result#{if @total != 1, do: "s"} found"}
             </p>
 
-            <div :if={@total > 0} class="flex items-center gap-3">
-              <span class="text-xs text-muted">Sort:</span>
-              <div class="flex rounded-full bg-[oklch(96%_0.01_280)] dark:bg-[oklch(22%_0.02_280)] p-1 border border-[oklch(90%_0.02_280)] dark:border-[oklch(30%_0.025_280)]">
+            <div :if={@total > 0} class="flex items-center gap-2 sm:gap-3">
+              <span class="text-xs text-muted hidden sm:inline">Sort:</span>
+              <div role="tablist" class="tabs tabs-boxed tabs-sm">
                 <button
-                  class={"px-3 py-1 text-xs font-medium rounded-full transition-all #{if @sort == :relevance, do: "bg-white dark:bg-[oklch(32%_0.03_280)] text-[oklch(35%_0.05_280)] dark:text-[oklch(90%_0.02_280)] shadow-sm", else: "text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)]"}"}
+                  role="tab"
+                  class={"tab #{if @sort == :relevance, do: "tab-active"}"}
                   phx-click="sort"
                   phx-value-sort="relevance"
                 >
                   Relevance
                 </button>
                 <button
-                  class={"px-3 py-1 text-xs font-medium rounded-full transition-all #{if @sort == :top_voted, do: "bg-white dark:bg-[oklch(32%_0.03_280)] text-[oklch(35%_0.05_280)] dark:text-[oklch(90%_0.02_280)] shadow-sm", else: "text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)]"}"}
+                  role="tab"
+                  class={"tab #{if @sort == :top_voted, do: "tab-active"}"}
                   phx-click="sort"
                   phx-value-sort="top_voted"
                 >
                   Top Voted
                 </button>
                 <button
-                  class={"px-3 py-1 text-xs font-medium rounded-full transition-all #{if @sort == :newest, do: "bg-white dark:bg-[oklch(32%_0.03_280)] text-[oklch(35%_0.05_280)] dark:text-[oklch(90%_0.02_280)] shadow-sm", else: "text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)]"}"}
+                  role="tab"
+                  class={"tab #{if @sort == :newest, do: "tab-active"}"}
                   phx-click="sort"
                   phx-value-sort="newest"
                 >
@@ -261,16 +270,16 @@ defmodule RepositWeb.SearchLive do
         </div>
 
     <!-- Empty State -->
-        <div :if={not @searching and not @searched} class="card-reposit p-12 text-center">
-          <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[oklch(55%_0.2_280_/_0.1)] to-[oklch(60%_0.22_320_/_0.05)] flex items-center justify-center">
-            <.icon name="search" class="size-8 text-[oklch(55%_0.15_280)]" />
+        <div :if={not @searching and not @searched} class="card bg-base-100 shadow-lg">
+          <div class="card-body items-center text-center py-12">
+            <div class="w-16 h-16 mb-2 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <.icon name="search" class="size-8 text-primary" />
+            </div>
+            <p class="text-lg font-semibold">Enter a problem description to search</p>
+            <p class="text-base-content/60">
+              Our semantic search will find similar solutions
+            </p>
           </div>
-          <p class="text-lg font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)]">
-            Enter a problem description to search
-          </p>
-          <p class="text-sm text-muted mt-2">
-            Our semantic search will find similar solutions
-          </p>
         </div>
       </div>
     </Layouts.app>
@@ -279,16 +288,16 @@ defmodule RepositWeb.SearchLive do
 
   defp no_results(assigns) do
     ~H"""
-    <div class="card-reposit p-12 text-center">
-      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[oklch(94%_0.02_280)] dark:bg-[oklch(28%_0.025_280)] flex items-center justify-center">
-        <.icon name="search" class="size-8 text-muted" />
+    <div class="card bg-base-100 shadow-lg">
+      <div class="card-body items-center text-center py-12">
+        <div class="w-16 h-16 mb-2 rounded-2xl bg-base-200 flex items-center justify-center">
+          <.icon name="search" class="size-8 text-base-content/40" />
+        </div>
+        <p class="text-lg font-semibold">No solutions found for "{@query}"</p>
+        <p class="text-base-content/60">
+          Try different keywords or remove some filters
+        </p>
       </div>
-      <p class="text-lg font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)]">
-        No solutions found for "{@query}"
-      </p>
-      <p class="text-sm text-muted mt-2">
-        Try different keywords or remove some filters
-      </p>
     </div>
     """
   end
@@ -300,11 +309,11 @@ defmodule RepositWeb.SearchLive do
     ~H"""
     <a
       href={~p"/solutions/#{@result.id}"}
-      class="card-reposit block p-5 hover:border-[oklch(60%_0.15_280)] dark:hover:border-[oklch(50%_0.15_280)]"
+      class="card-reposit block p-4 sm:p-5 hover:border-[oklch(60%_0.15_280)] dark:hover:border-[oklch(50%_0.15_280)]"
     >
-      <div class="flex justify-between items-start gap-4">
+      <div class="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
         <div class="flex-1 min-w-0">
-          <h2 class="font-semibold text-[oklch(25%_0.02_280)] dark:text-[oklch(92%_0.01_280)] line-clamp-1">
+          <h2 class="font-semibold text-[oklch(25%_0.02_280)] dark:text-[oklch(92%_0.01_280)] line-clamp-2 sm:line-clamp-1">
             {truncate(@result.problem_description, 100)}
           </h2>
           <p class="text-sm text-muted mt-2 line-clamp-2">
@@ -312,8 +321,8 @@ defmodule RepositWeb.SearchLive do
           </p>
         </div>
 
-        <div class="flex flex-col items-end gap-2 flex-shrink-0">
-          <span class="badge-reposit bg-gradient-to-r from-[oklch(55%_0.2_280_/_0.1)] to-[oklch(60%_0.22_320_/_0.1)] text-[oklch(50%_0.15_280)] dark:text-[oklch(75%_0.15_280)]">
+        <div class="flex sm:flex-col items-center sm:items-end gap-2 flex-shrink-0">
+          <span class="badge badge-sm badge-primary badge-outline">
             {Float.round(@result.similarity * 100, 1)}% match
           </span>
           <span class={"mono text-sm font-semibold #{score_color(@score)}"}>

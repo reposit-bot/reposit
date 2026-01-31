@@ -115,7 +115,48 @@ defmodule RepositWeb.ModerationLive do
           </p>
         </div>
 
-        <div :if={length(@solutions) > 0} class="overflow-x-auto">
+        <!-- Mobile: Card layout -->
+        <div :if={length(@solutions) > 0} class="space-y-4 md:hidden">
+          <div :for={solution <- @solutions} class="card bg-base-200">
+            <div class="card-body p-4">
+              <.link
+                navigate={~p"/solutions/#{solution.id}"}
+                class="card-title text-base hover:text-primary"
+              >
+                {truncate(solution.problem_description, 80)}
+              </.link>
+              <.tags tags={solution.tags} />
+
+              <div class="flex items-center gap-4 mt-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-success font-medium">+{solution.upvotes}</span>
+                  <span class="text-error font-medium">-{solution.downvotes}</span>
+                </div>
+                <.feedback_list votes={solution.votes} />
+              </div>
+
+              <div class="card-actions justify-end mt-3">
+                <button
+                  class="btn btn-sm btn-success"
+                  phx-click="approve"
+                  phx-value-id={solution.id}
+                >
+                  Approve
+                </button>
+                <button
+                  class="btn btn-sm btn-error"
+                  phx-click="archive"
+                  phx-value-id={solution.id}
+                >
+                  Archive
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop: Table layout -->
+        <div :if={length(@solutions) > 0} class="hidden md:block overflow-x-auto">
           <table class="table table-zebra">
             <thead>
               <tr>
@@ -146,16 +187,16 @@ defmodule RepositWeb.ModerationLive do
                   <.feedback_list votes={solution.votes} />
                 </td>
                 <td class="text-right">
-                  <div class="btn-group">
+                  <div class="join">
                     <button
-                      class="btn btn-sm btn-success"
+                      class="btn btn-sm btn-success join-item"
                       phx-click="approve"
                       phx-value-id={solution.id}
                     >
                       Approve
                     </button>
                     <button
-                      class="btn btn-sm btn-error"
+                      class="btn btn-sm btn-error join-item"
                       phx-click="archive"
                       phx-value-id={solution.id}
                     >

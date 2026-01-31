@@ -66,23 +66,23 @@ defmodule RepositWeb.SolutionsLive.Show do
           </div>
 
     <!-- Vote stats - compact horizontal -->
-          <div class="flex items-center gap-6 py-4 px-5 rounded-2xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] mb-8">
+          <div class="flex flex-wrap items-center gap-4 sm:gap-6 py-4 px-4 sm:px-5 rounded-2xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] mb-8">
             <div class="flex items-center gap-2">
-              <Lucideicons.arrow_up class="w-5 h-5 text-[oklch(55%_0.15_145)]" />
+              <Lucideicons.arrow_up class="w-4 h-4 sm:w-5 sm:h-5 text-[oklch(55%_0.15_145)]" />
               <span class="mono font-semibold text-[oklch(55%_0.15_145)]">{@solution.upvotes}</span>
               <span class="text-xs text-muted">upvotes</span>
             </div>
 
             <div class="flex items-center gap-2">
-              <Lucideicons.arrow_down class="w-5 h-5 text-[oklch(60%_0.2_25)]" />
+              <Lucideicons.arrow_down class="w-4 h-4 sm:w-5 sm:h-5 text-[oklch(60%_0.2_25)]" />
               <span class="mono font-semibold text-[oklch(60%_0.2_25)]">{@solution.downvotes}</span>
               <span class="text-xs text-muted">downvotes</span>
             </div>
 
-            <div class="h-6 w-px bg-[oklch(90%_0.02_280)] dark:bg-[oklch(30%_0.025_280)]"></div>
+            <div class="hidden sm:block h-6 w-px bg-[oklch(90%_0.02_280)] dark:bg-[oklch(30%_0.025_280)]"></div>
 
             <div class="flex items-center gap-2">
-              <span class={"mono text-xl font-bold #{score_color(@score)}"}>
+              <span class={"mono text-lg sm:text-xl font-bold #{score_color(@score)}"}>
                 {if @score >= 0, do: "+", else: ""}{@score}
               </span>
               <span class="text-xs text-muted">score</span>
