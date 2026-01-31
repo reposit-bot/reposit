@@ -21,6 +21,9 @@ if openai_api_key = System.get_env("OPENAI_API_KEY") do
   config :req_llm, :keys, openai: openai_api_key
 end
 
+# Configure email sending domain (defaults to email.reposit.bot)
+config :reposit, :email_domain, System.get_env("EMAIL_DOMAIN", "email.reposit.bot")
+
 if System.get_env("PHX_SERVER") do
   config :reposit, RepositWeb.Endpoint, server: true
 end

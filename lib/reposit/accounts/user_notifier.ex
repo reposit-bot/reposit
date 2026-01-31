@@ -9,13 +9,18 @@ defmodule Reposit.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Reposit", "contact@example.com"})
+      |> from({"Reposit", from_address()})
       |> subject(subject)
       |> text_body(body)
 
     with {:ok, _metadata} <- Mailer.deliver(email) do
       {:ok, email}
     end
+  end
+
+  defp from_address do
+    domain = Application.get_env(:reposit, :email_domain, "email.reposit.bot")
+    "noreply@#{domain}"
   end
 
   @doc """
