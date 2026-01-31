@@ -12,16 +12,7 @@ defmodule Reposit.MixProject do
       deps: deps(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader],
-      test_coverage: [
-        summary: [threshold: 30],
-        ignore_modules: [
-          # Phoenix boilerplate - tested by Phoenix itself
-          RepositWeb.CoreComponents,
-          RepositWeb.Layouts,
-          RepositWeb.PageHTML,
-          RepositWeb.ErrorHTML
-        ]
-      ]
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
@@ -37,7 +28,14 @@ defmodule Reposit.MixProject do
 
   def cli do
     [
-      preferred_envs: [precommit: :test]
+      preferred_envs: [
+        precommit: :test,
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+        "coveralls.github": :test
+      ]
     ]
   end
 
@@ -51,6 +49,9 @@ defmodule Reposit.MixProject do
   defp deps do
     [
       {:bcrypt_elixir, "~> 3.0"},
+      {:ueberauth, "~> 0.10.8"},
+      {:ueberauth_google, "~> 0.12.1"},
+      {:ueberauth_github, "~> 0.8.3"},
       {:phoenix, "~> 1.8.3"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.13"},
@@ -75,7 +76,8 @@ defmodule Reposit.MixProject do
       {:bandit, "~> 1.5"},
       {:mdex, "~> 0.11.3"},
       {:hammer, "~> 7.1"},
-      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 
