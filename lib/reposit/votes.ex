@@ -38,6 +38,7 @@ defmodule Reposit.Votes do
 
   defp create_vote_unsafe(attrs) do
     solution_id = Map.get(attrs, :solution_id) || Map.get(attrs, "solution_id")
+    user_id = Map.get(attrs, :user_id) || Map.get(attrs, "user_id")
 
     # Verify solution exists
     case Repo.get(Solution, solution_id) do
@@ -45,20 +46,55 @@ defmodule Reposit.Votes do
         {:error, :solution_not_found}
 
       _solution ->
-        Repo.transaction(fn ->
-          changeset = Vote.changeset(%Vote{}, attrs)
+        # Check for existing vote by this user
+        case get_vote(solution_id, user_id) do
+          nil ->
+            # No existing vote - create new one
+            create_new_vote(attrs)
 
-          case Repo.insert(changeset) do
-            {:ok, vote} ->
-              # Update solution vote counts atomically
-              update_solution_vote_count(vote.solution_id, vote.vote_type, :add)
-              vote
-
-            {:error, changeset} ->
-              Repo.rollback(changeset)
-          end
-        end)
+          existing_vote ->
+            # Update existing vote (upsert)
+            update_existing_vote(existing_vote, attrs)
+        end
     end
+  end
+
+  defp create_new_vote(attrs) do
+    Repo.transaction(fn ->
+      changeset = Vote.changeset(%Vote{}, attrs)
+
+      case Repo.insert(changeset) do
+        {:ok, vote} ->
+          # Update solution vote counts atomically
+          update_solution_vote_count(vote.solution_id, vote.vote_type, :add)
+          vote
+
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  defp update_existing_vote(existing_vote, attrs) do
+    new_vote_type = Map.get(attrs, :vote_type) || Map.get(attrs, "vote_type")
+
+    Repo.transaction(fn ->
+      changeset = Vote.changeset(existing_vote, attrs)
+
+      case Repo.update(changeset) do
+        {:ok, vote} ->
+          # Adjust vote counts if vote type changed
+          if existing_vote.vote_type != new_vote_type do
+            update_solution_vote_count(vote.solution_id, existing_vote.vote_type, :remove)
+            update_solution_vote_count(vote.solution_id, new_vote_type, :add)
+          end
+
+          vote
+
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
   end
 
   defp check_comment_safety(attrs) do

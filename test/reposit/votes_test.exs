@@ -91,16 +91,71 @@ defmodule Reposit.VotesTest do
       assert {:error, :solution_not_found} = Votes.create_vote(attrs)
     end
 
-    test "fails for duplicate vote from same user", %{solution: solution, voter: voter} do
+    test "updates existing vote when user votes again (upsert)", %{solution: solution, voter: voter} do
+      # First vote - upvote
       attrs = %{
         solution_id: solution.id,
         user_id: voter.id,
         vote_type: :up
       }
 
-      assert {:ok, _} = Votes.create_vote(attrs)
-      assert {:error, %Ecto.Changeset{} = changeset} = Votes.create_vote(attrs)
-      assert "already voted on this solution" in errors_on(changeset).solution_id
+      assert {:ok, vote1} = Votes.create_vote(attrs)
+      assert vote1.vote_type == :up
+
+      # Check solution counts
+      {:ok, solution_after_upvote} = Solutions.get_solution(solution.id)
+      assert solution_after_upvote.upvotes == 1
+      assert solution_after_upvote.downvotes == 0
+
+      # Second vote - change to downvote
+      downvote_attrs = %{
+        solution_id: solution.id,
+        user_id: voter.id,
+        vote_type: :down,
+        comment: "Changed my mind - this approach has issues",
+        reason: :incorrect
+      }
+
+      assert {:ok, vote2} = Votes.create_vote(downvote_attrs)
+      assert vote2.vote_type == :down
+      assert vote2.id == vote1.id
+
+      # Solution counts should be updated correctly
+      {:ok, solution_after_change} = Solutions.get_solution(solution.id)
+      assert solution_after_change.upvotes == 0
+      assert solution_after_change.downvotes == 1
+    end
+
+    test "same vote type updates comment and reason", %{solution: solution, voter: voter} do
+      # First downvote
+      attrs = %{
+        solution_id: solution.id,
+        user_id: voter.id,
+        vote_type: :down,
+        comment: "This approach is deprecated since Phoenix 1.7",
+        reason: :outdated
+      }
+
+      assert {:ok, vote1} = Votes.create_vote(attrs)
+
+      # Update with different comment
+      updated_attrs = %{
+        solution_id: solution.id,
+        user_id: voter.id,
+        vote_type: :down,
+        comment: "Actually, this is incorrect not outdated",
+        reason: :incorrect
+      }
+
+      assert {:ok, vote2} = Votes.create_vote(updated_attrs)
+      assert vote2.id == vote1.id
+      assert vote2.comment == "Actually, this is incorrect not outdated"
+      assert vote2.reason == :incorrect
+
+      # Vote counts should not change
+      {:ok, solution_after} = Solutions.get_solution(solution.id)
+      assert solution_after.upvotes == 0
+      assert solution_after.downvotes == 1
     end
 
     test "fails for downvote without comment", %{solution: solution, voter: voter} do

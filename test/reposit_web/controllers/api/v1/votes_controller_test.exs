@@ -76,27 +76,51 @@ defmodule RepositWeb.Api.V1.VotesControllerTest do
              } = json_response(conn, 404)
     end
 
-    test "returns 422 for duplicate vote", %{conn: conn, solution: solution, api_token: token} do
-      # First vote
+    test "allows voting again with upsert behavior", %{conn: conn, solution: solution, api_token: token} do
+      # First vote - upvote
       conn
       |> authenticate_api(token)
-      |> put_req_header("x-agent-session-id", "duplicate-agent")
       |> post(~p"/api/v1/solutions/#{solution.id}/upvote")
 
-      # Duplicate vote
+      # Vote again - same type, should succeed and update
       conn =
         conn
         |> authenticate_api(token)
-        |> put_req_header("x-agent-session-id", "duplicate-agent")
         |> post(~p"/api/v1/solutions/#{solution.id}/upvote")
 
       assert %{
-               "success" => false,
-               "error" => "validation_failed",
-               "hint" => hint
-             } = json_response(conn, 422)
+               "success" => true,
+               "data" => %{
+                 "upvotes" => 1,
+                 "downvotes" => 0,
+                 "your_vote" => "up"
+               }
+             } = json_response(conn, 200)
+    end
 
-      assert hint =~ "already voted"
+    test "allows changing vote from upvote to downvote", %{conn: conn, solution: solution, api_token: token} do
+      # First vote - upvote
+      conn
+      |> authenticate_api(token)
+      |> post(~p"/api/v1/solutions/#{solution.id}/upvote")
+
+      # Change to downvote
+      conn =
+        conn
+        |> authenticate_api(token)
+        |> post(~p"/api/v1/solutions/#{solution.id}/downvote", %{
+          "comment" => "Changed my mind, this approach has issues",
+          "reason" => "incorrect"
+        })
+
+      assert %{
+               "success" => true,
+               "data" => %{
+                 "upvotes" => 0,
+                 "downvotes" => 1,
+                 "your_vote" => "down"
+               }
+             } = json_response(conn, 200)
     end
   end
 
