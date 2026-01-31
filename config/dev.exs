@@ -1,11 +1,11 @@
 import Config
 
 # Configure your database
-config :chorus, Chorus.Repo,
+config :reposit, Reposit.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "chorus_dev",
+  database: "reposit_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -16,7 +16,7 @@ config :chorus, Chorus.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :chorus, ChorusWeb.Endpoint,
+config :reposit, RepositWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}],
@@ -25,8 +25,8 @@ config :chorus, ChorusWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "6HngflcK8CbYqLdHGuRpUi6FvqkcfVFMhOtITpIAGvBmyy2c9xA+UAwlh2T8UE5i",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:chorus, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:chorus, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:reposit, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:reposit, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -53,7 +53,7 @@ config :chorus, ChorusWeb.Endpoint,
 # different ports.
 
 # Reload browser tabs when matching files change.
-config :chorus, ChorusWeb.Endpoint,
+config :reposit, RepositWeb.Endpoint,
   live_reload: [
     web_console_logger: true,
     patterns: [
@@ -62,13 +62,13 @@ config :chorus, ChorusWeb.Endpoint,
       # Gettext translations
       ~r"priv/gettext/.*\.po$"E,
       # Router, Controllers, LiveViews and LiveComponents
-      ~r"lib/chorus_web/router\.ex$"E,
-      ~r"lib/chorus_web/(controllers|live|components)/.*\.(ex|heex)$"E
+      ~r"lib/reposit_web/router\.ex$"E,
+      ~r"lib/reposit_web/(controllers|live|components)/.*\.(ex|heex)$"E
     ]
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :chorus, dev_routes: true
+config :reposit, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

@@ -20,7 +20,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: chorus_test
+          POSTGRES_DB: reposit_test
         ports:
           - 5432:5432
         options: >-
@@ -58,7 +58,7 @@ jobs:
       - name: Run tests
         run: mix test
         env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/chorus_test
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/reposit_test
 
   lint:
     name: Lint

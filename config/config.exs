@@ -7,35 +7,35 @@
 # General application configuration
 import Config
 
-config :chorus, :scopes,
+config :reposit, :scopes,
   user: [
     default: true,
-    module: Chorus.Accounts.Scope,
+    module: Reposit.Accounts.Scope,
     assign_key: :current_scope,
     access_path: [:user, :id],
     schema_key: :user_id,
     schema_type: :id,
     schema_table: :users,
-    test_data_fixture: Chorus.AccountsFixtures,
+    test_data_fixture: Reposit.AccountsFixtures,
     test_setup_helper: :register_and_log_in_user
   ]
 
-config :chorus,
-  ecto_repos: [Chorus.Repo],
+config :reposit,
+  ecto_repos: [Reposit.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configure Repo to use pgvector types
-config :chorus, Chorus.Repo, types: Chorus.PostgrexTypes
+config :reposit, Reposit.Repo, types: Reposit.PostgrexTypes
 
 # Configure the endpoint
-config :chorus, ChorusWeb.Endpoint,
+config :reposit, RepositWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: ChorusWeb.ErrorHTML, json: ChorusWeb.ErrorJSON],
+    formats: [html: RepositWeb.ErrorHTML, json: RepositWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Chorus.PubSub,
+  pubsub_server: Reposit.PubSub,
   live_view: [signing_salt: "dJPjrc3p"]
 
 # Configure the mailer
@@ -45,12 +45,12 @@ config :chorus, ChorusWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :chorus, Chorus.Mailer, adapter: Swoosh.Adapters.Local
+config :reposit, Reposit.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.25.4",
-  chorus: [
+  reposit: [
     args:
       ~w(js/app.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
     cd: Path.expand("../assets", __DIR__),
@@ -60,7 +60,7 @@ config :esbuild,
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "4.1.12",
-  chorus: [
+  reposit: [
     args: ~w(
       --input=assets/css/app.css
       --output=priv/static/assets/css/app.css

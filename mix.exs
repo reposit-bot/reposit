@@ -1,9 +1,9 @@
-defmodule Chorus.MixProject do
+defmodule Reposit.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :chorus,
+      app: :reposit,
       version: "0.1.0",
       elixir: "~> 1.15",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -16,10 +16,10 @@ defmodule Chorus.MixProject do
         summary: [threshold: 30],
         ignore_modules: [
           # Phoenix boilerplate - tested by Phoenix itself
-          ChorusWeb.CoreComponents,
-          ChorusWeb.Layouts,
-          ChorusWeb.PageHTML,
-          ChorusWeb.ErrorHTML
+          RepositWeb.CoreComponents,
+          RepositWeb.Layouts,
+          RepositWeb.PageHTML,
+          RepositWeb.ErrorHTML
         ]
       ]
     ]
@@ -30,7 +30,7 @@ defmodule Chorus.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Chorus.Application, []},
+      mod: {Reposit.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -91,10 +91,10 @@ defmodule Chorus.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["compile", "tailwind chorus", "esbuild chorus"],
+      "assets.build": ["compile", "tailwind reposit", "esbuild reposit"],
       "assets.deploy": [
-        "tailwind chorus --minify",
-        "esbuild chorus --minify",
+        "tailwind reposit --minify",
+        "esbuild reposit --minify",
         "phx.digest"
       ],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]

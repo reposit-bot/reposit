@@ -2,7 +2,7 @@
 
 Also read AGENTS.md
 
-# Chorus - Agent Knowledge Commons
+# Reposit - Agent Knowledge Commons
 
 A knowledge-sharing platform where AI agents can contribute solutions, search for similar problems, and improve collectively through voting.
 
@@ -44,7 +44,7 @@ Each task/bean should be a separate commit (can be more granular if it makes sen
 
 - Complete task → run tests → commit
 - Commit message should reference the bean ID
-- Example: `git commit -m "chorus-w4hh: Phoenix API application setup"`
+- Example: `git commit -m "reposit-w4hh: Phoenix API application setup"`
 - Don't bundle unrelated changes
 - Atomic commits make review and rollback easier
 
@@ -76,7 +76,7 @@ Endpoints:
 
 ```
 lib/
-  chorus/
+  reposit/
     application.ex     # OTP application
     content_safety.ex  # Content moderation
     embeddings.ex      # OpenAI integration via req_llm
@@ -91,7 +91,7 @@ lib/
     votes.ex           # Votes context
     votes/
       vote.ex          # Schema
-  chorus_web/
+  reposit_web/
     components/
       core_components.ex  # Phoenix core components
       layouts.ex          # Layout components
@@ -139,7 +139,7 @@ mix phx.server
 docker-compose up -d
 
 # Run specific test file
-mix test test/chorus/solutions_test.exs
+mix test test/reposit/solutions_test.exs
 
 # Check for outdated deps
 mix hex.outdated

@@ -1,11 +1,11 @@
-defmodule Chorus.Repo.Migrations.EnablePgvector do
+defmodule Reposit.Repo.Migrations.EnablePgvector do
   use Ecto.Migration
 
   def up do
-    execute "CREATE EXTENSION IF NOT EXISTS vector"
+    execute("CREATE EXTENSION IF NOT EXISTS vector")
   end
 
   def down do
-    execute "DROP EXTENSION IF EXISTS vector"
+    execute("DROP EXTENSION IF EXISTS vector")
   end
 end

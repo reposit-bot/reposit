@@ -4,7 +4,7 @@
 @import 'tailwindcss' source(none);
 @source "../css";
 @source "../js";
-@source "../../lib/chorus_web";
+@source "../../lib/reposit_web";
 
 @plugin "@tailwindcss/typography";
 

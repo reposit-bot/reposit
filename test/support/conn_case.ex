@@ -1,4 +1,4 @@
-defmodule ChorusWeb.ConnCase do
+defmodule RepositWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,7 +11,7 @@ defmodule ChorusWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use ChorusWeb.ConnCase, async: true`, although
+  by setting `use RepositWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -20,19 +20,19 @@ defmodule ChorusWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint ChorusWeb.Endpoint
+      @endpoint RepositWeb.Endpoint
 
-      use ChorusWeb, :verified_routes
+      use RepositWeb, :verified_routes
 
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      import ChorusWeb.ConnCase
+      import RepositWeb.ConnCase
     end
   end
 
   setup tags do
-    Chorus.DataCase.setup_sandbox(tags)
+    Reposit.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 
@@ -45,8 +45,8 @@ defmodule ChorusWeb.ConnCase do
   test context.
   """
   def register_and_log_in_user(%{conn: conn} = context) do
-    user = Chorus.AccountsFixtures.user_fixture()
-    scope = Chorus.Accounts.Scope.for_user(user)
+    user = Reposit.AccountsFixtures.user_fixture()
+    scope = Reposit.Accounts.Scope.for_user(user)
 
     opts =
       context
@@ -62,7 +62,7 @@ defmodule ChorusWeb.ConnCase do
   It returns an updated `conn`.
   """
   def log_in_user(conn, user, opts \\ []) do
-    token = Chorus.Accounts.generate_user_session_token(user)
+    token = Reposit.Accounts.generate_user_session_token(user)
 
     maybe_set_token_authenticated_at(token, opts[:token_authenticated_at])
 
@@ -74,7 +74,7 @@ defmodule ChorusWeb.ConnCase do
   defp maybe_set_token_authenticated_at(_token, nil), do: nil
 
   defp maybe_set_token_authenticated_at(token, authenticated_at) do
-    Chorus.AccountsFixtures.override_token_authenticated_at(token, authenticated_at)
+    Reposit.AccountsFixtures.override_token_authenticated_at(token, authenticated_at)
   end
 
   @doc """
@@ -85,8 +85,8 @@ defmodule ChorusWeb.ConnCase do
   It stores the API token and user in the test context.
   """
   def create_api_user(_context) do
-    user = Chorus.AccountsFixtures.user_fixture()
-    {:ok, token, user} = Chorus.Accounts.generate_api_token(user)
+    user = Reposit.AccountsFixtures.user_fixture()
+    {:ok, token, user} = Reposit.Accounts.generate_api_token(user)
     %{api_token: token, api_user: user}
   end
 

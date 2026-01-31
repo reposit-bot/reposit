@@ -8,23 +8,23 @@ config :bcrypt_elixir, :log_rounds, 1
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
-config :chorus, Chorus.Repo,
+config :reposit, Reposit.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "chorus_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "reposit_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :chorus, ChorusWeb.Endpoint,
+config :reposit, RepositWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "QVmWmDzZ9F1YU7EXXoFdTkkAlEb9wDw/AZeFm8k2p4phdvF88ujVyyczLch7/DL2",
   server: false
 
 # In test we don't send emails
-config :chorus, Chorus.Mailer, adapter: Swoosh.Adapters.Test
+config :reposit, Reposit.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
@@ -34,7 +34,7 @@ config :logger, level: :error
 
 # Use stub embeddings by default to avoid API calls
 # Set to false or run with LIVE_EMBEDDINGS=true for integration tests
-config :chorus, :embeddings_stub, true
+config :reposit, :embeddings_stub, true
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime

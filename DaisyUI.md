@@ -1,4 +1,4 @@
-# DaisyUI Reference for Chorus
+# DaisyUI Reference for Reposit
 
 DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 
@@ -10,6 +10,7 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 ## Common Components
 
 ### Buttons
+
 ```html
 <button class="btn">Default</button>
 <button class="btn btn-primary">Primary</button>
@@ -25,6 +26,7 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 ```
 
 ### Cards
+
 ```html
 <div class="card bg-base-200 shadow-xl">
   <div class="card-body">
@@ -38,6 +40,7 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 ```
 
 ### Badges
+
 ```html
 <span class="badge">Default</span>
 <span class="badge badge-primary">Primary</span>
@@ -47,6 +50,7 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 ```
 
 ### Alerts
+
 ```html
 <div class="alert">Default alert</div>
 <div class="alert alert-info">Info</div>
@@ -56,6 +60,7 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 ```
 
 ### Form Inputs
+
 ```html
 <input type="text" class="input input-bordered w-full" placeholder="Text" />
 <input type="text" class="input input-primary" />
@@ -68,6 +73,7 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 ```
 
 ### Loading States
+
 ```html
 <span class="loading loading-spinner"></span>
 <span class="loading loading-dots"></span>
@@ -76,18 +82,26 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 ```
 
 ### Tables
+
 ```html
 <table class="table">
   <thead>
-    <tr><th>Name</th><th>Value</th></tr>
+    <tr>
+      <th>Name</th>
+      <th>Value</th>
+    </tr>
   </thead>
   <tbody>
-    <tr><td>Item</td><td>123</td></tr>
+    <tr>
+      <td>Item</td>
+      <td>123</td>
+    </tr>
   </tbody>
 </table>
 ```
 
 ### Navigation
+
 ```html
 <!-- Tabs -->
 <div class="tabs tabs-boxed">
@@ -105,6 +119,7 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 ```
 
 ### Modal
+
 ```html
 <dialog id="my_modal" class="modal">
   <div class="modal-box">
@@ -122,6 +137,7 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 ## Theme Colors
 
 DaisyUI uses semantic color names:
+
 - `primary` - Main brand color
 - `secondary` - Secondary brand color
 - `accent` - Accent color
