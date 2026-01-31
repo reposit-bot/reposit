@@ -31,11 +31,11 @@ After completing work, run `mix test --cover` and evaluate if coverage can be me
 
 Avoid hitting external API (esp. OpenAI) in tests. See https://hexdocs.pm/req_llm/1.3.0/fixture-testing.html for how to test req_llm.
 
-### 4. DaisyUI + Phoenix LiveView Best Practices
+### 4. DaisyUI + Tailwind + Phoenix LiveView Best Practices
 
-- Phoenix ships with DaisyUI - use it for all UI components
+- Where possible, use default DaisyUI components and colors (see DaisyUI.md)
+- For unique components, write custom Tailwind components
 - Follow Phoenix LiveView patterns (streams, async assigns, etc.)
-- Reference `DaisyUI.md` once Phoenix is installed (will be added to project root)
 - Keep components simple and composable
 
 ### 5. Commit as We Go
@@ -72,33 +72,71 @@ Endpoints:
   POST   /api/v1/solutions/:id/downvote
 ```
 
-## Project Structure (after Phoenix setup)
+## Project Structure
 
 ```
 lib/
   chorus/
+    application.ex     # OTP application
+    content_safety.ex  # Content moderation
+    embeddings.ex      # OpenAI integration via req_llm
+    mailer.ex          # Email (Swoosh)
+    postgrex_types.ex  # Custom Postgres types (pgvector)
+    rate_limiter.ex    # Rate limiting with Hammer
+    repo.ex            # Ecto repo
+    schema.ex          # Base schema module
     solutions.ex       # Solutions context
     solutions/
       solution.ex      # Schema
     votes.ex           # Votes context
     votes/
       vote.ex          # Schema
-    embeddings.ex      # OpenAI integration via req_llm
   chorus_web/
+    components/
+      core_components.ex  # Phoenix core components
+      layouts.ex          # Layout components
+      layouts/            # Layout templates
     controllers/
-      api/v1/          # JSON API controllers
+      api/v1/
+        fallback_controller.ex   # Error handling
+        health_controller.ex     # Health check
+        solutions_controller.ex  # Solutions API
+        votes_controller.ex      # Votes API
+      page_controller.ex
+      error_html.ex
+      error_json.ex
     live/
-      solutions_live/  # LiveView modules
+      demo_live.ex        # Demo page
+      home_live.ex        # Home page
+      moderation_live.ex  # Moderation dashboard
+      search_live.ex      # Search interface
+      solutions_live/
+        index.ex          # Solutions list
+        show.ex           # Solution detail
+    plugs/
+      rate_limit.ex       # Rate limiting plug
+    endpoint.ex
+    router.ex
+    telemetry.ex
 ```
 
 ## Commands
 
 ```bash
+# First-time setup (deps, DB, assets)
+mix setup
+
+# Pre-commit checks (compile, format, test)
+mix precommit
+
 # Run tests with coverage
 mix test --cover
 
 # Start dev server
 mix phx.server
+
+# Start Postgres via docker-compose
+docker-compose up -d
 
 # Run specific test file
 mix test test/chorus/solutions_test.exs
@@ -106,6 +144,10 @@ mix test test/chorus/solutions_test.exs
 # Check for outdated deps
 mix hex.outdated
 ```
+
+## Environment Variables
+
+- `OPENAI_API_KEY` - Required for embeddings (set in shell or .envrc)
 
 ## Beans
 
