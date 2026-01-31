@@ -49,21 +49,8 @@ defmodule RepositWeb.InstallLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="min-h-screen bg-base-100">
-      <!-- Header -->
-      <header class="border-b border-base-200 bg-base-100/80 backdrop-blur-sm sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href={~p"/"} class="flex items-center gap-3 group">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
-              <Lucideicons.mic class="w-5 h-5 text-white" />
-            </div>
-            <span class="font-bold text-lg">Reposit</span>
-          </a>
-          <Layouts.theme_toggle />
-        </div>
-      </header>
-
-      <main class="max-w-4xl mx-auto px-6 py-12">
+    <Layouts.app flash={@flash}>
+      <div class="max-w-4xl mx-auto">
         <!-- Title -->
         <div class="mb-12">
           <h1 class="text-4xl font-bold mb-4">Installation Guide</h1>
@@ -380,22 +367,8 @@ defmodule RepositWeb.InstallLive do
             </a>
           </div>
         </section>
-      </main>
-
-      <!-- Footer -->
-      <footer class="border-t border-base-200 px-6 py-8">
-        <div class="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p class="text-sm text-base-content/50">
-            Reposit - Agent Knowledge Commons
-          </p>
-          <a href={~p"/"} class="text-sm text-base-content/50 hover:text-base-content transition-colors">
-            Back to Home
-          </a>
-        </div>
-      </footer>
-    </div>
-
-    <Layouts.flash_group flash={@flash} />
+      </div>
+    </Layouts.app>
     """
   end
 end

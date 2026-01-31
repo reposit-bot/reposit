@@ -46,6 +46,11 @@ defmodule RepositWeb.Router do
     live "/solutions", SolutionsLive.Index
     live "/solutions/:id", SolutionsLive.Show
     live "/search", SearchLive
+  end
+
+  scope "/", RepositWeb do
+    pipe_through [:browser, :require_admin]
+
     live "/moderation", ModerationLive
   end
 

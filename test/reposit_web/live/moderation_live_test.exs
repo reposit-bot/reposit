@@ -7,6 +7,7 @@ defmodule RepositWeb.ModerationLiveTest do
   alias Reposit.Votes
 
   describe "ModerationLive" do
+    setup :register_and_log_in_admin
     test "renders empty state when no flagged solutions", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/moderation")
 

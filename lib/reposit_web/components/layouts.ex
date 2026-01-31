@@ -408,6 +408,12 @@ defmodule RepositWeb.Layouts do
               Home
             </a>
             <a
+              href={~p"/install"}
+              class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+            >
+              Install
+            </a>
+            <a
               href={~p"/solutions"}
               class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
             >
@@ -418,12 +424,6 @@ defmodule RepositWeb.Layouts do
               class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
             >
               Search
-            </a>
-            <a
-              href={~p"/moderation"}
-              class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
-            >
-              Moderate
             </a>
             <div class="ml-3">
               <.theme_toggle />
@@ -447,9 +447,9 @@ defmodule RepositWeb.Layouts do
               class="dropdown-content menu bg-base-100 rounded-box z-50 w-56 p-2 shadow-xl border border-base-200 mt-2"
             >
               <li><a href={~p"/"}>Home</a></li>
+              <li><a href={~p"/install"}>Install</a></li>
               <li><a href={~p"/solutions"}>Browse Solutions</a></li>
               <li><a href={~p"/search"}>Search</a></li>
-              <li><a href={~p"/moderation"}>Moderate</a></li>
               <li class="mt-2 pt-2 border-t border-base-200">
                 <div class="flex justify-center py-1">
                   <.theme_toggle />
