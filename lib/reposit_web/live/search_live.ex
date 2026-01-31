@@ -140,7 +140,7 @@ defmodule RepositWeb.SearchLive do
           <h1 class="page-title">Search Solutions</h1>
           <p class="page-subtitle mt-2">Find solutions using semantic search</p>
         </div>
-
+        
     <!-- Search Card -->
         <div class="card bg-base-100 shadow-lg">
           <div class="card-body p-4 sm:p-6">
@@ -158,7 +158,10 @@ defmodule RepositWeb.SearchLive do
 
             <div class="divider text-sm text-base-content/60">Filters</div>
 
-            <form phx-change="update_filter" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <form
+              phx-change="update_filter"
+              class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
+            >
               <div class="form-control">
                 <label class="label py-1">
                   <span class="label-text text-xs">Language</span>
@@ -213,7 +216,7 @@ defmodule RepositWeb.SearchLive do
             </form>
           </div>
         </div>
-
+        
     <!-- Loading State -->
         <div :if={@searching} class="flex justify-center py-12">
           <div class="flex items-center gap-3 text-primary">
@@ -221,7 +224,7 @@ defmodule RepositWeb.SearchLive do
             <span class="text-sm font-medium">Searching...</span>
           </div>
         </div>
-
+        
     <!-- Results -->
         <div :if={not @searching and @searched}>
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
@@ -268,7 +271,7 @@ defmodule RepositWeb.SearchLive do
             <.result_card :for={result <- @results} result={result} />
           </div>
         </div>
-
+        
     <!-- Empty State -->
         <div :if={not @searching and not @searched} class="card bg-base-100 shadow-lg">
           <div class="card-body items-center text-center py-12">
@@ -309,7 +312,7 @@ defmodule RepositWeb.SearchLive do
     ~H"""
     <a
       href={~p"/solutions/#{@result.id}"}
-      class="card-reposit block p-4 sm:p-5 hover:border-[oklch(60%_0.15_280)] dark:hover:border-[oklch(50%_0.15_280)]"
+      class="card card-bordered bg-base-100 block p-4 sm:p-5 hover:border-primary/50 transition-colors"
     >
       <div class="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
         <div class="flex-1 min-w-0">
@@ -344,11 +347,11 @@ defmodule RepositWeb.SearchLive do
     <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1.5 mt-4">
       <span
         :for={tag <- Enum.take(@all_tags, 6)}
-        class={"badge-reposit text-[0.7rem] py-1 #{tag_color(tag.category)}"}
+        class={"badge badge-sm font-mono #{tag_color(tag.category)}"}
       >
         {tag.value}
       </span>
-      <span :if={length(@all_tags) > 6} class="badge-reposit text-[0.7rem] py-1">
+      <span :if={length(@all_tags) > 6} class="badge badge-sm font-mono">
         +{length(@all_tags) - 6}
       </span>
     </div>
@@ -364,39 +367,15 @@ defmodule RepositWeb.SearchLive do
     end)
   end
 
-  defp tag_color("language"),
-    do:
-      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
-
-  defp tag_color(:language),
-    do:
-      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
-
-  defp tag_color("framework"),
-    do:
-      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
-
-  defp tag_color(:framework),
-    do:
-      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
-
-  defp tag_color("domain"),
-    do:
-      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
-
-  defp tag_color(:domain),
-    do:
-      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
-
-  defp tag_color("platform"),
-    do:
-      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
-
-  defp tag_color(:platform),
-    do:
-      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
-
-  defp tag_color(_), do: ""
+  defp tag_color("language"), do: "badge-primary badge-outline"
+  defp tag_color(:language), do: "badge-primary badge-outline"
+  defp tag_color("framework"), do: "badge-secondary badge-outline"
+  defp tag_color(:framework), do: "badge-secondary badge-outline"
+  defp tag_color("domain"), do: "badge-info badge-outline"
+  defp tag_color(:domain), do: "badge-info badge-outline"
+  defp tag_color("platform"), do: "badge-accent badge-outline"
+  defp tag_color(:platform), do: "badge-accent badge-outline"
+  defp tag_color(_), do: "badge-ghost"
 
   defp score_color(score) when score > 0, do: "text-[oklch(55%_0.15_145)]"
   defp score_color(score) when score < 0, do: "text-[oklch(60%_0.2_25)]"

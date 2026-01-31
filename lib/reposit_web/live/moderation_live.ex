@@ -114,8 +114,8 @@ defmodule RepositWeb.ModerationLive do
             All solutions are looking good!
           </p>
         </div>
-
-        <!-- Mobile: Card layout -->
+        
+    <!-- Mobile: Card layout -->
         <div :if={length(@solutions) > 0} class="space-y-4 md:hidden">
           <div :for={solution <- @solutions} class="card bg-base-200">
             <div class="card-body p-4">
@@ -154,8 +154,8 @@ defmodule RepositWeb.ModerationLive do
             </div>
           </div>
         </div>
-
-        <!-- Desktop: Table layout -->
+        
+    <!-- Desktop: Table layout -->
         <div :if={length(@solutions) > 0} class="hidden md:block overflow-x-auto">
           <table class="table table-zebra">
             <thead>

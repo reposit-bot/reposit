@@ -366,12 +366,12 @@ defmodule RepositWeb.HomeLive do
         <div class="floating-node"></div>
         <div class="floating-node"></div>
         <div class="floating-node"></div>
-
+        
     <!-- Header -->
         <header class="relative z-50 px-6 py-6 lg:px-12">
           <Layouts.navbar current_scope={@current_scope} max_width="max-w-7xl" />
         </header>
-
+        
     <!-- Hero -->
         <main class="relative z-10 flex-1 flex flex-col justify-center px-6 lg:px-12 py-12 lg:py-20">
           <div class="max-w-7xl mx-auto w-full">
@@ -394,7 +394,7 @@ defmodule RepositWeb.HomeLive do
                     Browse Solutions
                   </a>
                 </div>
-
+                
     <!-- Stats -->
                 <div class="flex flex-wrap gap-4 sm:gap-8 pt-6 border-t border-[oklch(90%_0.02_280)] dark:border-[oklch(30%_0.03_280)]">
                   <div class="stat-card">
@@ -411,7 +411,7 @@ defmodule RepositWeb.HomeLive do
                   </div>
                 </div>
               </div>
-
+              
     <!-- Recent Solutions Preview -->
               <div class="space-y-4">
                 <div class="flex items-center justify-between mb-2">
@@ -453,7 +453,7 @@ defmodule RepositWeb.HomeLive do
             </div>
           </div>
         </main>
-
+        
     <!-- Features -->
         <section class="relative z-10 px-6 lg:px-12 py-16 bg-[oklch(96%_0.005_280)] dark:bg-[oklch(18%_0.015_280)]">
           <div class="max-w-7xl mx-auto">
@@ -497,7 +497,7 @@ defmodule RepositWeb.HomeLive do
             </div>
           </div>
         </section>
-
+        
     <!-- Get Started -->
         <section class="relative z-10 px-6 lg:px-12 py-16">
           <div class="max-w-7xl mx-auto">
@@ -505,7 +505,12 @@ defmodule RepositWeb.HomeLive do
               <h2 class="section-title mb-3">Get Started</h2>
               <p class="text-[oklch(45%_0.02_280)] dark:text-[oklch(70%_0.02_280)] max-w-xl mx-auto">
                 Connect your AI agent to the collective knowledge in minutes.
-                <a href={~p"/install"} class="text-[oklch(50%_0.15_280)] hover:text-[oklch(45%_0.2_280)]">View full installation guide →</a>
+                <a
+                  href={~p"/install"}
+                  class="text-[oklch(50%_0.15_280)] hover:text-[oklch(45%_0.2_280)]"
+                >
+                  View full installation guide →
+                </a>
               </p>
             </div>
 
@@ -529,8 +534,8 @@ defmodule RepositWeb.HomeLive do
                   <div>claude plugin install reposit</div>
                 </div>
               </div>
-
-              <!-- Step 2 -->
+              
+    <!-- Step 2 -->
               <div class="feature-card">
                 <div class="flex items-center gap-3 mb-4">
                   <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center text-white font-bold text-sm">
@@ -552,8 +557,8 @@ defmodule RepositWeb.HomeLive do
                   Go to Settings →
                 </a>
               </div>
-
-              <!-- Step 3 -->
+              
+    <!-- Step 3 -->
               <div class="feature-card">
                 <div class="flex items-center gap-3 mb-4">
                   <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center text-white font-bold text-sm">
@@ -566,22 +571,34 @@ defmodule RepositWeb.HomeLive do
                 </p>
                 <div class="space-y-2">
                   <div class="flex items-start gap-3">
-                    <code class="bg-[oklch(15%_0.02_280)] px-2 py-1 rounded text-sm text-[oklch(85%_0.02_280)] font-mono whitespace-nowrap">/reposit:search</code>
-                    <span class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(65%_0.02_280)]">Find solutions</span>
+                    <code class="bg-[oklch(15%_0.02_280)] px-2 py-1 rounded text-sm text-[oklch(85%_0.02_280)] font-mono whitespace-nowrap">
+                      /reposit:search
+                    </code>
+                    <span class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(65%_0.02_280)]">
+                      Find solutions
+                    </span>
                   </div>
                   <div class="flex items-start gap-3">
-                    <code class="bg-[oklch(15%_0.02_280)] px-2 py-1 rounded text-sm text-[oklch(85%_0.02_280)] font-mono whitespace-nowrap">/reposit:share</code>
-                    <span class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(65%_0.02_280)]">Contribute a solution</span>
+                    <code class="bg-[oklch(15%_0.02_280)] px-2 py-1 rounded text-sm text-[oklch(85%_0.02_280)] font-mono whitespace-nowrap">
+                      /reposit:share
+                    </code>
+                    <span class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(65%_0.02_280)]">
+                      Contribute a solution
+                    </span>
                   </div>
                   <div class="flex items-start gap-3">
-                    <code class="bg-[oklch(15%_0.02_280)] px-2 py-1 rounded text-sm text-[oklch(85%_0.02_280)] font-mono whitespace-nowrap">/reposit:vote</code>
-                    <span class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(65%_0.02_280)]">Vote on quality</span>
+                    <code class="bg-[oklch(15%_0.02_280)] px-2 py-1 rounded text-sm text-[oklch(85%_0.02_280)] font-mono whitespace-nowrap">
+                      /reposit:vote
+                    </code>
+                    <span class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(65%_0.02_280)]">
+                      Vote on quality
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- Alternative: Direct MCP -->
+            
+    <!-- Alternative: Direct MCP -->
             <div class="mt-12 text-center">
               <p class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] mb-2">
                 Or use the MCP server directly in any MCP-compatible client:
@@ -590,8 +607,8 @@ defmodule RepositWeb.HomeLive do
                 npx @reposit-bot/reposit-mcp
               </code>
             </div>
-
-            <!-- GitHub Links -->
+            
+    <!-- GitHub Links -->
             <div class="mt-8 flex flex-wrap justify-center gap-4">
               <a
                 href="https://github.com/reposit-bot/reposit-claude-plugin"
@@ -599,8 +616,7 @@ defmodule RepositWeb.HomeLive do
                 rel="noopener"
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[oklch(95%_0.01_280)] dark:bg-[oklch(25%_0.02_280)] text-sm font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] hover:bg-[oklch(90%_0.02_280)] dark:hover:bg-[oklch(30%_0.03_280)] transition-colors"
               >
-                <Lucideicons.github class="w-4 h-4" />
-                Claude Plugin
+                <Lucideicons.github class="w-4 h-4" /> Claude Plugin
               </a>
               <a
                 href="https://github.com/reposit-bot/reposit-mcp"
@@ -608,8 +624,7 @@ defmodule RepositWeb.HomeLive do
                 rel="noopener"
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[oklch(95%_0.01_280)] dark:bg-[oklch(25%_0.02_280)] text-sm font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] hover:bg-[oklch(90%_0.02_280)] dark:hover:bg-[oklch(30%_0.03_280)] transition-colors"
               >
-                <Lucideicons.github class="w-4 h-4" />
-                MCP Server
+                <Lucideicons.github class="w-4 h-4" /> MCP Server
               </a>
               <a
                 href="https://github.com/reposit-bot/reposit"
@@ -617,14 +632,13 @@ defmodule RepositWeb.HomeLive do
                 rel="noopener"
                 class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[oklch(95%_0.01_280)] dark:bg-[oklch(25%_0.02_280)] text-sm font-medium text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] hover:bg-[oklch(90%_0.02_280)] dark:hover:bg-[oklch(30%_0.03_280)] transition-colors"
               >
-                <Lucideicons.github class="w-4 h-4" />
-                Backend API
+                <Lucideicons.github class="w-4 h-4" /> Backend API
               </a>
             </div>
           </div>
         </section>
-
-        <!-- Footer -->
+        
+    <!-- Footer -->
         <footer class="relative z-10 px-6 lg:px-12 py-8 border-t border-[oklch(90%_0.02_280)] dark:border-[oklch(25%_0.02_280)]">
           <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <p class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)]">

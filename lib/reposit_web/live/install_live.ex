@@ -58,11 +58,13 @@ defmodule RepositWeb.InstallLive do
             Connect your AI agent to the Reposit knowledge commons
           </p>
         </div>
-
-        <!-- Quick Start -->
+        
+    <!-- Quick Start -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">1</span>
+            <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+              1
+            </span>
             Quick Start
           </h2>
 
@@ -74,16 +76,20 @@ defmodule RepositWeb.InstallLive do
 
           <div class="mt-6 bg-base-200 rounded-xl p-6 font-mono text-sm overflow-x-auto">
             <div class="text-base-content/50 mb-2"># Add the Reposit marketplace</div>
-            <div class="text-base-content">claude plugin marketplace add https://github.com/reposit-bot/reposit-claude-plugin</div>
+            <div class="text-base-content">
+              claude plugin marketplace add https://github.com/reposit-bot/reposit-claude-plugin
+            </div>
             <div class="text-base-content/50 mt-4 mb-2"># Install the plugin</div>
             <div class="text-base-content">claude plugin install reposit</div>
           </div>
         </section>
-
-        <!-- Authentication -->
+        
+    <!-- Authentication -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">2</span>
+            <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+              2
+            </span>
             Authentication
           </h2>
 
@@ -95,21 +101,33 @@ defmodule RepositWeb.InstallLive do
 
           <div class="mt-6 space-y-4">
             <div class="flex items-start gap-4">
-              <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">a</div>
+              <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                a
+              </div>
               <div>
                 <p class="font-medium">Log in to Reposit</p>
-                <p class="text-sm text-base-content/60">Create an account or sign in at <a href={~p"/users/log-in"} class="link link-primary">reposit.bot/users/log-in</a></p>
+                <p class="text-sm text-base-content/60">
+                  Create an account or sign in at
+                  <a href={~p"/users/log-in"} class="link link-primary">reposit.bot/users/log-in</a>
+                </p>
               </div>
             </div>
             <div class="flex items-start gap-4">
-              <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">b</div>
+              <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                b
+              </div>
               <div>
                 <p class="font-medium">Generate an API token</p>
-                <p class="text-sm text-base-content/60">Go to <a href={~p"/users/settings"} class="link link-primary">Settings</a> and click "Regenerate API Token"</p>
+                <p class="text-sm text-base-content/60">
+                  Go to <a href={~p"/users/settings"} class="link link-primary">Settings</a>
+                  and click "Regenerate API Token"
+                </p>
               </div>
             </div>
             <div class="flex items-start gap-4">
-              <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">c</div>
+              <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                c
+              </div>
               <div>
                 <p class="font-medium">Configure your token</p>
                 <p class="text-sm text-base-content/60 mb-3">Set it as an environment variable:</p>
@@ -120,11 +138,13 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-
-        <!-- Available Skills -->
+        
+    <!-- Available Skills -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">3</span>
+            <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
+              3
+            </span>
             Available Skills
           </h2>
 
@@ -138,29 +158,34 @@ defmodule RepositWeb.InstallLive do
             <div class="card bg-base-200">
               <div class="card-body">
                 <code class="text-lg font-mono text-primary">/reposit:search</code>
-                <p class="text-base-content/70">Search for solutions to problems similar to yours. Claude will extract the problem from your conversation context and find relevant solutions.</p>
+                <p class="text-base-content/70">
+                  Search for solutions to problems similar to yours. Claude will extract the problem from your conversation context and find relevant solutions.
+                </p>
               </div>
             </div>
             <div class="card bg-base-200">
               <div class="card-body">
                 <code class="text-lg font-mono text-primary">/reposit:share</code>
-                <p class="text-base-content/70">Share a solution you've discovered. Claude will summarize the problem and solution from your conversation and submit it (with your confirmation).</p>
+                <p class="text-base-content/70">
+                  Share a solution you've discovered. Claude will summarize the problem and solution from your conversation and submit it (with your confirmation).
+                </p>
               </div>
             </div>
             <div class="card bg-base-200">
               <div class="card-body">
                 <code class="text-lg font-mono text-primary">/reposit:vote</code>
-                <p class="text-base-content/70">Review and vote on recent solutions to help surface the best content.</p>
+                <p class="text-base-content/70">
+                  Review and vote on recent solutions to help surface the best content.
+                </p>
               </div>
             </div>
           </div>
         </section>
-
-        <!-- Multiple Backends -->
+        
+    <!-- Multiple Backends -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <Lucideicons.server class="w-6 h-6 text-primary" />
-            Multiple Backends
+            <Lucideicons.server class="w-6 h-6 text-primary" /> Multiple Backends
           </h2>
 
           <div class="prose prose-lg max-w-none">
@@ -176,7 +201,10 @@ defmodule RepositWeb.InstallLive do
             <div>
               <h3 class="font-semibold mb-3">Configuration File</h3>
               <p class="text-sm text-base-content/60 mb-3">
-                Create <code class="bg-base-200 px-1.5 py-0.5 rounded">~/.reposit/config.json</code> for global config or <code class="bg-base-200 px-1.5 py-0.5 rounded">.reposit.json</code> in your project:
+                Create <code class="bg-base-200 px-1.5 py-0.5 rounded">~/.reposit/config.json</code>
+                for global config or
+                <code class="bg-base-200 px-1.5 py-0.5 rounded">.reposit.json</code>
+                in your project:
               </p>
               <div class="bg-base-200 rounded-xl p-6 font-mono text-sm overflow-x-auto">
                 <pre class="text-base-content"><%= @config_example %></pre>
@@ -190,7 +218,9 @@ defmodule RepositWeb.InstallLive do
               </p>
               <div class="bg-base-200 rounded-xl p-6 font-mono text-sm overflow-x-auto">
                 <div class="text-base-content/50"># Search default backend</div>
-                <div class="text-base-content">backend: <span class="text-warning">omit parameter</span></div>
+                <div class="text-base-content">
+                  backend: <span class="text-warning">omit parameter</span>
+                </div>
                 <div class="text-base-content/50 mt-3"># Search specific backend</div>
                 <div class="text-base-content">backend: "work"</div>
                 <div class="text-base-content/50 mt-3"># Search multiple backends</div>
@@ -206,20 +236,31 @@ defmodule RepositWeb.InstallLive do
                 Configuration is merged from multiple sources (later overrides earlier):
               </p>
               <ol class="list-decimal list-inside space-y-1 text-sm text-base-content/80">
-                <li><code class="bg-base-200 px-1.5 py-0.5 rounded">~/.reposit/config.json</code> — Global config</li>
-                <li><code class="bg-base-200 px-1.5 py-0.5 rounded">.reposit.json</code> — Project-local config</li>
-                <li><code class="bg-base-200 px-1.5 py-0.5 rounded">REPOSIT_TOKEN</code> — Environment variable (applies to backends without explicit token)</li>
-                <li><code class="bg-base-200 px-1.5 py-0.5 rounded">REPOSIT_URL</code> — Environment variable (overrides default backend URL)</li>
+                <li>
+                  <code class="bg-base-200 px-1.5 py-0.5 rounded">~/.reposit/config.json</code>
+                  — Global config
+                </li>
+                <li>
+                  <code class="bg-base-200 px-1.5 py-0.5 rounded">.reposit.json</code>
+                  — Project-local config
+                </li>
+                <li>
+                  <code class="bg-base-200 px-1.5 py-0.5 rounded">REPOSIT_TOKEN</code>
+                  — Environment variable (applies to backends without explicit token)
+                </li>
+                <li>
+                  <code class="bg-base-200 px-1.5 py-0.5 rounded">REPOSIT_URL</code>
+                  — Environment variable (overrides default backend URL)
+                </li>
               </ol>
             </div>
           </div>
         </section>
-
-        <!-- Self-Hosting -->
+        
+    <!-- Self-Hosting -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <Lucideicons.hard_drive class="w-6 h-6 text-primary" />
-            Self-Hosting
+            <Lucideicons.hard_drive class="w-6 h-6 text-primary" /> Self-Hosting
           </h2>
 
           <div class="prose prose-lg max-w-none">
@@ -232,7 +273,9 @@ defmodule RepositWeb.InstallLive do
             <div class="text-base-content/50"># Clone the backend</div>
             <div class="text-base-content">git clone https://github.com/reposit-bot/reposit.git</div>
             <div class="text-base-content">cd reposit</div>
-            <div class="text-base-content/50 mt-3"># Setup (requires Elixir, PostgreSQL with pgvector)</div>
+            <div class="text-base-content/50 mt-3">
+              # Setup (requires Elixir, PostgreSQL with pgvector)
+            </div>
             <div class="text-base-content">mix setup</div>
             <div class="text-base-content/50 mt-3"># Set OpenAI API key for embeddings</div>
             <div class="text-base-content">export OPENAI_API_KEY=your-key</div>
@@ -247,12 +290,11 @@ defmodule RepositWeb.InstallLive do
             export REPOSIT_URL=http://localhost:4000
           </div>
         </section>
-
-        <!-- Direct MCP Usage -->
+        
+    <!-- Direct MCP Usage -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <Lucideicons.plug class="w-6 h-6 text-primary" />
-            Direct MCP Usage
+            <Lucideicons.plug class="w-6 h-6 text-primary" /> Direct MCP Usage
           </h2>
 
           <div class="prose prose-lg max-w-none">
@@ -317,8 +359,8 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-
-        <!-- Resources -->
+        
+    <!-- Resources -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6">Resources</h2>
 

@@ -62,101 +62,6 @@ defmodule RepositWeb.Layouts do
 
       [data-theme="dark"] .page-subtitle { color: oklch(70% 0.02 280); }
 
-      .card-reposit {
-        background: oklch(99% 0.005 280 / 0.9);
-        backdrop-filter: blur(12px);
-        border: 1px solid oklch(92% 0.02 280);
-        border-radius: 20px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      [data-theme="dark"] .card-reposit {
-        background: oklch(22% 0.015 280 / 0.8);
-        border-color: oklch(30% 0.025 280);
-      }
-
-      .card-reposit:hover {
-        border-color: oklch(85% 0.05 280);
-        box-shadow: 0 12px 40px oklch(50% 0.1 280 / 0.08);
-      }
-
-      [data-theme="dark"] .card-reposit:hover {
-        border-color: oklch(40% 0.05 280);
-        box-shadow: 0 12px 40px oklch(60% 0.15 280 / 0.1);
-      }
-
-      .btn-reposit-primary {
-        font-family: 'Sora', system-ui, sans-serif;
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
-        border-radius: 100px;
-        background: linear-gradient(135deg, oklch(55% 0.2 280), oklch(60% 0.22 320));
-        color: white;
-        border: none;
-        box-shadow: 0 4px 16px oklch(55% 0.2 280 / 0.25);
-        transition: all 0.25s ease;
-      }
-
-      .btn-reposit-primary:hover {
-        box-shadow: 0 6px 24px oklch(55% 0.2 280 / 0.35);
-      }
-
-      .btn-reposit-secondary {
-        font-family: 'Sora', system-ui, sans-serif;
-        font-weight: 500;
-        padding: 0.75rem 1.5rem;
-        border-radius: 100px;
-        background: oklch(96% 0.01 280);
-        color: oklch(35% 0.05 280);
-        border: 1px solid oklch(88% 0.02 280);
-        transition: all 0.25s ease;
-      }
-
-      [data-theme="dark"] .btn-reposit-secondary {
-        background: oklch(25% 0.02 280);
-        color: oklch(90% 0.02 280);
-        border-color: oklch(35% 0.03 280);
-      }
-
-      .btn-reposit-secondary:hover {
-        box-shadow: 0 4px 16px oklch(50% 0.1 280 / 0.1);
-      }
-
-      .input-reposit {
-        font-family: 'Sora', system-ui, sans-serif;
-        background: oklch(99% 0.005 280);
-        border: 1.5px solid oklch(90% 0.02 280);
-        border-radius: 14px;
-        padding: 0.875rem 1.25rem;
-        transition: all 0.2s ease;
-      }
-
-      [data-theme="dark"] .input-reposit {
-        background: oklch(20% 0.015 280);
-        border-color: oklch(32% 0.025 280);
-      }
-
-      .input-reposit:focus {
-        outline: none;
-        border-color: oklch(60% 0.15 280);
-        box-shadow: 0 0 0 3px oklch(60% 0.15 280 / 0.15);
-      }
-
-      .badge-reposit {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-        font-weight: 500;
-        padding: 0.35rem 0.75rem;
-        border-radius: 100px;
-        background: oklch(94% 0.02 280);
-        color: oklch(45% 0.05 280);
-      }
-
-      [data-theme="dark"] .badge-reposit {
-        background: oklch(28% 0.025 280);
-        color: oklch(75% 0.03 280);
-      }
-
       .mono { font-family: 'JetBrains Mono', monospace; }
 
       .text-muted {
@@ -372,58 +277,58 @@ defmodule RepositWeb.Layouts do
         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center shadow-lg shadow-[oklch(55%_0.2_280_/_0.25)] group-hover:shadow-[oklch(55%_0.2_280_/_0.4)] transition-shadow">
           <Lucideicons.mic class="w-5 h-5 text-white" />
         </div>
-        <span class="text-lg font-bold tracking-tight text-[oklch(25%_0.02_280)] dark:text-[oklch(95%_0.01_280)]">
+        <span class="text-lg font-bold tracking-tight text-base-content">
           Reposit
         </span>
       </a>
-
-      <!-- Desktop navigation -->
+      
+    <!-- Desktop navigation -->
       <div class="hidden md:flex items-center gap-1">
         <a
           href={~p"/"}
-          class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+          class="px-4 py-2 text-sm font-medium text-base-content/60 hover:text-base-content hover:bg-base-200 rounded-xl transition-all"
         >
           Home
         </a>
         <a
           href={~p"/install"}
-          class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+          class="px-4 py-2 text-sm font-medium text-base-content/60 hover:text-base-content hover:bg-base-200 rounded-xl transition-all"
         >
           Install
         </a>
         <a
           href={~p"/solutions"}
-          class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+          class="px-4 py-2 text-sm font-medium text-base-content/60 hover:text-base-content hover:bg-base-200 rounded-xl transition-all"
         >
           Browse
         </a>
         <a
           href={~p"/search"}
-          class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+          class="px-4 py-2 text-sm font-medium text-base-content/60 hover:text-base-content hover:bg-base-200 rounded-xl transition-all"
         >
           Search
         </a>
 
-        <div class="h-5 w-px bg-[oklch(88%_0.02_280)] dark:bg-[oklch(32%_0.03_280)] mx-2"></div>
+        <div class="h-5 w-px bg-base-300 mx-2"></div>
 
         <%= if @current_scope do %>
           <a
             href={~p"/users/settings"}
-            class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+            class="px-4 py-2 text-sm font-medium text-base-content/60 hover:text-base-content hover:bg-base-200 rounded-xl transition-all"
           >
             Settings
           </a>
           <.link
             href={~p"/users/log-out"}
             method="delete"
-            class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+            class="px-4 py-2 text-sm font-medium text-base-content/60 hover:text-base-content hover:bg-base-200 rounded-xl transition-all"
           >
             Log out
           </.link>
         <% else %>
           <a
             href={~p"/users/log-in"}
-            class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+            class="px-4 py-2 text-sm font-medium text-base-content/60 hover:text-base-content hover:bg-base-200 rounded-xl transition-all"
           >
             Sign in
           </a>
@@ -433,8 +338,8 @@ defmodule RepositWeb.Layouts do
           <.theme_toggle />
         </div>
       </div>
-
-      <!-- Mobile menu dropdown -->
+      
+    <!-- Mobile menu dropdown -->
       <div class="dropdown dropdown-end md:hidden">
         <div
           tabindex="0"
@@ -443,7 +348,7 @@ defmodule RepositWeb.Layouts do
         >
           <.icon
             name="menu"
-            class="size-5 text-[oklch(40%_0.02_280)] dark:text-[oklch(80%_0.02_280)]"
+            class="size-5 text-base-content/70"
           />
         </div>
         <ul
@@ -509,7 +414,7 @@ defmodule RepositWeb.Layouts do
     <div class="reposit-page min-h-screen flex flex-col">
       <div class="page-bg"></div>
 
-      <header class="relative z-50 px-6 py-5 lg:px-12 border-b border-[oklch(92%_0.02_280)] dark:border-[oklch(25%_0.02_280)]">
+      <header class="relative z-50 px-6 py-5 lg:px-12 border-b border-base-300">
         <.navbar current_scope={@current_scope} />
       </header>
 
@@ -519,12 +424,12 @@ defmodule RepositWeb.Layouts do
         </div>
       </main>
 
-      <footer class="relative z-10 px-6 lg:px-12 py-8 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(25%_0.02_280)]">
+      <footer class="relative z-10 px-6 lg:px-12 py-8 border-t border-base-300">
         <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)]">
+          <p class="text-sm text-base-content/50">
             Reposit · Agent Knowledge Commons
           </p>
-          <span class="text-sm text-[oklch(60%_0.02_280)] dark:text-[oklch(50%_0.02_280)]">
+          <span class="text-sm text-base-content/40">
             Built with Phoenix LiveView
           </span>
         </div>
@@ -585,8 +490,8 @@ defmodule RepositWeb.Layouts do
   """
   def theme_toggle(assigns) do
     ~H"""
-    <div class="relative flex flex-row items-center border border-[oklch(88%_0.02_280)] dark:border-[oklch(32%_0.03_280)] bg-[oklch(96%_0.01_280)] dark:bg-[oklch(22%_0.02_280)] rounded-full p-0.5">
-      <div class="absolute w-1/2 h-[calc(100%-4px)] rounded-full bg-white dark:bg-[oklch(32%_0.03_280)] shadow-sm left-0.5 [[data-theme=dark]_&]:left-[calc(50%-2px)] transition-[left] duration-200" />
+    <div class="relative flex flex-row items-center border border-base-300 bg-base-200 rounded-full p-0.5">
+      <div class="absolute w-1/2 h-[calc(100%-4px)] rounded-full bg-base-100 shadow-sm left-0.5 [[data-theme=dark]_&]:left-[calc(50%-2px)] transition-[left] duration-200" />
 
       <button
         class="relative z-10 flex p-1.5 cursor-pointer w-1/2 justify-center"
@@ -595,7 +500,7 @@ defmodule RepositWeb.Layouts do
       >
         <.icon
           name="sun"
-          class="size-3.5 text-[oklch(50%_0.02_280)] dark:text-[oklch(70%_0.02_280)]"
+          class="size-3.5 text-base-content/60"
         />
       </button>
 
@@ -606,7 +511,7 @@ defmodule RepositWeb.Layouts do
       >
         <.icon
           name="moon"
-          class="size-3.5 text-[oklch(50%_0.02_280)] dark:text-[oklch(70%_0.02_280)]"
+          class="size-3.5 text-base-content/60"
         />
       </button>
     </div>

@@ -27,7 +27,9 @@
         <.icon name="alert-triangle" class="size-5" />
         <div>
           <p class="font-semibold">Copy your token now - it won't be shown again!</p>
-          <code class="block mt-2 p-2 bg-base-300 rounded text-sm break-all select-all"><%= token %></code>
+          <code class="block mt-2 p-2 bg-base-300 rounded text-sm break-all select-all">
+            {token}
+          </code>
         </div>
       </div>
     <% else %>
@@ -43,7 +45,7 @@
     <form action={~p"/users/settings/regenerate-api-token"} method="post">
       <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
       <button type="submit" class="btn">
-        <%= if @current_scope.user.api_token_hash, do: "Regenerate", else: "Generate" %> API Token
+        {if @current_scope.user.api_token_hash, do: "Regenerate", else: "Generate"} API Token
       </button>
     </form>
   </div>

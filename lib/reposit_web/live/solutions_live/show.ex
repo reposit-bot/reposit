@@ -51,9 +51,9 @@ defmodule RepositWeb.SolutionsLive.Show do
         >
           <Lucideicons.arrow_left class="w-4 h-4" /> Back to Solutions
         </a>
-
+        
     <!-- Main content card -->
-        <div class="card-reposit p-6 lg:p-8">
+        <div class="card card-bordered bg-base-100 p-6 lg:p-8">
           <!-- Problem section -->
           <div class="mb-8">
             <div class="flex items-center gap-3 mb-3">
@@ -64,7 +64,7 @@ defmodule RepositWeb.SolutionsLive.Show do
               {@solution.problem_description}
             </p>
           </div>
-
+          
     <!-- Vote stats - compact horizontal -->
           <div class="flex flex-wrap items-center gap-4 sm:gap-6 py-4 px-4 sm:px-5 rounded-2xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] mb-8">
             <div class="flex items-center gap-2">
@@ -79,7 +79,8 @@ defmodule RepositWeb.SolutionsLive.Show do
               <span class="text-xs text-muted">downvotes</span>
             </div>
 
-            <div class="hidden sm:block h-6 w-px bg-[oklch(90%_0.02_280)] dark:bg-[oklch(30%_0.025_280)]"></div>
+            <div class="hidden sm:block h-6 w-px bg-[oklch(90%_0.02_280)] dark:bg-[oklch(30%_0.025_280)]">
+            </div>
 
             <div class="flex items-center gap-2">
               <span class={"mono text-lg sm:text-xl font-bold #{score_color(@score)}"}>
@@ -88,7 +89,7 @@ defmodule RepositWeb.SolutionsLive.Show do
               <span class="text-xs text-muted">score</span>
             </div>
           </div>
-
+          
     <!-- Solution section -->
           <div>
             <span class="text-xs font-semibold uppercase tracking-wider text-muted mb-4 block">
@@ -98,13 +99,13 @@ defmodule RepositWeb.SolutionsLive.Show do
               {Phoenix.HTML.raw(@markdown_html)}
             </div>
           </div>
-
+          
     <!-- Tags by category -->
           <.tags_by_category tags={@solution.tags} />
-
+          
     <!-- Vote comments -->
           <.vote_comments votes={@solution.votes} />
-
+          
     <!-- Metadata footer -->
           <div class="mt-8 pt-6 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(28%_0.025_280)] flex flex-wrap gap-4 text-xs text-muted">
             <span>Created {format_date(@solution.inserted_at)}</span>
@@ -126,7 +127,7 @@ defmodule RepositWeb.SolutionsLive.Show do
     <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1.5">
       <span
         :for={tag <- @all_tags}
-        class={"badge-reposit text-[0.65rem] py-0.5 px-2 #{tag_color(tag.category)}"}
+        class={"badge badge-sm font-mono #{tag_color(tag.category)}"}
       >
         {tag.value}
       </span>
@@ -152,7 +153,7 @@ defmodule RepositWeb.SolutionsLive.Show do
           <div class="flex flex-wrap gap-1.5">
             <span
               :for={value <- values}
-              class={"badge-reposit text-xs py-1 #{tag_color(category)}"}
+              class={"badge badge-sm font-mono #{tag_color(category)}"}
             >
               {value}
             </span>
@@ -180,39 +181,15 @@ defmodule RepositWeb.SolutionsLive.Show do
     end)
   end
 
-  defp tag_color("language"),
-    do:
-      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
-
-  defp tag_color(:language),
-    do:
-      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
-
-  defp tag_color("framework"),
-    do:
-      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
-
-  defp tag_color(:framework),
-    do:
-      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
-
-  defp tag_color("domain"),
-    do:
-      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
-
-  defp tag_color(:domain),
-    do:
-      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
-
-  defp tag_color("platform"),
-    do:
-      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
-
-  defp tag_color(:platform),
-    do:
-      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
-
-  defp tag_color(_), do: ""
+  defp tag_color("language"), do: "badge-primary badge-outline"
+  defp tag_color(:language), do: "badge-primary badge-outline"
+  defp tag_color("framework"), do: "badge-secondary badge-outline"
+  defp tag_color(:framework), do: "badge-secondary badge-outline"
+  defp tag_color("domain"), do: "badge-info badge-outline"
+  defp tag_color(:domain), do: "badge-info badge-outline"
+  defp tag_color("platform"), do: "badge-accent badge-outline"
+  defp tag_color(:platform), do: "badge-accent badge-outline"
+  defp tag_color(_), do: "badge-ghost"
 
   defp vote_comments(assigns) do
     # Filter to only votes with comments (downvotes)
@@ -233,7 +210,7 @@ defmodule RepositWeb.SolutionsLive.Show do
           class="p-4 rounded-xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] border-l-3 border-[oklch(60%_0.2_25)]"
         >
           <div class="flex items-center gap-2 mb-2">
-            <span class="badge-reposit text-[0.65rem] py-0.5 bg-[oklch(92%_0.03_25)] dark:bg-[oklch(30%_0.05_25)] text-[oklch(50%_0.15_25)] dark:text-[oklch(75%_0.12_25)]">
+            <span class="badge badge-sm badge-warning badge-outline font-mono">
               {reason_label(vote.reason)}
             </span>
             <span class="text-xs text-muted">{format_date(vote.inserted_at)}</span>

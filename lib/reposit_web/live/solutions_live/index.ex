@@ -133,7 +133,7 @@ defmodule RepositWeb.SolutionsLive.Index do
             </div>
           </div>
         </div>
-
+        
     <!-- Empty State -->
         <div
           :if={@total == 0}
@@ -147,13 +147,13 @@ defmodule RepositWeb.SolutionsLive.Index do
             <p class="text-base-content/60">Be the first to contribute!</p>
           </div>
         </div>
-
+        
     <!-- Solutions List -->
         <div
           :if={@total > 0}
           id="solutions"
           phx-update="stream"
-          class="card-reposit divide-y divide-[oklch(92%_0.02_280)] dark:divide-[oklch(28%_0.025_280)]"
+          class="card card-bordered bg-base-100 divide-y divide-base-300"
         >
           <.solution_row
             :for={{dom_id, solution} <- @streams.solutions}
@@ -161,7 +161,7 @@ defmodule RepositWeb.SolutionsLive.Index do
             solution={solution}
           />
         </div>
-
+        
     <!-- Infinite scroll sentinel -->
         <div
           :if={not @end_of_list and @total > 0}
@@ -175,7 +175,7 @@ defmodule RepositWeb.SolutionsLive.Index do
           </div>
           <span :if={not @loading} class="text-muted text-sm">Scroll for more...</span>
         </div>
-
+        
     <!-- End of list message -->
         <div
           :if={@end_of_list and @total > 0}
@@ -208,7 +208,7 @@ defmodule RepositWeb.SolutionsLive.Index do
           {@solution.upvotes}↑ {downvotes(@solution)}↓
         </span>
       </div>
-
+      
     <!-- Main content -->
       <div class="flex-1 min-w-0">
         <h3 class="font-medium text-[oklch(25%_0.02_280)] dark:text-[oklch(92%_0.01_280)] line-clamp-2 sm:line-clamp-1">
@@ -239,11 +239,11 @@ defmodule RepositWeb.SolutionsLive.Index do
     <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1.5">
       <span
         :for={tag <- Enum.take(@all_tags, 3)}
-        class={"badge-reposit text-[0.65rem] py-0.5 px-2 #{tag_color(tag.category)}"}
+        class={"badge badge-sm font-mono #{tag_color(tag.category)}"}
       >
         {tag.value}
       </span>
-      <span :if={length(@all_tags) > 3} class="badge-reposit text-[0.65rem] py-0.5 px-2">
+      <span :if={length(@all_tags) > 3} class="badge badge-sm font-mono">
         +{length(@all_tags) - 3}
       </span>
     </div>
@@ -259,39 +259,15 @@ defmodule RepositWeb.SolutionsLive.Index do
     end)
   end
 
-  defp tag_color("language"),
-    do:
-      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
-
-  defp tag_color(:language),
-    do:
-      "bg-[oklch(90%_0.05_280)] dark:bg-[oklch(30%_0.05_280)] text-[oklch(45%_0.1_280)] dark:text-[oklch(80%_0.1_280)]"
-
-  defp tag_color("framework"),
-    do:
-      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
-
-  defp tag_color(:framework),
-    do:
-      "bg-[oklch(90%_0.05_320)] dark:bg-[oklch(30%_0.05_320)] text-[oklch(45%_0.1_320)] dark:text-[oklch(80%_0.1_320)]"
-
-  defp tag_color("domain"),
-    do:
-      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
-
-  defp tag_color(:domain),
-    do:
-      "bg-[oklch(90%_0.05_200)] dark:bg-[oklch(30%_0.05_200)] text-[oklch(45%_0.1_200)] dark:text-[oklch(80%_0.1_200)]"
-
-  defp tag_color("platform"),
-    do:
-      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
-
-  defp tag_color(:platform),
-    do:
-      "bg-[oklch(90%_0.05_240)] dark:bg-[oklch(30%_0.05_240)] text-[oklch(45%_0.1_240)] dark:text-[oklch(80%_0.1_240)]"
-
-  defp tag_color(_), do: ""
+  defp tag_color("language"), do: "badge-primary badge-outline"
+  defp tag_color(:language), do: "badge-primary badge-outline"
+  defp tag_color("framework"), do: "badge-secondary badge-outline"
+  defp tag_color(:framework), do: "badge-secondary badge-outline"
+  defp tag_color("domain"), do: "badge-info badge-outline"
+  defp tag_color(:domain), do: "badge-info badge-outline"
+  defp tag_color("platform"), do: "badge-accent badge-outline"
+  defp tag_color(:platform), do: "badge-accent badge-outline"
+  defp tag_color(_), do: "badge-ghost"
 
   defp score_color(score) when score > 0, do: "text-[oklch(55%_0.15_145)]"
   defp score_color(score) when score < 0, do: "text-[oklch(60%_0.2_25)]"

@@ -15,7 +15,7 @@ defmodule Reposit.Accounts.UserNotifier do
       |> text_body(body)
 
     case Mailer.deliver(email) do
-      {:ok, metadata} ->
+      {:ok, _metadata} ->
         Logger.info("Email sent to #{recipient}: #{subject}")
         {:ok, email}
 
