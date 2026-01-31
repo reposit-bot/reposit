@@ -15,6 +15,11 @@ defmodule ChorusWeb.Router do
     plug ChorusWeb.Plugs.RateLimit, action: :api
   end
 
+  pipeline :api_search do
+    plug :accepts, ["json"]
+    plug ChorusWeb.Plugs.RateLimit, action: :search
+  end
+
   pipeline :api_create do
     plug :accepts, ["json"]
     plug ChorusWeb.Plugs.RateLimit, action: :create_solution
@@ -37,11 +42,17 @@ defmodule ChorusWeb.Router do
   end
 
   # API endpoints with rate limiting
+  # Note: search route must be defined before :id to avoid matching "search" as an ID
+  scope "/api/v1", ChorusWeb.Api.V1 do
+    pipe_through :api_search
+
+    get "/solutions/search", SolutionsController, :search
+  end
+
   scope "/api/v1", ChorusWeb.Api.V1 do
     pipe_through :api
 
     get "/health", HealthController, :index
-    get "/solutions/search", SolutionsController, :search
     get "/solutions/:id", SolutionsController, :show
   end
 

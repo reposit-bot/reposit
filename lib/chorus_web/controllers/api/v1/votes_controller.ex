@@ -91,6 +91,15 @@ defmodule ChorusWeb.Api.V1.VotesController do
           hint: "Solution not found"
         })
 
+      {:error, :content_unsafe} ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{
+          success: false,
+          error: "content_unsafe",
+          hint: "Comment contains potentially unsafe patterns. Please revise and try again."
+        })
+
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)

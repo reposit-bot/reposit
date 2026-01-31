@@ -7,6 +7,7 @@ defmodule Chorus.Solutions do
   alias Chorus.Repo
   alias Chorus.Solutions.Solution
   alias Chorus.Embeddings
+  alias Chorus.ContentSafety
 
   @doc """
   Creates a solution with automatic embedding generation.
@@ -22,8 +23,20 @@ defmodule Chorus.Solutions do
       })
 
   """
-  @spec create_solution(map()) :: {:ok, Solution.t()} | {:error, Ecto.Changeset.t()}
+  @spec create_solution(map()) ::
+          {:ok, Solution.t()} | {:error, Ecto.Changeset.t() | :content_unsafe}
   def create_solution(attrs) do
+    # Check content safety before processing
+    case check_content_safety(attrs) do
+      :ok ->
+        create_solution_unsafe(attrs)
+
+      {:error, :content_unsafe} = error ->
+        error
+    end
+  end
+
+  defp create_solution_unsafe(attrs) do
     changeset = Solution.changeset(%Solution{}, attrs)
 
     if changeset.valid? do
@@ -43,6 +56,32 @@ defmodule Chorus.Solutions do
       end
     else
       {:error, changeset}
+    end
+  end
+
+  defp check_content_safety(attrs) do
+    problem = Map.get(attrs, :problem_description) || Map.get(attrs, "problem_description") || ""
+    solution = Map.get(attrs, :solution_pattern) || Map.get(attrs, "solution_pattern") || ""
+
+    # context_requirements is a map, so we need to convert it to a string for safety check
+    context = Map.get(attrs, :context_requirements) || Map.get(attrs, "context_requirements")
+
+    context_str =
+      case context do
+        nil -> ""
+        ctx when is_map(ctx) -> Jason.encode!(ctx)
+        ctx when is_binary(ctx) -> ctx
+        _ -> ""
+      end
+
+    content = "#{problem}\n#{solution}\n#{context_str}"
+
+    if ContentSafety.risky?(content) do
+      require Logger
+      Logger.warning("Content safety check failed for solution submission")
+      {:error, :content_unsafe}
+    else
+      :ok
     end
   end
 

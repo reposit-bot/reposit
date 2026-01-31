@@ -21,6 +21,15 @@ defmodule ChorusWeb.Api.V1.SolutionsController do
           data: solution_json(solution)
         })
 
+      {:error, :content_unsafe} ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{
+          success: false,
+          error: "content_unsafe",
+          hint: "Content contains potentially unsafe patterns. Please revise and try again."
+        })
+
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)

@@ -7,6 +7,7 @@ defmodule Chorus.Votes do
   alias Chorus.Repo
   alias Chorus.Votes.Vote
   alias Chorus.Solutions.Solution
+  alias Chorus.ContentSafety
 
   @doc """
   Creates a vote on a solution.
@@ -22,8 +23,20 @@ defmodule Chorus.Votes do
       })
 
   """
-  @spec create_vote(map()) :: {:ok, Vote.t()} | {:error, Ecto.Changeset.t() | :solution_not_found}
+  @spec create_vote(map()) ::
+          {:ok, Vote.t()} | {:error, Ecto.Changeset.t() | :solution_not_found | :content_unsafe}
   def create_vote(attrs) do
+    # Check content safety on comment if present
+    case check_comment_safety(attrs) do
+      :ok ->
+        create_vote_unsafe(attrs)
+
+      {:error, :content_unsafe} = error ->
+        error
+    end
+  end
+
+  defp create_vote_unsafe(attrs) do
     solution_id = Map.get(attrs, :solution_id) || Map.get(attrs, "solution_id")
 
     # Verify solution exists
@@ -45,6 +58,18 @@ defmodule Chorus.Votes do
               Repo.rollback(changeset)
           end
         end)
+    end
+  end
+
+  defp check_comment_safety(attrs) do
+    comment = Map.get(attrs, :comment) || Map.get(attrs, "comment")
+
+    if comment && ContentSafety.risky?(comment) do
+      require Logger
+      Logger.warning("Content safety check failed for vote comment")
+      {:error, :content_unsafe}
+    else
+      :ok
     end
   end
 
