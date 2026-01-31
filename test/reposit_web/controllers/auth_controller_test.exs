@@ -115,6 +115,62 @@ defmodule RepositWeb.AuthControllerTest do
     end
   end
 
+  describe "callback/2 when user is already logged in (account linking)" do
+    setup :register_and_log_in_user
+
+    test "links Google account to logged-in user", %{conn: conn, user: user} do
+      auth =
+        build_ueberauth_auth(:google, "google_link_new", "different@example.com", "OAuth Name")
+
+      conn =
+        conn
+        |> assign(:ueberauth_auth, auth)
+        |> get(~p"/auth/google/callback")
+
+      assert redirected_to(conn) == ~p"/users/settings"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Google account connected"
+
+      updated_user = Reposit.Accounts.get_user!(user.id)
+      assert updated_user.google_uid == "google_link_new"
+    end
+
+    test "links GitHub account to logged-in user", %{conn: conn, user: user} do
+      auth =
+        build_ueberauth_auth(:github, "github_link_new", "different@example.com", "OAuth Name")
+
+      conn =
+        conn
+        |> assign(:ueberauth_auth, auth)
+        |> get(~p"/auth/github/callback")
+
+      assert redirected_to(conn) == ~p"/users/settings"
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "account connected"
+
+      updated_user = Reposit.Accounts.get_user!(user.id)
+      assert updated_user.github_uid == "github_link_new"
+    end
+
+    test "shows error when OAuth account is already linked to another user", %{conn: conn} do
+      # Create another user with Google linked
+      other_user = user_fixture()
+
+      other_user
+      |> Ecto.Changeset.change(google_uid: "google_taken")
+      |> Reposit.Repo.update!()
+
+      # Try to link the same Google account to logged-in user
+      auth = build_ueberauth_auth(:google, "google_taken", "other@example.com", "Other User")
+
+      conn =
+        conn
+        |> assign(:ueberauth_auth, auth)
+        |> get(~p"/auth/google/callback")
+
+      assert redirected_to(conn) == ~p"/users/settings"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "already linked to another user"
+    end
+  end
+
   defp build_ueberauth_auth(provider, uid, email, name) do
     %Ueberauth.Auth{
       uid: uid,

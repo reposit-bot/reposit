@@ -1,6 +1,10 @@
 defmodule RepositWeb.AuthController do
   @moduledoc """
   Handles OAuth authentication callbacks from Ueberauth providers (Google, GitHub).
+
+  Supports two flows:
+  1. Sign in/up: User is not logged in, OAuth creates or finds their account
+  2. Account linking: User is already logged in, OAuth links provider to their account
   """
   use RepositWeb, :controller
 
@@ -11,11 +15,42 @@ defmodule RepositWeb.AuthController do
 
   @doc """
   Handles the OAuth callback from providers.
-  On success, logs the user in. On failure, redirects to login with an error.
+  On success, logs the user in (or links account if already logged in).
+  On failure, redirects with an error.
   """
   def callback(conn, params)
 
+  def callback(%{assigns: %{ueberauth_auth: auth, current_scope: %{user: user}}} = conn, %{
+        "provider" => provider
+      })
+      when not is_nil(user) do
+    # User is already logged in - link the OAuth account
+    user_info = extract_user_info(auth)
+    provider_name = String.capitalize(provider)
+
+    result =
+      case provider do
+        "google" -> Accounts.link_google_account(user, user_info)
+        "github" -> Accounts.link_github_account(user, user_info)
+      end
+
+    case result do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "#{provider_name} account connected successfully!")
+        |> redirect(to: ~p"/users/settings")
+
+      {:error, changeset} ->
+        error_message = link_error_message(changeset, provider_name)
+
+        conn
+        |> put_flash(:error, error_message)
+        |> redirect(to: ~p"/users/settings")
+    end
+  end
+
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, %{"provider" => provider}) do
+    # User is not logged in - sign in or create account
     user_info = extract_user_info(auth)
 
     result =
@@ -62,6 +97,17 @@ defmodule RepositWeb.AuthController do
       "Welcome, #{user.name}!"
     else
       "Welcome!"
+    end
+  end
+
+  defp link_error_message(changeset, provider_name) do
+    cond do
+      Keyword.has_key?(changeset.errors, :google_uid) or
+          Keyword.has_key?(changeset.errors, :github_uid) ->
+        "This #{provider_name} account is already linked to another user."
+
+      true ->
+        "Failed to connect #{provider_name} account. Please try again."
     end
   end
 end
