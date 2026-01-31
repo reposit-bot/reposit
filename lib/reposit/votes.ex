@@ -132,6 +132,38 @@ defmodule Reposit.Votes do
   end
 
   @doc """
+  Deletes a vote by solution and user ID.
+
+  Adjusts the solution's vote count atomically.
+
+  ## Examples
+
+      {:ok, vote} = delete_vote(solution_id, user_id)
+      {:error, :not_found} = delete_vote(solution_id, nonexistent_user_id)
+
+  """
+  @spec delete_vote(binary(), integer()) :: {:ok, Vote.t()} | {:error, :not_found}
+  def delete_vote(solution_id, user_id) do
+    case get_vote(solution_id, user_id) do
+      nil ->
+        {:error, :not_found}
+
+      vote ->
+        Repo.transaction(fn ->
+          case Repo.delete(vote) do
+            {:ok, deleted_vote} ->
+              # Decrement the appropriate vote count
+              update_solution_vote_count(solution_id, vote.vote_type, :remove)
+              deleted_vote
+
+            {:error, changeset} ->
+              Repo.rollback(changeset)
+          end
+        end)
+    end
+  end
+
+  @doc """
   Returns vote types.
   """
   def vote_types, do: Vote.vote_types()

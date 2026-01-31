@@ -238,6 +238,34 @@ defmodule Reposit.VotesTest do
     end
   end
 
+  describe "delete_vote/2" do
+    test "deletes vote and adjusts solution counts", %{solution: solution, voter: voter} do
+      {:ok, _vote} = Votes.create_vote(%{
+        solution_id: solution.id,
+        user_id: voter.id,
+        vote_type: :up
+      })
+
+      # Verify vote exists and count is updated
+      {:ok, solution_with_vote} = Solutions.get_solution(solution.id)
+      assert solution_with_vote.upvotes == 1
+
+      # Delete vote
+      assert {:ok, _} = Votes.delete_vote(solution.id, voter.id)
+
+      # Vote should be gone
+      assert nil == Votes.get_vote(solution.id, voter.id)
+
+      # Solution count should be decremented
+      {:ok, solution_after} = Solutions.get_solution(solution.id)
+      assert solution_after.upvotes == 0
+    end
+
+    test "returns error when no vote exists", %{solution: solution, voter: voter} do
+      assert {:error, :not_found} = Votes.delete_vote(solution.id, voter.id)
+    end
+  end
+
   describe "get_vote/2" do
     test "returns vote when found", %{solution: solution, voter: voter} do
       attrs = %{

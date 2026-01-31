@@ -147,6 +147,16 @@ defmodule RepositWeb.SolutionsLive.Show do
               <a href={~p"/users/log-in"} class="text-primary hover:underline">Log in</a>
               to vote
             </div>
+
+            <!-- Remove vote button -->
+            <button
+              :if={logged_in?(@current_scope) && @user_vote}
+              phx-click="remove-vote"
+              disabled={@voting}
+              class="text-xs text-muted hover:text-error transition-colors"
+            >
+              Remove vote
+            </button>
           </div>
 
     <!-- Downvote form modal -->
@@ -310,6 +320,31 @@ defmodule RepositWeb.SolutionsLive.Show do
 
   def handle_event("cancel-delete", _params, socket) do
     {:noreply, assign(socket, :show_delete_confirm, false)}
+  end
+
+  def handle_event("remove-vote", _params, socket) do
+    user = socket.assigns.current_scope.user
+    solution = socket.assigns.solution
+
+    socket = assign(socket, :voting, true)
+
+    case Votes.delete_vote(solution.id, user.id) do
+      {:ok, _} ->
+        # Reload solution to get updated counts
+        {:ok, updated_solution} = Solutions.get_solution_with_votes(solution.id, votes_limit: 10)
+
+        {:noreply,
+         socket
+         |> assign(:solution, updated_solution)
+         |> assign(:user_vote, nil)
+         |> assign(:voting, false)}
+
+      {:error, :not_found} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "No vote found to remove")
+         |> assign(:voting, false)}
+    end
   end
 
   def handle_event("delete-solution", _params, socket) do

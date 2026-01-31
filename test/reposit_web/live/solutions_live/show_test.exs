@@ -418,6 +418,80 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert updated_solution.downvotes == 1
     end
 
+    test "user can remove their upvote", %{conn: conn, user: user, voter: voter} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for removing upvote",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      # Create an upvote
+      {:ok, _} = Votes.create_vote(%{solution_id: solution.id, user_id: voter.id, vote_type: :up})
+
+      conn = log_in_user(conn, voter)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      # Should see remove vote button
+      assert has_element?(view, "button[phx-click='remove-vote']")
+
+      # Remove the vote
+      view |> element("button[phx-click='remove-vote']") |> render_click()
+
+      # Vote should be removed - no more remove button
+      refute has_element?(view, "button[phx-click='remove-vote']")
+
+      # Solution counts should be updated
+      {:ok, updated} = Solutions.get_solution(solution.id)
+      assert updated.upvotes == 0
+    end
+
+    test "user can remove their downvote", %{conn: conn, user: user, voter: voter} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for removing downvote",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      # Create a downvote
+      {:ok, _} = Votes.create_vote(%{
+        solution_id: solution.id,
+        user_id: voter.id,
+        vote_type: :down,
+        comment: "This has issues with the approach",
+        reason: :incorrect
+      })
+
+      conn = log_in_user(conn, voter)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      # Remove the vote
+      view |> element("button[phx-click='remove-vote']") |> render_click()
+
+      # Solution counts should be updated
+      {:ok, updated} = Solutions.get_solution(solution.id)
+      assert updated.downvotes == 0
+    end
+
+    test "remove vote button not shown when no vote", %{conn: conn, user: user, voter: voter} do
+      {:ok, solution} =
+        create_solution(
+          "Test problem for no vote",
+          "This is a detailed solution pattern that helps solve the problem effectively",
+          %{},
+          user.id
+        )
+
+      conn = log_in_user(conn, voter)
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      # Should not see remove vote button
+      refute has_element?(view, "button[phx-click='remove-vote']")
+    end
+
     test "shows user's existing vote", %{conn: conn, user: user, voter: voter} do
       {:ok, solution} =
         create_solution(
