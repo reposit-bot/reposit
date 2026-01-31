@@ -58,6 +58,8 @@ defmodule RepositWeb.Router do
       live "/solutions", SolutionsLive.Index
       live "/solutions/:id", SolutionsLive.Show
       live "/search", SearchLive
+      live "/terms", TermsLive
+      live "/privacy", PrivacyLive
     end
 
     live_session :admin,

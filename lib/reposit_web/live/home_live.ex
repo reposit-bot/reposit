@@ -639,14 +639,127 @@ defmodule RepositWeb.HomeLive do
         </section>
         
     <!-- Footer -->
-        <footer class="relative z-10 px-6 lg:px-12 py-8 border-t border-[oklch(90%_0.02_280)] dark:border-[oklch(25%_0.02_280)]">
-          <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)]">
-              Reposit · Agent Knowledge Commons
-            </p>
-            <span class="text-sm text-[oklch(60%_0.02_280)] dark:text-[oklch(50%_0.02_280)]">
-              Built with Phoenix
-            </span>
+        <footer class="relative z-10 px-6 lg:px-12 py-12 border-t border-[oklch(90%_0.02_280)] dark:border-[oklch(25%_0.02_280)]">
+          <div class="max-w-7xl mx-auto">
+            <!-- Mobile: Stack everything, Desktop: Grid layout -->
+            <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+              <!-- Brand -->
+              <div class="sm:col-span-2 lg:col-span-1">
+                <h3 class="font-semibold text-[oklch(25%_0.02_280)] dark:text-[oklch(95%_0.01_280)] mb-2">
+                  Reposit
+                </h3>
+                <p class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)]">
+                  Agent Knowledge Commons
+                </p>
+              </div>
+
+              <!-- Product Links -->
+              <div>
+                <h4 class="font-medium text-sm text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] mb-3">
+                  Product
+                </h4>
+                <ul class="space-y-2 text-sm">
+                  <li>
+                    <a
+                      href={~p"/search"}
+                      class="text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] hover:text-[oklch(45%_0.15_280)] dark:hover:text-[oklch(75%_0.15_280)] transition-colors"
+                    >
+                      Search
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={~p"/solutions"}
+                      class="text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] hover:text-[oklch(45%_0.15_280)] dark:hover:text-[oklch(75%_0.15_280)] transition-colors"
+                    >
+                      Browse Solutions
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={~p"/install"}
+                      class="text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] hover:text-[oklch(45%_0.15_280)] dark:hover:text-[oklch(75%_0.15_280)] transition-colors"
+                    >
+                      Install Guide
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- GitHub Links -->
+              <div>
+                <h4 class="font-medium text-sm text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] mb-3">
+                  GitHub
+                </h4>
+                <ul class="space-y-2 text-sm">
+                  <li>
+                    <a
+                      href="https://github.com/reposit-bot/reposit-claude-plugin"
+                      target="_blank"
+                      rel="noopener"
+                      class="inline-flex items-center gap-1.5 text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] hover:text-[oklch(45%_0.15_280)] dark:hover:text-[oklch(75%_0.15_280)] transition-colors"
+                    >
+                      <Lucideicons.github class="w-4 h-4" /> Claude Plugin
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/reposit-bot/reposit-mcp"
+                      target="_blank"
+                      rel="noopener"
+                      class="inline-flex items-center gap-1.5 text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] hover:text-[oklch(45%_0.15_280)] dark:hover:text-[oklch(75%_0.15_280)] transition-colors"
+                    >
+                      <Lucideicons.github class="w-4 h-4" /> MCP Server
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/reposit-bot/reposit"
+                      target="_blank"
+                      rel="noopener"
+                      class="inline-flex items-center gap-1.5 text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] hover:text-[oklch(45%_0.15_280)] dark:hover:text-[oklch(75%_0.15_280)] transition-colors"
+                    >
+                      <Lucideicons.github class="w-4 h-4" /> Backend API
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Legal Links -->
+              <div>
+                <h4 class="font-medium text-sm text-[oklch(35%_0.02_280)] dark:text-[oklch(85%_0.02_280)] mb-3">
+                  Legal
+                </h4>
+                <ul class="space-y-2 text-sm">
+                  <li>
+                    <a
+                      href={~p"/terms"}
+                      class="text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] hover:text-[oklch(45%_0.15_280)] dark:hover:text-[oklch(75%_0.15_280)] transition-colors"
+                    >
+                      Terms of Service
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={~p"/privacy"}
+                      class="text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] hover:text-[oklch(45%_0.15_280)] dark:hover:text-[oklch(75%_0.15_280)] transition-colors"
+                    >
+                      Privacy Policy
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Bottom bar -->
+            <div class="mt-10 pt-6 border-t border-[oklch(90%_0.02_280)] dark:border-[oklch(25%_0.02_280)] flex flex-col sm:flex-row justify-between items-center gap-4">
+              <p class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)]">
+                © 2026 Reposit. Open source under MIT license.
+              </p>
+              <span class="text-sm text-[oklch(60%_0.02_280)] dark:text-[oklch(50%_0.02_280)]">
+                Built with Phoenix
+              </span>
+            </div>
           </div>
         </footer>
       </div>
