@@ -451,6 +451,194 @@ defmodule Reposit.AccountsTest do
     end
   end
 
+  describe "get_or_create_user_from_google/1" do
+    test "creates new user when email doesn't exist" do
+      auth_info = %{
+        uid: "google_12345",
+        email: "newuser@example.com",
+        name: "New User",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, user} = Accounts.get_or_create_user_from_google(auth_info)
+      assert user.email == "newuser@example.com"
+      assert user.google_uid == "google_12345"
+      assert user.name == "New User"
+      assert user.avatar_url == "https://example.com/avatar.jpg"
+      assert user.confirmed_at != nil
+    end
+
+    test "links Google to existing user with same email" do
+      existing_user = user_fixture()
+
+      auth_info = %{
+        uid: "google_12345",
+        email: existing_user.email,
+        name: "Google Name",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, user} = Accounts.get_or_create_user_from_google(auth_info)
+      assert user.id == existing_user.id
+      assert user.google_uid == "google_12345"
+    end
+
+    test "returns existing user when google_uid already exists" do
+      existing_user = user_with_google_fixture()
+
+      auth_info = %{
+        uid: existing_user.google_uid,
+        email: "different@example.com",
+        name: "Name",
+        avatar_url: nil
+      }
+
+      assert {:ok, user} = Accounts.get_or_create_user_from_google(auth_info)
+      assert user.id == existing_user.id
+    end
+  end
+
+  describe "get_or_create_user_from_github/1" do
+    test "creates new user when email doesn't exist" do
+      auth_info = %{
+        uid: "github_12345",
+        email: "newuser@example.com",
+        name: "New User",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, user} = Accounts.get_or_create_user_from_github(auth_info)
+      assert user.email == "newuser@example.com"
+      assert user.github_uid == "github_12345"
+      assert user.name == "New User"
+      assert user.avatar_url == "https://example.com/avatar.jpg"
+      assert user.confirmed_at != nil
+    end
+
+    test "links GitHub to existing user with same email" do
+      existing_user = user_fixture()
+
+      auth_info = %{
+        uid: "github_12345",
+        email: existing_user.email,
+        name: "GitHub Name",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, user} = Accounts.get_or_create_user_from_github(auth_info)
+      assert user.id == existing_user.id
+      assert user.github_uid == "github_12345"
+    end
+
+    test "returns existing user when github_uid already exists" do
+      existing_user = user_with_github_fixture()
+
+      auth_info = %{
+        uid: existing_user.github_uid,
+        email: "different@example.com",
+        name: "Name",
+        avatar_url: nil
+      }
+
+      assert {:ok, user} = Accounts.get_or_create_user_from_github(auth_info)
+      assert user.id == existing_user.id
+    end
+  end
+
+  describe "link_google_account/2" do
+    test "links Google account to user" do
+      user = user_fixture()
+
+      auth_info = %{
+        uid: "google_link_123",
+        name: "Google Name",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, updated_user} = Accounts.link_google_account(user, auth_info)
+      assert updated_user.google_uid == "google_link_123"
+    end
+
+    test "fails if google_uid is already taken" do
+      existing = user_with_google_fixture()
+      user = user_fixture()
+
+      auth_info = %{
+        uid: existing.google_uid,
+        name: nil,
+        avatar_url: nil
+      }
+
+      assert {:error, changeset} = Accounts.link_google_account(user, auth_info)
+      assert {"has already been taken", _} = changeset.errors[:google_uid]
+    end
+  end
+
+  describe "link_github_account/2" do
+    test "links GitHub account to user" do
+      user = user_fixture()
+
+      auth_info = %{
+        uid: "github_link_123",
+        name: "GitHub Name",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, updated_user} = Accounts.link_github_account(user, auth_info)
+      assert updated_user.github_uid == "github_link_123"
+    end
+
+    test "fails if github_uid is already taken" do
+      existing = user_with_github_fixture()
+      user = user_fixture()
+
+      auth_info = %{
+        uid: existing.github_uid,
+        name: nil,
+        avatar_url: nil
+      }
+
+      assert {:error, changeset} = Accounts.link_github_account(user, auth_info)
+      assert {"has already been taken", _} = changeset.errors[:github_uid]
+    end
+  end
+
+  describe "unlink_oauth_provider/2" do
+    test "unlinks Google account" do
+      user = user_with_google_fixture()
+      assert user.google_uid != nil
+
+      assert {:ok, updated_user} = Accounts.unlink_oauth_provider(user, :google)
+      assert updated_user.google_uid == nil
+    end
+
+    test "unlinks GitHub account" do
+      user = user_with_github_fixture()
+      assert user.github_uid != nil
+
+      assert {:ok, updated_user} = Accounts.unlink_oauth_provider(user, :github)
+      assert updated_user.github_uid == nil
+    end
+  end
+
+  describe "update_user_profile/2" do
+    test "updates user name" do
+      user = user_fixture()
+
+      assert {:ok, updated_user} = Accounts.update_user_profile(user, %{"name" => "New Name"})
+      assert updated_user.name == "New Name"
+    end
+
+    test "allows empty name" do
+      user = user_fixture()
+      {:ok, user} = Accounts.update_user_profile(user, %{"name" => "Some Name"})
+
+      assert {:ok, updated_user} = Accounts.update_user_profile(user, %{"name" => ""})
+      # Empty string is cast to nil
+      assert updated_user.name == nil
+    end
+  end
+
   describe "delete_user/1" do
     test "deletes the user" do
       user = user_fixture()
@@ -476,7 +664,8 @@ defmodule Reposit.AccountsTest do
       {:ok, solution} =
         Reposit.Solutions.create_solution(scope, %{
           problem_description: "Test problem description that is long enough for validation",
-          solution_pattern: "Test solution pattern that is also long enough to pass the minimum character validation requirement"
+          solution_pattern:
+            "Test solution pattern that is also long enough to pass the minimum character validation requirement"
         })
 
       {:ok, _} = Accounts.delete_user(user)
@@ -492,7 +681,8 @@ defmodule Reposit.AccountsTest do
       {:ok, solution} =
         Reposit.Solutions.create_solution(author_scope, %{
           problem_description: "Test problem description that is long enough for validation",
-          solution_pattern: "Test solution pattern that is also long enough to pass the minimum character validation requirement"
+          solution_pattern:
+            "Test solution pattern that is also long enough to pass the minimum character validation requirement"
         })
 
       # Create voter

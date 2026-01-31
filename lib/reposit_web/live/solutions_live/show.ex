@@ -43,7 +43,9 @@ defmodule RepositWeb.SolutionsLive.Show do
 
   defp is_author?(nil, _solution), do: false
   defp is_author?(%{user: nil}, _solution), do: false
-  defp is_author?(%{user: %{id: user_id}}, %{user_id: solution_user_id}), do: user_id == solution_user_id
+
+  defp is_author?(%{user: %{id: user_id}}, %{user_id: solution_user_id}),
+    do: user_id == solution_user_id
 
   defp get_user_vote(socket, solution_id) do
     case socket.assigns[:current_scope] do
@@ -114,8 +116,8 @@ defmodule RepositWeb.SolutionsLive.Show do
               <span class="mono font-semibold text-[oklch(55%_0.15_145)]">{@solution.upvotes}</span>
               <span class="text-xs text-muted">upvotes</span>
             </div>
-
-            <!-- Downvote button -->
+            
+    <!-- Downvote button -->
             <button
               :if={logged_in?(@current_scope)}
               phx-click="show-downvote-form"
@@ -141,14 +143,13 @@ defmodule RepositWeb.SolutionsLive.Show do
               </span>
               <span class="text-xs text-muted">score</span>
             </div>
-
-            <!-- Login prompt for guests -->
+            
+    <!-- Login prompt for guests -->
             <div :if={!logged_in?(@current_scope)} class="text-xs text-muted">
-              <a href={~p"/users/log-in"} class="text-primary hover:underline">Log in</a>
-              to vote
+              <a href={~p"/users/log-in"} class="text-primary hover:underline">Log in</a> to vote
             </div>
-
-            <!-- Remove vote button -->
+            
+    <!-- Remove vote button -->
             <button
               :if={logged_in?(@current_scope) && @user_vote}
               phx-click="remove-vote"
@@ -158,7 +159,7 @@ defmodule RepositWeb.SolutionsLive.Show do
               Remove vote
             </button>
           </div>
-
+          
     <!-- Downvote form modal -->
           <div
             :if={@show_downvote_form}
@@ -235,8 +236,8 @@ defmodule RepositWeb.SolutionsLive.Show do
             <span :if={@solution.updated_at != @solution.inserted_at}>
               · Updated {format_date(@solution.updated_at)}
             </span>
-
-            <!-- Delete button for author -->
+            
+    <!-- Delete button for author -->
             <button
               :if={is_author?(@current_scope, @solution)}
               phx-click="show-delete-confirm"
@@ -247,7 +248,7 @@ defmodule RepositWeb.SolutionsLive.Show do
           </div>
         </div>
       </div>
-
+      
     <!-- Delete confirmation modal -->
       <div
         :if={@show_delete_confirm}

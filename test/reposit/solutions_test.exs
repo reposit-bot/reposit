@@ -38,7 +38,9 @@ defmodule Reposit.SolutionsTest do
         solution_pattern: "too short"
       }
 
-      assert {:error, %Ecto.Changeset{} = changeset} = Solutions.create_solution(scope, invalid_attrs)
+      assert {:error, %Ecto.Changeset{} = changeset} =
+               Solutions.create_solution(scope, invalid_attrs)
+
       refute changeset.valid?
     end
 
@@ -245,7 +247,9 @@ defmodule Reposit.SolutionsTest do
 
     test "excludes by exclude tags", %{scope: scope} do
       attrs = valid_attrs()
-      {:ok, _s1} = Solutions.create_solution(scope, Map.merge(attrs, %{tags: %{language: ["elixir"]}}))
+
+      {:ok, _s1} =
+        Solutions.create_solution(scope, Map.merge(attrs, %{tags: %{language: ["elixir"]}}))
 
       {:ok, _s2} =
         Solutions.create_solution(

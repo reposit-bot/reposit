@@ -13,6 +13,12 @@ defmodule Reposit.Accounts.User do
     field(:api_token_hash, :binary, redact: true)
     field(:role, Ecto.Enum, values: @roles, default: :user)
 
+    # OAuth fields
+    field(:google_uid, :string)
+    field(:github_uid, :string)
+    field(:name, :string)
+    field(:avatar_url, :string)
+
     timestamps(type: :utc_datetime)
   end
 
@@ -169,4 +175,81 @@ defmodule Reposit.Accounts.User do
   end
 
   def valid_api_token?(_, _), do: false
+
+  ## OAuth Changesets
+
+  @doc """
+  A user changeset for Google OAuth registration/login.
+  Creates a new user with Google OAuth info, auto-confirmed.
+  """
+  def google_oauth_changeset(user, attrs) do
+    now = DateTime.utc_now(:second)
+
+    user
+    |> cast(attrs, [:email, :google_uid, :name, :avatar_url])
+    |> validate_required([:email, :google_uid])
+    |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+$/,
+      message: "must have the @ sign and no spaces"
+    )
+    |> validate_length(:email, max: 160)
+    |> unsafe_validate_unique(:email, Reposit.Repo)
+    |> unique_constraint(:email)
+    |> unique_constraint(:google_uid)
+    |> put_change(:confirmed_at, now)
+  end
+
+  @doc """
+  A user changeset for GitHub OAuth registration/login.
+  Creates a new user with GitHub OAuth info, auto-confirmed.
+  """
+  def github_oauth_changeset(user, attrs) do
+    now = DateTime.utc_now(:second)
+
+    user
+    |> cast(attrs, [:email, :github_uid, :name, :avatar_url])
+    |> validate_required([:email, :github_uid])
+    |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+$/,
+      message: "must have the @ sign and no spaces"
+    )
+    |> validate_length(:email, max: 160)
+    |> unsafe_validate_unique(:email, Reposit.Repo)
+    |> unique_constraint(:email)
+    |> unique_constraint(:github_uid)
+    |> put_change(:confirmed_at, now)
+  end
+
+  @doc """
+  A user changeset for linking a Google account to an existing user.
+  """
+  def link_google_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:google_uid, :name, :avatar_url])
+    |> validate_required([:google_uid])
+    |> unique_constraint(:google_uid)
+  end
+
+  @doc """
+  A user changeset for linking a GitHub account to an existing user.
+  """
+  def link_github_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:github_uid, :name, :avatar_url])
+    |> validate_required([:github_uid])
+    |> unique_constraint(:github_uid)
+  end
+
+  @doc """
+  A user changeset for unlinking an OAuth provider.
+  Sets the provider UID to nil (keeps avatar_url since user might want to keep it).
+  """
+  def unlink_oauth_changeset(user, :google), do: change(user, google_uid: nil)
+  def unlink_oauth_changeset(user, :github), do: change(user, github_uid: nil)
+
+  @doc """
+  A user changeset for updating profile info (name).
+  """
+  def profile_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:name])
+  end
 end

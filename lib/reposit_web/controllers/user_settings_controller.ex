@@ -36,6 +36,21 @@ defmodule RepositWeb.UserSettingsController do
     end
   end
 
+  def update(conn, %{"action" => "update_profile"} = params) do
+    %{"user" => user_params} = params
+    user = conn.assigns.current_scope.user
+
+    case Accounts.update_user_profile(user, user_params) do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "Profile updated successfully.")
+        |> redirect(to: ~p"/users/settings")
+
+      {:error, changeset} ->
+        render(conn, :edit, profile_changeset: changeset)
+    end
+  end
+
   def confirm_email(conn, %{"token" => token}) do
     case Accounts.update_user_email(conn.assigns.current_scope.user, token) do
       {:ok, _user} ->
@@ -83,10 +98,32 @@ defmodule RepositWeb.UserSettingsController do
     end
   end
 
+  def unlink_oauth(conn, %{"provider" => provider}) do
+    user = conn.assigns.current_scope.user
+    provider_atom = String.to_existing_atom(provider)
+    provider_name = String.capitalize(provider)
+
+    case Accounts.unlink_oauth_provider(user, provider_atom) do
+      {:ok, _user} ->
+        conn
+        |> put_flash(
+          :info,
+          "#{provider_name} account disconnected. You can still sign in with email."
+        )
+        |> redirect(to: ~p"/users/settings")
+
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:error, "Failed to disconnect #{provider_name} account.")
+        |> redirect(to: ~p"/users/settings")
+    end
+  end
+
   defp assign_email_changeset(conn, _opts) do
     user = conn.assigns.current_scope.user
 
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
+    |> assign(:profile_changeset, Accounts.change_user_profile(user))
   end
 end

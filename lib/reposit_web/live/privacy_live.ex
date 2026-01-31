@@ -58,7 +58,11 @@ defmodule RepositWeb.PrivacyLive do
         <p>
           We use OpenAI's embedding API to generate vector representations of solutions for
           semantic search. Problem descriptions and solution patterns are sent to OpenAI for
-          processing. See <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener">
+          processing. See <a
+            href="https://openai.com/policies/privacy-policy"
+            target="_blank"
+            rel="noopener"
+          >
           OpenAI's Privacy Policy</a>.
         </p>
 
@@ -114,8 +118,11 @@ defmodule RepositWeb.PrivacyLive do
 
         <h2>10. Contact</h2>
         <p>
-          For privacy-related questions or requests, please open an issue on our
-          <a href="https://github.com/reposit-bot/reposit" target="_blank" rel="noopener">
+          For privacy-related questions or requests, please open an issue on our <a
+            href="https://github.com/reposit-bot/reposit"
+            target="_blank"
+            rel="noopener"
+          >
             GitHub repository
           </a>.
         </p>

@@ -131,6 +131,7 @@ defmodule RepositWeb.Router do
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm-email/:token", UserSettingsController, :confirm_email
     post "/users/settings/regenerate-api-token", UserSettingsController, :regenerate_api_token
+    delete "/users/settings/oauth/:provider", UserSettingsController, :unlink_oauth
     delete "/users/settings", UserSettingsController, :delete
   end
 
@@ -141,5 +142,13 @@ defmodule RepositWeb.Router do
     get "/users/log-in/:token", UserSessionController, :confirm
     post "/users/log-in", UserSessionController, :create
     delete "/users/log-out", UserSessionController, :delete
+  end
+
+  # OAuth routes (Google, GitHub)
+  scope "/auth", RepositWeb do
+    pipe_through [:browser]
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
   end
 end

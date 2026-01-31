@@ -94,4 +94,40 @@ defmodule Reposit.AccountsFixtures do
       set: [inserted_at: dt, authenticated_at: dt]
     )
   end
+
+  @doc """
+  Creates a user with Google OAuth credentials linked.
+  """
+  def user_with_google_fixture(attrs \\ %{}) do
+    user = user_fixture(attrs)
+
+    user
+    |> Ecto.Changeset.change(google_uid: "google_#{System.unique_integer()}")
+    |> Reposit.Repo.update!()
+  end
+
+  @doc """
+  Creates a user with GitHub OAuth credentials linked.
+  """
+  def user_with_github_fixture(attrs \\ %{}) do
+    user = user_fixture(attrs)
+
+    user
+    |> Ecto.Changeset.change(github_uid: "github_#{System.unique_integer()}")
+    |> Reposit.Repo.update!()
+  end
+
+  @doc """
+  Creates a user with both Google and GitHub OAuth credentials linked.
+  """
+  def user_with_both_oauth_fixture(attrs \\ %{}) do
+    user = user_fixture(attrs)
+
+    user
+    |> Ecto.Changeset.change(
+      google_uid: "google_#{System.unique_integer()}",
+      github_uid: "github_#{System.unique_integer()}"
+    )
+    |> Reposit.Repo.update!()
+  end
 end

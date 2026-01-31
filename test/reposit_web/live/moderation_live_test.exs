@@ -17,7 +17,12 @@ defmodule RepositWeb.ModerationLiveTest do
       voter_scopes = Enum.map(voters, &Scope.for_user/1)
       solution_author = user_fixture(%{email: "author@example.com"})
       author_scope = Scope.for_user(solution_author)
-      {:ok, voters: voters, voter_scopes: voter_scopes, solution_author: solution_author, author_scope: author_scope}
+
+      {:ok,
+       voters: voters,
+       voter_scopes: voter_scopes,
+       solution_author: solution_author,
+       author_scope: author_scope}
     end
 
     test "renders empty state when no flagged solutions", %{conn: conn} do

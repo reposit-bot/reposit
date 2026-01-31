@@ -20,11 +20,20 @@ defmodule Reposit.VotesTest do
           "Use recursion with pattern matching. Split the list in half and compare the middle element with the target."
       })
 
-    {:ok, solution: solution, user: user, voter: voter, user_scope: user_scope, voter_scope: voter_scope}
+    {:ok,
+     solution: solution,
+     user: user,
+     voter: voter,
+     user_scope: user_scope,
+     voter_scope: voter_scope}
   end
 
   describe "create_vote/2" do
-    test "creates upvote successfully", %{solution: solution, voter: voter, voter_scope: voter_scope} do
+    test "creates upvote successfully", %{
+      solution: solution,
+      voter: voter,
+      voter_scope: voter_scope
+    } do
       attrs = %{
         solution_id: solution.id,
         vote_type: :up
@@ -36,7 +45,10 @@ defmodule Reposit.VotesTest do
       assert vote.user_id == voter.id
     end
 
-    test "creates downvote with comment and reason", %{solution: solution, voter_scope: voter_scope} do
+    test "creates downvote with comment and reason", %{
+      solution: solution,
+      voter_scope: voter_scope
+    } do
       attrs = %{
         solution_id: solution.id,
         vote_type: :down,
@@ -50,7 +62,10 @@ defmodule Reposit.VotesTest do
       assert vote.reason == :outdated
     end
 
-    test "updates solution upvote count atomically", %{solution: solution, voter_scope: voter_scope} do
+    test "updates solution upvote count atomically", %{
+      solution: solution,
+      voter_scope: voter_scope
+    } do
       attrs = %{
         solution_id: solution.id,
         vote_type: :up
@@ -64,7 +79,10 @@ defmodule Reposit.VotesTest do
       assert updated_solution.downvotes == 0
     end
 
-    test "updates solution downvote count atomically", %{solution: solution, voter_scope: voter_scope} do
+    test "updates solution downvote count atomically", %{
+      solution: solution,
+      voter_scope: voter_scope
+    } do
       attrs = %{
         solution_id: solution.id,
         vote_type: :down,
@@ -88,7 +106,10 @@ defmodule Reposit.VotesTest do
       assert {:error, :solution_not_found} = Votes.create_vote(voter_scope, attrs)
     end
 
-    test "updates existing vote when user votes again (upsert)", %{solution: solution, voter_scope: voter_scope} do
+    test "updates existing vote when user votes again (upsert)", %{
+      solution: solution,
+      voter_scope: voter_scope
+    } do
       # First vote - upvote
       attrs = %{
         solution_id: solution.id,
@@ -121,7 +142,10 @@ defmodule Reposit.VotesTest do
       assert solution_after_change.downvotes == 1
     end
 
-    test "same vote type updates comment and reason", %{solution: solution, voter_scope: voter_scope} do
+    test "same vote type updates comment and reason", %{
+      solution: solution,
+      voter_scope: voter_scope
+    } do
       # First downvote
       attrs = %{
         solution_id: solution.id,
@@ -185,7 +209,10 @@ defmodule Reposit.VotesTest do
       assert "must be at least 10 characters" in errors_on(changeset).comment
     end
 
-    test "rejects downvote with prompt injection in comment", %{solution: solution, voter_scope: voter_scope} do
+    test "rejects downvote with prompt injection in comment", %{
+      solution: solution,
+      voter_scope: voter_scope
+    } do
       attrs = %{
         solution_id: solution.id,
         vote_type: :down,
@@ -226,11 +253,16 @@ defmodule Reposit.VotesTest do
   end
 
   describe "delete_vote/2" do
-    test "deletes vote and adjusts solution counts", %{solution: solution, voter: voter, voter_scope: voter_scope} do
-      {:ok, _vote} = Votes.create_vote(voter_scope, %{
-        solution_id: solution.id,
-        vote_type: :up
-      })
+    test "deletes vote and adjusts solution counts", %{
+      solution: solution,
+      voter: voter,
+      voter_scope: voter_scope
+    } do
+      {:ok, _vote} =
+        Votes.create_vote(voter_scope, %{
+          solution_id: solution.id,
+          vote_type: :up
+        })
 
       # Verify vote exists and count is updated
       {:ok, solution_with_vote} = Solutions.get_solution(solution.id)

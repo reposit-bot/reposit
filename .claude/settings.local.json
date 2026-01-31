@@ -21,7 +21,9 @@
       "Bash(mix hex.outdated:*)",
       "Bash(mix phx.new:*)",
       "Bash(mix precommit:*)",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(mix coveralls:*)",
+      "Bash(git push)"
     ]
   }
 }

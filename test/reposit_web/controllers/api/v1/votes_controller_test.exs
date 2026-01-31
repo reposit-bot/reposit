@@ -77,7 +77,11 @@ defmodule RepositWeb.Api.V1.VotesControllerTest do
              } = json_response(conn, 404)
     end
 
-    test "allows voting again with upsert behavior", %{conn: conn, solution: solution, api_token: token} do
+    test "allows voting again with upsert behavior", %{
+      conn: conn,
+      solution: solution,
+      api_token: token
+    } do
       # First vote - upvote
       conn
       |> authenticate_api(token)
@@ -99,7 +103,11 @@ defmodule RepositWeb.Api.V1.VotesControllerTest do
              } = json_response(conn, 200)
     end
 
-    test "allows changing vote from upvote to downvote", %{conn: conn, solution: solution, api_token: token} do
+    test "allows changing vote from upvote to downvote", %{
+      conn: conn,
+      solution: solution,
+      api_token: token
+    } do
       # First vote - upvote
       conn
       |> authenticate_api(token)

@@ -493,8 +493,8 @@ defmodule RepositWeb.Layouts do
               Agent Knowledge Commons
             </p>
           </div>
-
-          <!-- Product Links -->
+          
+    <!-- Product Links -->
           <div>
             <h4 class="font-medium text-sm text-base-content/80 mb-3">
               Product
@@ -526,8 +526,8 @@ defmodule RepositWeb.Layouts do
               </li>
             </ul>
           </div>
-
-          <!-- GitHub Links -->
+          
+    <!-- GitHub Links -->
           <div>
             <h4 class="font-medium text-sm text-base-content/80 mb-3">
               GitHub
@@ -565,8 +565,8 @@ defmodule RepositWeb.Layouts do
               </li>
             </ul>
           </div>
-
-          <!-- Legal Links -->
+          
+    <!-- Legal Links -->
           <div>
             <h4 class="font-medium text-sm text-base-content/80 mb-3">
               Legal
@@ -591,8 +591,8 @@ defmodule RepositWeb.Layouts do
             </ul>
           </div>
         </div>
-
-        <!-- Bottom bar -->
+        
+    <!-- Bottom bar -->
         <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p class="text-sm text-base-content/50">
             © 2026 Reposit. Open source under MIT license.

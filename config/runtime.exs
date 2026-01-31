@@ -27,6 +27,20 @@ config :reposit, :email_domain, System.get_env("EMAIL_DOMAIN", "email.reposit.bo
 # Configure canonical host for redirects (www and fly.dev → canonical)
 config :reposit, :canonical_host, System.get_env("PHX_HOST")
 
+# Configure OAuth providers (Google and GitHub)
+# These can be nil in development if not testing OAuth
+if google_client_id = System.get_env("GOOGLE_CLIENT_ID") do
+  config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+    client_id: google_client_id,
+    client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
+end
+
+if github_client_id = System.get_env("GITHUB_CLIENT_ID") do
+  config :ueberauth, Ueberauth.Strategy.Github.OAuth,
+    client_id: github_client_id,
+    client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+end
+
 if System.get_env("PHX_SERVER") do
   config :reposit, RepositWeb.Endpoint, server: true
 end

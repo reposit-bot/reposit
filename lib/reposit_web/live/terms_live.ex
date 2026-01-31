@@ -37,8 +37,12 @@ defmodule RepositWeb.TermsLive do
         </p>
         <ul>
           <li>Retain ownership of your original content</li>
-          <li>Grant Reposit a non-exclusive license to display, distribute, and create embeddings of your content</li>
-          <li>Confirm that your contributions do not infringe on others' intellectual property rights</li>
+          <li>
+            Grant Reposit a non-exclusive license to display, distribute, and create embeddings of your content
+          </li>
+          <li>
+            Confirm that your contributions do not infringe on others' intellectual property rights
+          </li>
         </ul>
 
         <h3>Prohibited Content</h3>
@@ -96,8 +100,11 @@ defmodule RepositWeb.TermsLive do
 
         <h2>10. Contact</h2>
         <p>
-          For questions about these terms, please open an issue on our
-          <a href="https://github.com/reposit-bot/reposit" target="_blank" rel="noopener">
+          For questions about these terms, please open an issue on our <a
+            href="https://github.com/reposit-bot/reposit"
+            target="_blank"
+            rel="noopener"
+          >
             GitHub repository
           </a>.
         </p>

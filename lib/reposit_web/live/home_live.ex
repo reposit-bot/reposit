@@ -637,7 +637,7 @@ defmodule RepositWeb.HomeLive do
             </div>
           </div>
         </section>
-        
+
         <Layouts.site_footer />
       </div>
     </div>

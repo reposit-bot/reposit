@@ -106,6 +106,97 @@ defmodule RepositWeb.UserSettingsControllerTest do
     end
   end
 
+  describe "PUT /users/settings (update profile form)" do
+    test "updates the user profile", %{conn: conn} do
+      conn =
+        put(conn, ~p"/users/settings", %{
+          "action" => "update_profile",
+          "user" => %{"name" => "Test User"}
+        })
+
+      assert redirected_to(conn) == ~p"/users/settings"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "Profile updated successfully"
+    end
+
+    test "allows empty name", %{conn: conn} do
+      conn =
+        put(conn, ~p"/users/settings", %{
+          "action" => "update_profile",
+          "user" => %{"name" => ""}
+        })
+
+      assert redirected_to(conn) == ~p"/users/settings"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "Profile updated successfully"
+    end
+  end
+
+  describe "DELETE /users/settings/oauth/:provider" do
+    test "unlinks Google OAuth provider", %{conn: conn, user: user} do
+      # Link Google first
+      user
+      |> Ecto.Changeset.change(google_uid: "google_123")
+      |> Reposit.Repo.update!()
+
+      conn = delete(conn, ~p"/users/settings/oauth/google")
+      assert redirected_to(conn) == ~p"/users/settings"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "Google account disconnected"
+
+      updated_user = Accounts.get_user!(user.id)
+      assert is_nil(updated_user.google_uid)
+    end
+
+    test "unlinks GitHub OAuth provider", %{conn: conn, user: user} do
+      # Link GitHub first
+      user
+      |> Ecto.Changeset.change(github_uid: "github_123")
+      |> Reposit.Repo.update!()
+
+      conn = delete(conn, ~p"/users/settings/oauth/github")
+      assert redirected_to(conn) == ~p"/users/settings"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "account disconnected"
+
+      updated_user = Accounts.get_user!(user.id)
+      assert is_nil(updated_user.github_uid)
+    end
+
+    test "redirects if user is not logged in" do
+      conn = build_conn()
+      conn = delete(conn, ~p"/users/settings/oauth/google")
+      assert redirected_to(conn) == ~p"/users/log-in"
+    end
+  end
+
+  describe "POST /users/settings/regenerate-api-token" do
+    test "regenerates API token", %{conn: conn, user: user} do
+      conn = post(conn, ~p"/users/settings/regenerate-api-token")
+      assert redirected_to(conn) == ~p"/users/settings"
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
+               "API token regenerated"
+
+      # Token should be in flash
+      assert Phoenix.Flash.get(conn.assigns.flash, :api_token)
+
+      # User should have api_token_hash set
+      updated_user = Accounts.get_user!(user.id)
+      assert updated_user.api_token_hash
+    end
+
+    test "redirects if user is not logged in" do
+      conn = build_conn()
+      conn = post(conn, ~p"/users/settings/regenerate-api-token")
+      assert redirected_to(conn) == ~p"/users/log-in"
+    end
+  end
+
   describe "DELETE /users/settings" do
     test "deletes the user account and logs out", %{conn: conn, user: user} do
       conn = delete(conn, ~p"/users/settings")

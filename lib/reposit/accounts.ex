@@ -364,4 +364,195 @@ defmodule Reposit.Accounts do
         nil
     end
   end
+
+  ## OAuth
+
+  @doc """
+  Gets or creates a user from Google OAuth.
+
+  Handles three scenarios:
+  1. User with this google_uid exists → return user
+  2. User with this email exists → link Google account to existing user
+  3. New user → create user with Google info
+
+  In all cases, the user is auto-confirmed (Google already verified the email).
+  """
+  def get_or_create_user_from_google(%{email: email, uid: google_uid} = auth_info) do
+    case Repo.get_by(User, google_uid: google_uid) do
+      %User{} = user ->
+        # User found by Google UID - return as-is (could update name/avatar here if desired)
+        {:ok, user}
+
+      nil ->
+        # No user with this Google UID - check for email match
+        case get_user_by_email(email) do
+          %User{} = user ->
+            # Link Google account to existing user and confirm
+            link_google_and_confirm(user, auth_info)
+
+          nil ->
+            # Create new user with Google info
+            create_user_from_google(auth_info)
+        end
+    end
+  end
+
+  defp link_google_and_confirm(user, auth_info) do
+    attrs = %{
+      google_uid: auth_info.uid,
+      name: auth_info[:name] || user.name,
+      avatar_url: auth_info[:avatar_url] || user.avatar_url
+    }
+
+    changeset = User.link_google_changeset(user, attrs)
+
+    # Also confirm user if not already confirmed
+    changeset =
+      if is_nil(user.confirmed_at) do
+        Ecto.Changeset.put_change(changeset, :confirmed_at, DateTime.utc_now(:second))
+      else
+        changeset
+      end
+
+    Repo.update(changeset)
+  end
+
+  defp create_user_from_google(auth_info) do
+    attrs = %{
+      email: auth_info.email,
+      google_uid: auth_info.uid,
+      name: auth_info[:name],
+      avatar_url: auth_info[:avatar_url]
+    }
+
+    %User{}
+    |> User.google_oauth_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Gets or creates a user from GitHub OAuth.
+
+  Handles three scenarios:
+  1. User with this github_uid exists → return user
+  2. User with this email exists → link GitHub account to existing user
+  3. New user → create user with GitHub info
+
+  In all cases, the user is auto-confirmed (GitHub already verified the email).
+  """
+  def get_or_create_user_from_github(%{email: email, uid: github_uid} = auth_info) do
+    case Repo.get_by(User, github_uid: github_uid) do
+      %User{} = user ->
+        # User found by GitHub UID - return as-is
+        {:ok, user}
+
+      nil ->
+        # No user with this GitHub UID - check for email match
+        case get_user_by_email(email) do
+          %User{} = user ->
+            # Link GitHub account to existing user and confirm
+            link_github_and_confirm(user, auth_info)
+
+          nil ->
+            # Create new user with GitHub info
+            create_user_from_github(auth_info)
+        end
+    end
+  end
+
+  defp link_github_and_confirm(user, auth_info) do
+    attrs = %{
+      github_uid: auth_info.uid,
+      name: auth_info[:name] || user.name,
+      avatar_url: auth_info[:avatar_url] || user.avatar_url
+    }
+
+    changeset = User.link_github_changeset(user, attrs)
+
+    # Also confirm user if not already confirmed
+    changeset =
+      if is_nil(user.confirmed_at) do
+        Ecto.Changeset.put_change(changeset, :confirmed_at, DateTime.utc_now(:second))
+      else
+        changeset
+      end
+
+    Repo.update(changeset)
+  end
+
+  defp create_user_from_github(auth_info) do
+    attrs = %{
+      email: auth_info.email,
+      github_uid: auth_info.uid,
+      name: auth_info[:name],
+      avatar_url: auth_info[:avatar_url]
+    }
+
+    %User{}
+    |> User.github_oauth_changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Links a Google account to an existing logged-in user.
+
+  Returns `{:ok, user}` or `{:error, changeset}`.
+  """
+  def link_google_account(%User{} = user, auth_info) do
+    attrs = %{
+      google_uid: auth_info.uid,
+      name: auth_info[:name] || user.name,
+      avatar_url: auth_info[:avatar_url] || user.avatar_url
+    }
+
+    user
+    |> User.link_google_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Links a GitHub account to an existing logged-in user.
+
+  Returns `{:ok, user}` or `{:error, changeset}`.
+  """
+  def link_github_account(%User{} = user, auth_info) do
+    attrs = %{
+      github_uid: auth_info.uid,
+      name: auth_info[:name] || user.name,
+      avatar_url: auth_info[:avatar_url] || user.avatar_url
+    }
+
+    user
+    |> User.link_github_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Unlinks an OAuth provider from a user.
+
+  Returns `{:ok, user}` or `{:error, changeset}`.
+  """
+  def unlink_oauth_provider(%User{} = user, provider) when provider in [:google, :github] do
+    user
+    |> User.unlink_oauth_changeset(provider)
+    |> Repo.update()
+  end
+
+  @doc """
+  Updates a user's profile (name).
+
+  Returns `{:ok, user}` or `{:error, changeset}`.
+  """
+  def update_user_profile(%User{} = user, attrs) do
+    user
+    |> User.profile_changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user profile.
+  """
+  def change_user_profile(%User{} = user, attrs \\ %{}) do
+    User.profile_changeset(user, attrs)
+  end
 end

@@ -116,7 +116,11 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "75%"
     end
 
-    test "displays vote comments from downvotes", %{conn: conn, user_scope: user_scope, voter_scope: voter_scope} do
+    test "displays vote comments from downvotes", %{
+      conn: conn,
+      user_scope: user_scope,
+      voter_scope: voter_scope
+    } do
       {:ok, solution} =
         create_solution(
           "Test problem for vote comments",
@@ -141,7 +145,11 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "Outdated"
     end
 
-    test "does not display upvote comments (they don't have any)", %{conn: conn, user_scope: user_scope, voter_scope: voter_scope} do
+    test "does not display upvote comments (they don't have any)", %{
+      conn: conn,
+      user_scope: user_scope,
+      voter_scope: voter_scope
+    } do
       {:ok, solution} =
         create_solution(
           "Test problem for upvote display",
@@ -236,7 +244,11 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert has_element?(view, "button[phx-click='show-delete-confirm']")
     end
 
-    test "non-author does not see delete button", %{conn: conn, user_scope: user_scope, voter: other_user} do
+    test "non-author does not see delete button", %{
+      conn: conn,
+      user_scope: user_scope,
+      voter: other_user
+    } do
       {:ok, solution} =
         create_solution(
           "Test problem for delete visibility",
@@ -357,7 +369,11 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ ">1</span>"
     end
 
-    test "logged in user can downvote with comment", %{conn: conn, user_scope: user_scope, voter: voter} do
+    test "logged in user can downvote with comment", %{
+      conn: conn,
+      user_scope: user_scope,
+      voter: voter
+    } do
       {:ok, solution} =
         create_solution(
           "Test problem for downvoting",
@@ -389,7 +405,11 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ ">1</span>"
     end
 
-    test "user can change vote from up to down", %{conn: conn, user_scope: user_scope, voter: voter} do
+    test "user can change vote from up to down", %{
+      conn: conn,
+      user_scope: user_scope,
+      voter: voter
+    } do
       {:ok, solution} =
         create_solution(
           "Test problem for changing vote",
@@ -406,6 +426,7 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
 
       # Then change to downvote
       view |> element("button[phx-click='show-downvote-form']") |> render_click()
+
       view
       |> form("form[phx-submit='downvote']", %{
         comment: "Changed my mind, this has issues",
@@ -419,7 +440,12 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert updated_solution.downvotes == 1
     end
 
-    test "user can remove their upvote", %{conn: conn, user_scope: user_scope, voter: voter, voter_scope: voter_scope} do
+    test "user can remove their upvote", %{
+      conn: conn,
+      user_scope: user_scope,
+      voter: voter,
+      voter_scope: voter_scope
+    } do
       {:ok, solution} =
         create_solution(
           "Test problem for removing upvote",
@@ -448,7 +474,12 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert updated.upvotes == 0
     end
 
-    test "user can remove their downvote", %{conn: conn, user_scope: user_scope, voter: voter, voter_scope: voter_scope} do
+    test "user can remove their downvote", %{
+      conn: conn,
+      user_scope: user_scope,
+      voter: voter,
+      voter_scope: voter_scope
+    } do
       {:ok, solution} =
         create_solution(
           "Test problem for removing downvote",
@@ -458,12 +489,13 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
         )
 
       # Create a downvote
-      {:ok, _} = Votes.create_vote(voter_scope, %{
-        solution_id: solution.id,
-        vote_type: :down,
-        comment: "This has issues with the approach",
-        reason: :incorrect
-      })
+      {:ok, _} =
+        Votes.create_vote(voter_scope, %{
+          solution_id: solution.id,
+          vote_type: :down,
+          comment: "This has issues with the approach",
+          reason: :incorrect
+        })
 
       conn = log_in_user(conn, voter)
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
@@ -476,7 +508,11 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert updated.downvotes == 0
     end
 
-    test "remove vote button not shown when no vote", %{conn: conn, user_scope: user_scope, voter: voter} do
+    test "remove vote button not shown when no vote", %{
+      conn: conn,
+      user_scope: user_scope,
+      voter: voter
+    } do
       {:ok, solution} =
         create_solution(
           "Test problem for no vote",
@@ -492,7 +528,12 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       refute has_element?(view, "button[phx-click='remove-vote']")
     end
 
-    test "shows user's existing vote", %{conn: conn, user_scope: user_scope, voter: voter, voter_scope: voter_scope} do
+    test "shows user's existing vote", %{
+      conn: conn,
+      user_scope: user_scope,
+      voter: voter,
+      voter_scope: voter_scope
+    } do
       {:ok, solution} =
         create_solution(
           "Test problem for existing vote",
@@ -502,10 +543,11 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
         )
 
       # Create an existing upvote
-      {:ok, _vote} = Votes.create_vote(voter_scope, %{
-        solution_id: solution.id,
-        vote_type: :up
-      })
+      {:ok, _vote} =
+        Votes.create_vote(voter_scope, %{
+          solution_id: solution.id,
+          vote_type: :up
+        })
 
       conn = log_in_user(conn, voter)
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
