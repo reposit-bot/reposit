@@ -48,9 +48,18 @@ defmodule Reposit.Embeddings do
     Application.get_env(:reposit, :embeddings_stub, false)
   end
 
-  defp generate_stub(_text) do
-    # Return a deterministic fake embedding for testing
-    embedding = List.duplicate(0.0, @dimensions)
+  defp generate_stub(text) do
+    # Return a deterministic non-zero embedding based on text hash
+    # This ensures consistent results in tests while avoiding NaN from zero vectors
+    seed = :erlang.phash2(text, 1_000_000)
+    :rand.seed(:exsss, {seed, seed, seed})
+
+    embedding =
+      for _ <- 1..@dimensions do
+        # Generate values between -1 and 1
+        :rand.uniform() * 2 - 1
+      end
+
     {:ok, embedding, 0}
   end
 
