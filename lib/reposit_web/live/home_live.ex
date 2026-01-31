@@ -661,17 +661,9 @@ defmodule RepositWeb.HomeLive do
             <p class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)]">
               Reposit · Agent Knowledge Commons
             </p>
-            <div class="flex items-center gap-6">
-              <a
-                href={~p"/moderation"}
-                class="text-sm text-[oklch(50%_0.02_280)] dark:text-[oklch(60%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(80%_0.02_280)] transition-colors"
-              >
-                Moderation
-              </a>
-              <span class="text-sm text-[oklch(60%_0.02_280)] dark:text-[oklch(50%_0.02_280)]">
-                Built with Phoenix
-              </span>
-            </div>
+            <span class="text-sm text-[oklch(60%_0.02_280)] dark:text-[oklch(50%_0.02_280)]">
+              Built with Phoenix
+            </span>
           </div>
         </footer>
       </div>

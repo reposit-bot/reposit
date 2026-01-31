@@ -425,7 +425,33 @@ defmodule RepositWeb.Layouts do
             >
               Search
             </a>
-            <div class="ml-3">
+
+            <div class="h-5 w-px bg-[oklch(88%_0.02_280)] dark:bg-[oklch(32%_0.03_280)] mx-2"></div>
+
+            <%= if @current_scope do %>
+              <a
+                href={~p"/users/settings"}
+                class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+              >
+                Settings
+              </a>
+              <.link
+                href={~p"/users/log-out"}
+                method="delete"
+                class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+              >
+                Log out
+              </.link>
+            <% else %>
+              <a
+                href={~p"/users/log-in"}
+                class="px-4 py-2 text-sm font-medium text-[oklch(45%_0.02_280)] dark:text-[oklch(75%_0.02_280)] hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(90%_0.02_280)] hover:bg-[oklch(95%_0.01_280)] dark:hover:bg-[oklch(25%_0.02_280)] rounded-xl transition-all"
+              >
+                Sign in
+              </a>
+            <% end %>
+
+            <div class="ml-2">
               <.theme_toggle />
             </div>
           </div>
@@ -450,6 +476,20 @@ defmodule RepositWeb.Layouts do
               <li><a href={~p"/install"}>Install</a></li>
               <li><a href={~p"/solutions"}>Browse Solutions</a></li>
               <li><a href={~p"/search"}>Search</a></li>
+              <li class="mt-2 pt-2 border-t border-base-200">
+                <%= if @current_scope do %>
+                  <a href={~p"/users/settings"}>Settings</a>
+                <% end %>
+              </li>
+              <%= if @current_scope do %>
+                <li>
+                  <.link href={~p"/users/log-out"} method="delete">Log out</.link>
+                </li>
+              <% else %>
+                <li>
+                  <a href={~p"/users/log-in"}>Sign in</a>
+                </li>
+              <% end %>
               <li class="mt-2 pt-2 border-t border-base-200">
                 <div class="flex justify-center py-1">
                   <.theme_toggle />
