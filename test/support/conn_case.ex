@@ -76,4 +76,24 @@ defmodule ChorusWeb.ConnCase do
   defp maybe_set_token_authenticated_at(token, authenticated_at) do
     Chorus.AccountsFixtures.override_token_authenticated_at(token, authenticated_at)
   end
+
+  @doc """
+  Setup helper that creates a user with an API token for authenticated API requests.
+
+      setup :create_api_user
+
+  It stores the API token and user in the test context.
+  """
+  def create_api_user(_context) do
+    user = Chorus.AccountsFixtures.user_fixture()
+    {:ok, token, user} = Chorus.Accounts.generate_api_token(user)
+    %{api_token: token, api_user: user}
+  end
+
+  @doc """
+  Adds API authentication to the connection using a Bearer token.
+  """
+  def authenticate_api(conn, token) do
+    Plug.Conn.put_req_header(conn, "authorization", "Bearer #{token}")
+  end
 end

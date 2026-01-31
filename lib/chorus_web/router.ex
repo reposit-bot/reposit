@@ -33,6 +33,10 @@ defmodule ChorusWeb.Router do
     plug ChorusWeb.Plugs.RateLimit, action: :vote
   end
 
+  pipeline :api_auth do
+    plug ChorusWeb.Plugs.ApiAuth
+  end
+
   scope "/", ChorusWeb do
     pipe_through :browser
 
@@ -60,13 +64,13 @@ defmodule ChorusWeb.Router do
   end
 
   scope "/api/v1", ChorusWeb.Api.V1 do
-    pipe_through :api_create
+    pipe_through [:api_create, :api_auth]
 
     post "/solutions", SolutionsController, :create
   end
 
   scope "/api/v1", ChorusWeb.Api.V1 do
-    pipe_through :api_vote
+    pipe_through [:api_vote, :api_auth]
 
     post "/solutions/:solution_id/upvote", VotesController, :upvote
     post "/solutions/:solution_id/downvote", VotesController, :downvote
