@@ -101,7 +101,7 @@ defmodule RepositWeb.HomeLive do
         
     <!-- Header -->
         <header class="relative z-50 px-6 py-6 lg:px-12">
-          <Layouts.navbar current_scope={@current_scope} max_width="max-w-7xl" />
+          <Layouts.navbar current_scope={@current_scope} />
         </header>
         
     <!-- Hero -->

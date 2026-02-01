@@ -116,7 +116,7 @@ defmodule RepositWeb.DeviceAuthLive do
     ~H"""
     <div class="min-h-screen bg-base-100">
       <header class="px-6 py-6 lg:px-12">
-        <Layouts.navbar current_scope={@current_scope} max_width="max-w-2xl" />
+        <Layouts.navbar current_scope={@current_scope} />
       </header>
 
       <main class="flex flex-col items-center justify-center px-6 py-12">

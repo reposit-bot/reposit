@@ -16,11 +16,10 @@ defmodule RepositWeb.Layouts do
   """
   attr :current_scope, :map, default: nil
   attr :class, :string, default: ""
-  attr :max_width, :string, default: "max-w-6xl"
 
   def navbar(assigns) do
     ~H"""
-    <nav class={"flex items-center justify-between mx-auto #{@max_width} #{@class}"}>
+    <nav class={"flex items-center justify-between mx-auto #{@class}"}>
       <a href="/" class="flex items-center gap-2 group">
         <img src={~p"/images/logo.png"} alt="Reposit" class="w-9 h-9" />
         <span class="text-lg font-bold tracking-tight text-base-content">

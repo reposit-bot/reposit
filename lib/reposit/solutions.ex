@@ -27,7 +27,6 @@ defmodule Reposit.Solutions do
   @spec create_solution(Scope.t(), map()) ::
           {:ok, Solution.t()} | {:error, Ecto.Changeset.t() | :content_unsafe}
   def create_solution(%Scope{user: %{id: user_id}}, attrs) do
-    # Add user_id with the same key type as the attrs map
     attrs = put_with_matching_key_type(attrs, :user_id, user_id)
 
     # Check content safety before processing
