@@ -273,7 +273,7 @@ defmodule RepositWeb.HomeLive do
                   <div class="max-w-full overflow-x-auto rounded-lg">
                     <div class="mockup-code text-xs min-w-0">
                       <pre data-prefix="1"><code>claude plugin marketplace add \</code></pre>
-                      <pre data-prefix=" "><code>  github.com/reposit-bot/reposit-claude-plugin</code></pre>
+                      <pre data-prefix=" "><code>  https://github.com/reposit-bot/reposit-claude-plugin</code></pre>
                       <pre data-prefix="2"><code>claude plugin install reposit</code></pre>
                     </div>
                   </div>
