@@ -10,15 +10,40 @@ defmodule RepositWeb.DeviceAuthLive do
   alias Reposit.Accounts
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
+    # Pre-fill code from URL query param if present
+    code_from_url = Map.get(params, "code", "")
+    formatted_code = format_user_code(code_from_url)
+
     socket =
       socket
       |> assign(:page_title, "Authorize Device")
-      |> assign(:user_code, "")
+      |> assign(:user_code, formatted_code)
       |> assign(:error, nil)
       |> assign(:success, false)
+      |> assign(:auto_submit, formatted_code != "")
 
     {:ok, socket}
+  end
+
+  @impl true
+  def handle_info(:auto_submit, socket) do
+    # Auto-submit if we have a pre-filled code and user is logged in
+    if socket.assigns.auto_submit && socket.assigns.current_scope && socket.assigns.current_scope.user do
+      {:noreply, handle_code_submit(socket, socket.assigns.user_code)}
+    else
+      {:noreply, socket}
+    end
+  end
+
+  @impl true
+  def handle_params(_params, _uri, socket) do
+    # Trigger auto-submit after mount if code was pre-filled
+    if socket.assigns.auto_submit do
+      send(self(), :auto_submit)
+    end
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -30,34 +55,37 @@ defmodule RepositWeb.DeviceAuthLive do
 
   @impl true
   def handle_event("submit", %{"user_code" => user_code}, socket) do
+    {:noreply, handle_code_submit(socket, user_code)}
+  end
+
+  defp handle_code_submit(socket, user_code) do
     current_user = socket.assigns.current_scope && socket.assigns.current_scope.user
+    code_param = if socket.assigns.user_code != "", do: "?code=#{socket.assigns.user_code}", else: ""
 
     cond do
       is_nil(current_user) ->
-        # User not logged in - redirect to login with return path
-        {:noreply,
-         socket
-         |> put_flash(:info, "Please log in first, then enter the code again.")
-         |> push_navigate(to: ~p"/users/log-in?return_to=/auth/device")}
+        # User not logged in - redirect to login with return path (preserve code)
+        socket
+        |> put_flash(:info, "Please log in first to authorize this device.")
+        |> push_navigate(to: ~p"/users/log-in?return_to=/auth/device#{code_param}")
 
       String.length(String.replace(user_code, "-", "")) != 8 ->
-        {:noreply, assign(socket, :error, "Please enter the complete 8-character code.")}
+        assign(socket, :error, "Please enter the complete 8-character code.")
 
       true ->
         case Accounts.get_device_code_by_user_code(user_code) do
           nil ->
-            {:noreply, assign(socket, :error, "Invalid or expired code. Please check and try again.")}
+            assign(socket, :error, "Invalid or expired code. Please check and try again.")
 
           device_code ->
             case Accounts.approve_device_code(device_code, current_user) do
               {:ok, _} ->
-                {:noreply,
-                 socket
-                 |> assign(:success, true)
-                 |> assign(:error, nil)}
+                socket
+                |> assign(:success, true)
+                |> assign(:error, nil)
 
               {:error, _} ->
-                {:noreply, assign(socket, :error, "Failed to authorize device. Please try again.")}
+                assign(socket, :error, "Failed to authorize device. Please try again.")
             end
         end
     end
