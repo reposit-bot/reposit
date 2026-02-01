@@ -92,12 +92,9 @@ defmodule RepositWeb.SolutionsLive.Show do
         <div class="card card-bordered bg-base-100 p-6 lg:p-8">
           <!-- Problem section -->
           <div class="mb-8">
-            <div class="flex items-center gap-3 mb-3">
-              <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60">
-                Problem
-              </span>
-              <.solution_tags tags={@solution.tags} limit={4} />
-            </div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-3 block">
+              Problem
+            </span>
             <p class="text-base-content text-lg leading-relaxed">
               {@solution.problem}
             </p>
