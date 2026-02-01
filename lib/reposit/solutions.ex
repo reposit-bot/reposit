@@ -376,6 +376,46 @@ defmodule Reposit.Solutions do
   defp apply_required_tags(query, tags) when map_size(tags) == 0, do: query
 
   defp apply_required_tags(query, tags) do
+    # Separate flat tags (match any category) from structured tags (match specific category)
+    {flat_tags, structured_tags} = Map.pop(tags, :_any, [])
+
+    query
+    |> apply_flat_tags(flat_tags)
+    |> apply_structured_tags(structured_tags)
+  end
+
+  # Flat tags match if the value exists in ANY category
+  defp apply_flat_tags(query, []), do: query
+
+  defp apply_flat_tags(query, flat_tags) do
+    Enum.reduce(flat_tags, query, fn value, q ->
+      # Check if the value exists in any of the tag arrays (language, framework, domain, platform)
+      from(s in q,
+        where:
+          fragment(
+            """
+            (COALESCE(? -> 'language' @> to_jsonb(?::text[]), false)
+             OR COALESCE(? -> 'framework' @> to_jsonb(?::text[]), false)
+             OR COALESCE(? -> 'domain' @> to_jsonb(?::text[]), false)
+             OR COALESCE(? -> 'platform' @> to_jsonb(?::text[]), false))
+            """,
+            s.tags,
+            ^[value],
+            s.tags,
+            ^[value],
+            s.tags,
+            ^[value],
+            s.tags,
+            ^[value]
+          )
+      )
+    end)
+  end
+
+  # Structured tags match a specific category
+  defp apply_structured_tags(query, tags) when map_size(tags) == 0, do: query
+
+  defp apply_structured_tags(query, tags) do
     Enum.reduce(tags, query, fn {category, values}, acc ->
       category_str = to_string(category)
 

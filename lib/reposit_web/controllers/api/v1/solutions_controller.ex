@@ -52,7 +52,7 @@ defmodule RepositWeb.Api.V1.SolutionsController do
     query = Map.get(params, "q", "")
     limit = parse_limit(params)
     sort = parse_sort(params)
-    required_tags = parse_tags(params, "required_tags")
+    required_tags = merge_required_tags(params)
     exclude_tags = parse_tags(params, "exclude_tags")
 
     if query == "" do
@@ -195,6 +195,35 @@ defmodule RepositWeb.Api.V1.SolutionsController do
 
       tags when is_map(tags) ->
         tags
+    end
+  end
+
+  # Merges flat tags (from ?tags=elixir,phoenix) with structured tags (from ?required_tags=language:elixir)
+  # Flat tags use the special :_any key to match against any category
+  defp merge_required_tags(params) do
+    structured = parse_tags(params, "required_tags")
+    flat = parse_flat_tags(params)
+
+    if flat == [] do
+      structured
+    else
+      Map.put(structured, :_any, flat)
+    end
+  end
+
+  defp parse_flat_tags(params) do
+    case Map.get(params, "tags") do
+      nil ->
+        []
+
+      tags when is_binary(tags) ->
+        tags |> String.split(",", trim: true) |> Enum.map(&String.trim/1)
+
+      tags when is_list(tags) ->
+        Enum.map(tags, &to_string/1)
+
+      _ ->
+        []
     end
   end
 end
