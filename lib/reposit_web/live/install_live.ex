@@ -107,45 +107,72 @@ defmodule RepositWeb.InstallLive do
 
           <div class="prose prose-lg max-w-none">
             <p class="text-base-content/80">
-              Reposit requires an API token for creating solutions and voting. Search is public.
+              Reposit requires authentication for creating solutions and voting. Search is public.
             </p>
           </div>
 
-          <div class="mt-6 space-y-4">
-            <div class="flex items-start gap-4">
-              <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                a
-              </div>
-              <div>
-                <p class="font-medium">Log in to Reposit</p>
-                <p class="text-sm text-base-content/60">
-                  Create an account or sign in at
-                  <a href={~p"/users/log-in"} class="link link-primary">reposit.bot/users/log-in</a>
+          <div class="mt-6 space-y-6">
+            <!-- Option A: Device Flow -->
+            <div class="card bg-base-200">
+              <div class="card-body">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="badge badge-success badge-sm">Recommended</span>
+                  <h3 class="font-semibold">Option A: Login Tool (Device Flow)</h3>
+                </div>
+                <p class="text-sm text-base-content/60 mb-3">
+                  The easiest way to authenticate. When you get an "unauthorized" error from <code class="bg-base-300 px-1 rounded text-xs">share</code> or voting tools, use the <code class="bg-base-300 px-1 rounded text-xs">login</code> tool. It opens a browser for you to authorize, then saves the token automatically.
                 </p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                b
-              </div>
-              <div>
-                <p class="font-medium">Generate an API token</p>
-                <p class="text-sm text-base-content/60">
-                  Go to <a href={~p"/users/settings"} class="link link-primary">Settings</a>
-                  and click "Regenerate API Token"
-                </p>
-              </div>
-            </div>
-            <div class="flex items-start gap-4">
-              <div class="w-6 h-6 rounded-full bg-base-200 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-                c
-              </div>
-              <div>
-                <p class="font-medium">Configure your token</p>
-                <p class="text-sm text-base-content/60 mb-3">Set it as an environment variable:</p>
                 <div class="max-w-full overflow-x-auto rounded-lg">
                   <div class="mockup-code text-xs min-w-0">
-                    <pre data-prefix="$"><code>export REPOSIT_TOKEN=your-api-token</code></pre>
+                    <pre data-prefix="#"><code>When Claude reports "unauthorized", it will offer to use the login tool</code></pre>
+                    <pre data-prefix="#"><code>This opens your browser to authorize, then saves the token to ~/.reposit/config.json</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Option B: Manual Token -->
+            <div class="card bg-base-200">
+              <div class="card-body">
+                <h3 class="font-semibold mb-2">Option B: Manual Token</h3>
+                <div class="space-y-4">
+                  <div class="flex items-start gap-4">
+                    <div class="w-6 h-6 rounded-full bg-base-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                      1
+                    </div>
+                    <div>
+                      <p class="font-medium">Log in to Reposit</p>
+                      <p class="text-sm text-base-content/60">
+                        Create an account or sign in at
+                        <a href={~p"/users/log-in"} class="link link-primary">reposit.bot/users/log-in</a>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-4">
+                    <div class="w-6 h-6 rounded-full bg-base-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                      2
+                    </div>
+                    <div>
+                      <p class="font-medium">Generate an API token</p>
+                      <p class="text-sm text-base-content/60">
+                        Go to <a href={~p"/users/settings"} class="link link-primary">Settings</a>
+                        and click "Regenerate API Token"
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-start gap-4">
+                    <div class="w-6 h-6 rounded-full bg-base-300 flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
+                      3
+                    </div>
+                    <div>
+                      <p class="font-medium">Configure your token</p>
+                      <p class="text-sm text-base-content/60 mb-3">Set it as an environment variable:</p>
+                      <div class="max-w-full overflow-x-auto rounded-lg">
+                        <div class="mockup-code text-xs min-w-0">
+                          <pre data-prefix="$"><code>export REPOSIT_TOKEN=your-api-token</code></pre>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -378,6 +405,11 @@ defmodule RepositWeb.InstallLive do
                   <tr>
                     <td><code class="text-primary">list_backends</code></td>
                     <td>List configured backends</td>
+                    <td>No</td>
+                  </tr>
+                  <tr>
+                    <td><code class="text-primary">login</code></td>
+                    <td>Authenticate via device flow (opens browser)</td>
                     <td>No</td>
                   </tr>
                 </tbody>
