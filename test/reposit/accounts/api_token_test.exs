@@ -28,7 +28,9 @@ defmodule Reposit.Accounts.ApiTokenTest do
 
     test "stores device_name for device_flow tokens" do
       user = user_fixture()
-      {_, changeset} = ApiToken.generate(user, "My Device", :device_flow, device_name: "MacBook Pro")
+
+      {_, changeset} =
+        ApiToken.generate(user, "My Device", :device_flow, device_name: "MacBook Pro")
 
       assert changeset.changes.device_name == "MacBook Pro"
       assert changeset.changes.source == :device_flow
@@ -59,7 +61,9 @@ defmodule Reposit.Accounts.ApiTokenTest do
     end
 
     test "returns nil for non-existent token" do
-      assert {:ok, query} = ApiToken.verify_token_query("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY")
+      assert {:ok, query} =
+               ApiToken.verify_token_query("YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY")
+
       assert is_nil(Repo.one(query))
     end
 

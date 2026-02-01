@@ -108,7 +108,8 @@ defmodule RepositWeb.Api.V1.DeviceAuthController do
         |> json(%{
           success: false,
           error: "token_limit_reached",
-          hint: "You have reached the maximum number of API tokens (50). Please delete unused tokens in settings."
+          hint:
+            "You have reached the maximum number of API tokens (50). Please delete unused tokens in settings."
         })
 
       {:error, :token_generation_failed} ->

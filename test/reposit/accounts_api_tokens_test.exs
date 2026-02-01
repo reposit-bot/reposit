@@ -9,7 +9,9 @@ defmodule Reposit.AccountsApiTokensTest do
     test "creates a token for the user" do
       user = user_fixture()
 
-      assert {:ok, plaintext_token, api_token} = Accounts.create_api_token(user, "My Token", :settings)
+      assert {:ok, plaintext_token, api_token} =
+               Accounts.create_api_token(user, "My Token", :settings)
+
       assert String.length(plaintext_token) == 43
       assert api_token.name == "My Token"
       assert api_token.source == :settings
@@ -20,7 +22,9 @@ defmodule Reposit.AccountsApiTokensTest do
       user = user_fixture()
 
       assert {:ok, _, api_token} =
-               Accounts.create_api_token(user, "CLI Token", :device_flow, device_name: "MacBook Pro")
+               Accounts.create_api_token(user, "CLI Token", :device_flow,
+                 device_name: "MacBook Pro"
+               )
 
       assert api_token.source == :device_flow
       assert api_token.device_name == "MacBook Pro"
@@ -35,7 +39,8 @@ defmodule Reposit.AccountsApiTokensTest do
       end
 
       # 51st should fail
-      assert {:error, :token_limit_reached} = Accounts.create_api_token(user, "Token 51", :settings)
+      assert {:error, :token_limit_reached} =
+               Accounts.create_api_token(user, "Token 51", :settings)
     end
   end
 
@@ -44,7 +49,9 @@ defmodule Reposit.AccountsApiTokensTest do
       user = user_fixture()
 
       {:ok, _, _} = Accounts.create_api_token(user, "Token 1", :settings)
-      {:ok, _, _} = Accounts.create_api_token(user, "Token 2", :device_flow, device_name: "Device")
+
+      {:ok, _, _} =
+        Accounts.create_api_token(user, "Token 2", :device_flow, device_name: "Device")
 
       tokens = Accounts.list_api_tokens(user)
       assert length(tokens) == 2
