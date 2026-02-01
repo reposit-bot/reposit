@@ -1,6 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
+    <script>
+      (function(){
+        var s = document.documentElement.getAttribute("data-theme");
+        if (!s) {
+          try { s = localStorage.getItem("phx:theme"); } catch (e) {}
+          s = s || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+          document.documentElement.setAttribute("data-theme", s);
+        }
+      })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
@@ -16,14 +26,20 @@
     </script>
     <script>
       (() => {
-        const setTheme = (theme) => {
-          localStorage.setItem("phx:theme", theme);
+        const applyTheme = (theme, persist = true) => {
+          if (persist) localStorage.setItem("phx:theme", theme);
           document.documentElement.setAttribute("data-theme", theme);
         };
+        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         const saved = localStorage.getItem("phx:theme");
-        if (saved) setTheme(saved);
-        window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "dark"));
-        window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));
+        const initial = saved || (systemPrefersDark ? "dark" : "light");
+        applyTheme(initial, !!saved);
+        window.addEventListener("storage", (e) => {
+          if (e.key !== "phx:theme") return;
+          const theme = e.newValue || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+          applyTheme(theme, !!e.newValue);
+        });
+        window.addEventListener("phx:set-theme", (e) => applyTheme(e.target.dataset.phxTheme));
       })();
     </script>
   </head>
