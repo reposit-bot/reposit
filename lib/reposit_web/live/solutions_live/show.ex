@@ -77,9 +77,20 @@ defmodule RepositWeb.SolutionsLive.Show do
 
   defp render_markdown(text) do
     case MDEx.to_html(text, extension: [autolink: true, strikethrough: true]) do
-      {:ok, html} -> html
+      {:ok, html} -> safe_user_content_links(html)
       {:error, _} -> text
     end
+  end
+
+  # Add rel and target to links in user-submitted HTML:
+  # - nofollow, ugc: tell Google not to pass link equity (ugc = user-generated content)
+  # - noopener, noreferrer: security when opening in new tab
+  defp safe_user_content_links(html) when is_binary(html) do
+    Regex.replace(
+      ~r/<a\s+/i,
+      html,
+      ~s|<a rel="nofollow ugc noopener noreferrer" target="_blank" |
+    )
   end
 
   @impl true

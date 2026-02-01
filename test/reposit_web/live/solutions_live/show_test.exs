@@ -49,6 +49,25 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "<em>italic</em>"
     end
 
+    test "user content links have nofollow noopener noreferrer and target _blank", %{
+      conn: conn,
+      user_scope: user_scope
+    } do
+      {:ok, solution} =
+        create_solution(
+          "Problem with link in solution body",
+          "See https://example.com for more. Or [click here](https://other.example.com).",
+          %{},
+          user_scope
+        )
+
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      html = render(view)
+      assert html =~ ~s(rel="nofollow ugc noopener noreferrer")
+      assert html =~ ~s(target="_blank")
+    end
+
     test "displays tags grouped by category", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
