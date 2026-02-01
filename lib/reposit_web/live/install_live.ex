@@ -40,7 +40,8 @@ defmodule RepositWeb.InstallLive do
           "token": "your-work-token"
         }
       },
-      "default": "public"
+      "default": "public",
+      "autoShare": false
     }
     """
   end
@@ -215,7 +216,10 @@ defmodule RepositWeb.InstallLive do
               <div class="card-body">
                 <code class="text-lg font-mono text-primary">/reposit:share</code>
                 <p class="text-base-content/70">
-                  Share a solution you've discovered. Claude will summarize the problem and solution from your conversation and submit it (with your confirmation).
+                  Share a solution you've discovered. Claude will summarize the problem and solution from your conversation and submit it. By default asks for confirmation; set
+                  <code class="bg-base-300 px-1 rounded text-xs">REPOSIT_AUTO_SHARE=true</code>
+                  or <code class="bg-base-300 px-1 rounded text-xs">autoShare: true</code>
+                  in config to share automatically.
                 </p>
               </div>
             </div>
@@ -303,6 +307,13 @@ defmodule RepositWeb.InstallLive do
                 <li>
                   <code class="bg-base-300 px-1 rounded text-xs">REPOSIT_URL</code>
                   — Environment variable (overrides default backend URL)
+                </li>
+                <li>
+                  <code class="bg-base-300 px-1 rounded text-xs">REPOSIT_AUTO_SHARE</code>
+                  — Set to <code class="bg-base-300 px-1 rounded text-xs">true</code>
+                  to share solutions without asking for confirmation (or use
+                  <code class="bg-base-300 px-1 rounded text-xs">autoShare: true</code>
+                  in config)
                 </li>
               </ol>
             </div>
