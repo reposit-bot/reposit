@@ -47,12 +47,14 @@ defmodule RepositWeb.UserLiveTest do
     end
 
     test "redirects to solutions when user not found", %{conn: conn} do
-      assert {:error, {:redirect, %{to: to}}} = live(conn, ~p"/u/999999")
+      assert {:error, {:redirect, %{to: to}}} =
+               live(conn, ~p"/u/00000000-0000-0000-0000-000000000001")
+
       assert to == ~p"/solutions"
     end
 
     test "redirects when id is invalid", %{conn: conn} do
-      assert {:error, {:redirect, %{to: to}}} = live(conn, ~p"/u/not-a-number")
+      assert {:error, {:redirect, %{to: to}}} = live(conn, ~p"/u/not-a-valid-uuid")
       assert to == ~p"/solutions"
     end
   end

@@ -43,9 +43,9 @@ defmodule RepositWeb.UserLive do
   end
 
   defp parse_id(id) when is_binary(id) do
-    case Integer.parse(id) do
-      {n, ""} when n > 0 -> n
-      _ -> nil
+    case Ecto.UUID.cast(id) do
+      {:ok, uuid} -> uuid
+      :error -> nil
     end
   end
 

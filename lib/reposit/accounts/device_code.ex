@@ -15,6 +15,9 @@ defmodule Reposit.Accounts.DeviceCode do
 
   alias Reposit.Accounts.{DeviceCode, User}
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
+
   @hash_algorithm :sha256
   @rand_size 32
   @user_code_length 8
@@ -28,7 +31,7 @@ defmodule Reposit.Accounts.DeviceCode do
 
     belongs_to :user, User
 
-    timestamps(type: :utc_datetime, updated_at: false)
+    timestamps(type: :utc_datetime_usec, updated_at: false)
   end
 
   @doc """

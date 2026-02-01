@@ -220,7 +220,7 @@ defmodule RepositWeb.UserSettingsControllerTest do
     end
 
     test "returns error for non-existent token", %{conn: conn} do
-      conn = delete(conn, ~p"/users/settings/api-tokens/999999")
+      conn = delete(conn, ~p"/users/settings/api-tokens/00000000-0000-0000-0000-000000000001")
       assert redirected_to(conn) == ~p"/users/settings"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~ "Token not found"

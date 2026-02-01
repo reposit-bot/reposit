@@ -13,7 +13,7 @@ defmodule Reposit.Solutions.Solution do
     field(:downvotes, :integer, default: 0)
     field(:status, Ecto.Enum, values: @statuses, default: :active)
 
-    belongs_to(:user, Reposit.Accounts.User, type: :id)
+    belongs_to(:user, Reposit.Accounts.User, type: :binary_id)
     has_many(:votes, Reposit.Votes.Vote)
 
     timestamps(type: :utc_datetime_usec)

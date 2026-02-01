@@ -118,6 +118,25 @@ lib/
     telemetry.ex
 ```
 
+## Migrations
+
+All tables use **UUID primary keys** (`:binary_id`). New migrations must follow this pattern (see express or existing migrations):
+
+```elixir
+create table(:table_name, primary_key: false) do
+  add(:id, :binary_id, primary_key: true)
+  add(:other_id, references(:other_table, type: :binary_id, on_delete: :delete_all))
+  # ...
+  timestamps(type: :utc_datetime_usec)
+end
+```
+
+- Use `primary_key: false` and `add(:id, :binary_id, primary_key: true)` for new tables.
+- Use `references(..., type: :binary_id)` for foreign keys.
+- Use `timestamps(type: :utc_datetime_usec)`.
+
+Schemas that don't use `Reposit.Schema` must set `@primary_key {:id, :binary_id, autogenerate: true}` and `@foreign_key_type :binary_id`.
+
 ## Commands
 
 ```bash

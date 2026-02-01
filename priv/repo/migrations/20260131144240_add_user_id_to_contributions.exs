@@ -4,14 +4,14 @@ defmodule Reposit.Repo.Migrations.AddUserIdToContributions do
   def change do
     # Add user_id to solutions table
     alter table(:solutions) do
-      add :user_id, references(:users, on_delete: :delete_all)
+      add(:user_id, references(:users, type: :binary_id, on_delete: :delete_all))
     end
 
     create index(:solutions, [:user_id])
 
     # Add user_id to votes table
     alter table(:votes) do
-      add :user_id, references(:users, on_delete: :delete_all)
+      add(:user_id, references(:users, type: :binary_id, on_delete: :delete_all))
     end
 
     create index(:votes, [:user_id])

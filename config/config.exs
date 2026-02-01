@@ -22,7 +22,7 @@ config :reposit, :scopes,
 
 config :reposit,
   ecto_repos: [Reposit.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [binary_id: true, timestamp_type: :utc_datetime_usec]
 
 # Configure Repo to use pgvector types
 config :reposit, Reposit.Repo, types: Reposit.PostgrexTypes

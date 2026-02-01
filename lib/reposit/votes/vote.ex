@@ -10,7 +10,7 @@ defmodule Reposit.Votes.Vote do
     field(:reason, Ecto.Enum, values: @downvote_reasons)
 
     belongs_to(:solution, Reposit.Solutions.Solution)
-    belongs_to(:user, Reposit.Accounts.User, type: :id)
+    belongs_to(:user, Reposit.Accounts.User, type: :binary_id)
 
     timestamps(type: :utc_datetime_usec, updated_at: false)
   end

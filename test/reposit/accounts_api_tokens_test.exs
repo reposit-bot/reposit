@@ -100,7 +100,9 @@ defmodule Reposit.AccountsApiTokensTest do
 
     test "returns error for non-existent token" do
       user = user_fixture()
-      assert {:error, :not_found} = Accounts.delete_api_token(user, 999_999)
+
+      assert {:error, :not_found} =
+               Accounts.delete_api_token(user, "00000000-0000-0000-0000-000000000001")
     end
 
     test "cannot delete another user's token" do
@@ -125,7 +127,9 @@ defmodule Reposit.AccountsApiTokensTest do
 
     test "returns error for non-existent token" do
       user = user_fixture()
-      assert {:error, :not_found} = Accounts.rename_api_token(user, 999_999, "New Name")
+
+      assert {:error, :not_found} =
+               Accounts.rename_api_token(user, "00000000-0000-0000-0000-000000000001", "New Name")
     end
 
     test "cannot rename another user's token" do

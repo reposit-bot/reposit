@@ -3,6 +3,9 @@ defmodule Reposit.Accounts.UserToken do
   import Ecto.Query
   alias Reposit.Accounts.UserToken
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
+
   @hash_algorithm :sha256
   @rand_size 32
 
@@ -19,7 +22,7 @@ defmodule Reposit.Accounts.UserToken do
     field(:authenticated_at, :utc_datetime)
     belongs_to(:user, Reposit.Accounts.User)
 
-    timestamps(type: :utc_datetime, updated_at: false)
+    timestamps(type: :utc_datetime_usec, updated_at: false)
   end
 
   @doc """

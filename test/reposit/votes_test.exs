@@ -324,7 +324,8 @@ defmodule Reposit.VotesTest do
     end
 
     test "returns nil when not found", %{solution: solution} do
-      assert nil == Votes.get_vote(solution.id, 999_999_999)
+      assert nil ==
+               Votes.get_vote(solution.id, "00000000-0000-0000-0000-000000000001")
     end
   end
 end

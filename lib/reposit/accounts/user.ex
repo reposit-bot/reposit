@@ -2,6 +2,9 @@ defmodule Reposit.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
+
   @roles [:user, :admin]
 
   schema "users" do
@@ -20,7 +23,7 @@ defmodule Reposit.Accounts.User do
 
     has_many(:solutions, Reposit.Solutions.Solution)
 
-    timestamps(type: :utc_datetime)
+    timestamps(type: :utc_datetime_usec)
   end
 
   @doc """

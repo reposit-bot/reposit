@@ -16,6 +16,9 @@ defmodule Reposit.Accounts.ApiToken do
 
   alias Reposit.Accounts.{ApiToken, User}
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
+
   @hash_algorithm :sha256
   @rand_size 32
   @max_tokens_per_user 50
@@ -31,7 +34,7 @@ defmodule Reposit.Accounts.ApiToken do
 
     belongs_to :user, User
 
-    timestamps(type: :utc_datetime)
+    timestamps(type: :utc_datetime_usec)
   end
 
   @doc """
