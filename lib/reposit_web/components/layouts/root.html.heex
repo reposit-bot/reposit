@@ -13,6 +13,9 @@
     </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <%= if assigns[:referrer_policy] do %>
+      <meta name="referrer" content={assigns[:referrer_policy]} />
+    <% end %>
     <meta name="csrf-token" content={get_csrf_token()} />
     <link phx-track-static rel="icon" href={~p"/favicon.ico"} sizes="any" />
     <link phx-track-static rel="icon" href={~p"/favicon.svg"} type="image/svg+xml" />

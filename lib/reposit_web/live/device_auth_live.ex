@@ -18,6 +18,7 @@ defmodule RepositWeb.DeviceAuthLive do
     socket =
       socket
       |> assign(:page_title, "Authorize Device")
+      |> assign(:referrer_policy, "no-referrer")
       |> assign(:user_code, formatted_code)
       |> assign(:error, nil)
       |> assign(:success, false)
@@ -29,7 +30,8 @@ defmodule RepositWeb.DeviceAuthLive do
   @impl true
   def handle_info(:auto_submit, socket) do
     # Auto-submit if we have a pre-filled code and user is logged in
-    if socket.assigns.auto_submit && socket.assigns.current_scope && socket.assigns.current_scope.user do
+    if socket.assigns.auto_submit && socket.assigns.current_scope &&
+         socket.assigns.current_scope.user do
       {:noreply, handle_code_submit(socket, socket.assigns.user_code)}
     else
       {:noreply, socket}
@@ -60,7 +62,9 @@ defmodule RepositWeb.DeviceAuthLive do
 
   defp handle_code_submit(socket, user_code) do
     current_user = socket.assigns.current_scope && socket.assigns.current_scope.user
-    code_param = if socket.assigns.user_code != "", do: "?code=#{socket.assigns.user_code}", else: ""
+
+    code_param =
+      if socket.assigns.user_code != "", do: "?code=#{socket.assigns.user_code}", else: ""
 
     cond do
       is_nil(current_user) ->
