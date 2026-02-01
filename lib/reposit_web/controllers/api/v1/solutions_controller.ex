@@ -74,7 +74,7 @@ defmodule RepositWeb.Api.V1.SolutionsController do
           json(conn, %{
             success: true,
             data: %{
-              results: Enum.map(results, &search_result_json/1),
+              solutions: Enum.map(results, &search_result_json/1),
               total: total
             }
           })

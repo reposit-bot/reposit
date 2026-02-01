@@ -172,7 +172,7 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
       assert %{
                "success" => true,
                "data" => %{
-                 "results" => [],
+                 "solutions" => [],
                  "total" => 0
                }
              } = json_response(conn, 200)
@@ -187,7 +187,7 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
       assert %{
                "success" => true,
                "data" => %{
-                 "results" => [result],
+                 "solutions" => [result],
                  "total" => 1
                }
              } = json_response(conn, 200)
@@ -211,12 +211,12 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
 
       assert %{
                "data" => %{
-                 "results" => results,
+                 "solutions" => solutions,
                  "total" => 5
                }
              } = json_response(conn, 200)
 
-      assert length(results) == 2
+      assert length(solutions) == 2
     end
 
     test "filters by required_tags", %{conn: conn, owner_scope: scope} do
@@ -238,12 +238,12 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
 
       assert %{
                "data" => %{
-                 "results" => results
+                 "solutions" => solutions
                }
              } = json_response(conn, 200)
 
-      assert length(results) == 1
-      assert hd(results)["tags"]["language"] == ["elixir"]
+      assert length(solutions) == 1
+      assert hd(solutions)["tags"]["language"] == ["elixir"]
     end
 
     test "sorts by sort parameter", %{conn: conn, owner_scope: scope} do
