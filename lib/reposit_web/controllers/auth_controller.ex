@@ -2,9 +2,10 @@ defmodule RepositWeb.AuthController do
   @moduledoc """
   Handles OAuth authentication callbacks from Ueberauth providers (Google, GitHub).
 
-  Supports two flows:
+  Supports three flows:
   1. Sign in/up: User is not logged in, OAuth creates or finds their account
-  2. Account linking: User is already logged in, OAuth links provider to their account
+  2. Sudo re-auth: User is logged in with provider linked, re-authenticating refreshes session
+  3. Account linking: User is logged in without provider linked, OAuth links it to their account
   """
   use RepositWeb, :controller
 
@@ -24,28 +25,30 @@ defmodule RepositWeb.AuthController do
         "provider" => provider
       })
       when not is_nil(user) do
-    # User is already logged in - link the OAuth account
     user_info = extract_user_info(auth)
     provider_name = String.capitalize(provider)
 
-    result =
-      case provider do
-        "google" -> Accounts.link_google_account(user, user_info)
-        "github" -> Accounts.link_github_account(user, user_info)
-      end
+    # Check if this is sudo re-auth (provider already linked) or account linking
+    user_provider_uid = get_user_provider_uid(user, provider)
 
-    case result do
-      {:ok, _user} ->
+    cond do
+      # Sudo re-auth: provider is linked and UIDs match - refresh session
+      user_provider_uid == user_info.uid ->
         conn
-        |> put_flash(:info, "#{provider_name} account connected successfully!")
-        |> redirect(to: ~p"/users/settings")
+        |> UserAuth.log_in_user(user)
 
-      {:error, changeset} ->
-        error_message = link_error_message(changeset, provider_name)
+      # Provider not linked yet - link it
+      is_nil(user_provider_uid) ->
+        link_provider_account(conn, user, user_info, provider, provider_name)
 
+      # Provider linked but UID doesn't match - wrong account
+      true ->
         conn
-        |> put_flash(:error, error_message)
-        |> redirect(to: ~p"/users/settings")
+        |> put_flash(
+          :error,
+          "Please sign in with the same #{provider_name} account that's linked to your profile."
+        )
+        |> redirect(to: ~p"/users/log-in")
     end
   end
 
@@ -82,6 +85,31 @@ defmodule RepositWeb.AuthController do
     )
     |> redirect(to: ~p"/users/log-in")
   end
+
+  defp link_provider_account(conn, user, user_info, provider, provider_name) do
+    result =
+      case provider do
+        "google" -> Accounts.link_google_account(user, user_info)
+        "github" -> Accounts.link_github_account(user, user_info)
+      end
+
+    case result do
+      {:ok, _user} ->
+        conn
+        |> put_flash(:info, "#{provider_name} account connected successfully!")
+        |> redirect(to: ~p"/users/settings")
+
+      {:error, changeset} ->
+        error_message = link_error_message(changeset, provider_name)
+
+        conn
+        |> put_flash(:error, error_message)
+        |> redirect(to: ~p"/users/settings")
+    end
+  end
+
+  defp get_user_provider_uid(user, "google"), do: user.google_uid
+  defp get_user_provider_uid(user, "github"), do: user.github_uid
 
   defp extract_user_info(auth) do
     %{
