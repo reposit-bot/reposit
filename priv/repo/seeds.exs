@@ -48,7 +48,7 @@ end
   Accounts.register_user(%{email: "carol@example.com"})
 
 # Seed solutions: ~100 varied problem/solution pairs
-# Each entry has problem_description (min 20), solution_pattern (min 50), optional context_requirements, tags
+# Each entry has problem (min 20), solution (min 50), optional context_requirements, tags
 defmodule SeedData do
   def solution_attrs do
     [
@@ -313,8 +313,8 @@ defmodule SeedData do
 
   defp solution(problem, pattern, tags),
     do: %{
-      problem_description: problem,
-      solution_pattern: pattern,
+      problem: problem,
+      solution: pattern,
       context_requirements: %{},
       tags: tags
     }

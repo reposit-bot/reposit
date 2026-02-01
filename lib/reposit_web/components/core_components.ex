@@ -519,6 +519,7 @@ defmodule RepositWeb.CoreComponents do
 
   def solution_tag(assigns) do
     assigns = assign(assigns, :solution_tag_class, @solution_tag_class)
+
     ~H"""
     <span class={@solution_tag_class}>{@value}</span>
     """
@@ -544,7 +545,10 @@ defmodule RepositWeb.CoreComponents do
     ~H"""
     <div :if={length(@all_tags) > 0} class={["flex flex-wrap gap-1.5", @class]}>
       <.solution_tag :for={tag <- maybe_take(@all_tags, @limit)} value={tag} />
-      <.solution_tag :if={@limit && length(@all_tags) > @limit} value={"+#{length(@all_tags) - @limit}"} />
+      <.solution_tag
+        :if={@limit && length(@all_tags) > @limit}
+        value={"+#{length(@all_tags) - @limit}"}
+      />
     </div>
     """
   end
@@ -584,6 +588,7 @@ defmodule RepositWeb.CoreComponents do
     solution = assigns.solution
     score = (solution.upvotes || 0) - (solution.downvotes || 0)
     user = Map.get(solution, :user)
+
     assigns =
       assigns
       |> assign(:score, score)
@@ -591,8 +596,8 @@ defmodule RepositWeb.CoreComponents do
       |> assign(:author_name, solution_row_author_name(user))
       |> assign(:show_author_block, assigns.show_author && user)
       |> assign(:author_user_id, user && Map.get(user, :id))
-      |> assign(:problem_truncated, solution_row_truncate(Map.get(solution, :problem_description), 100))
-      |> assign(:solution_truncated, solution_row_truncate(Map.get(solution, :solution_pattern), 180))
+      |> assign(:problem_truncated, solution_row_truncate(Map.get(solution, :problem), 100))
+      |> assign(:solution_truncated, solution_row_truncate(Map.get(solution, :solution), 180))
       |> assign(:date_str, solution_row_format_date(Map.get(solution, :inserted_at)))
 
     ~H"""
@@ -642,6 +647,7 @@ defmodule RepositWeb.CoreComponents do
   defp solution_row_score_class(_), do: "text-base-content/60"
 
   defp solution_row_author_name(nil), do: nil
+
   defp solution_row_author_name(user) do
     name = Map.get(user, :name)
     if is_binary(name) and name != "", do: name, else: "Contributor"

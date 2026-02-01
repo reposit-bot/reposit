@@ -4,8 +4,8 @@ defmodule Reposit.Solutions.Solution do
   @statuses [:active, :archived]
 
   schema "solutions" do
-    field(:problem_description, :string)
-    field(:solution_pattern, :string)
+    field(:problem, :string)
+    field(:solution, :string)
     field(:context_requirements, :map, default: %{})
     field(:embedding, Pgvector.Ecto.Vector)
     field(:tags, :map, default: %{language: [], framework: [], domain: [], platform: []})
@@ -24,7 +24,7 @@ defmodule Reposit.Solutions.Solution do
   """
   def statuses, do: @statuses
 
-  @required_fields [:problem_description, :solution_pattern, :user_id]
+  @required_fields [:problem, :solution, :user_id]
   @optional_fields [:context_requirements, :embedding, :tags]
 
   @doc """
@@ -34,8 +34,8 @@ defmodule Reposit.Solutions.Solution do
     solution
     |> cast(attrs, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
-    |> validate_length(:problem_description, min: 20)
-    |> validate_length(:solution_pattern, min: 50)
+    |> validate_length(:problem, min: 20)
+    |> validate_length(:solution, min: 50)
     |> validate_tags()
     |> foreign_key_constraint(:user_id)
   end

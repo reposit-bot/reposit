@@ -16,8 +16,8 @@ defmodule RepositWeb.Api.V1.VotesControllerTest do
     setup ctx do
       {:ok, solution} =
         Solutions.create_solution(ctx.owner_scope, %{
-          problem_description: "How to implement binary search in Elixir efficiently",
-          solution_pattern:
+          problem: "How to implement binary search in Elixir efficiently",
+          solution:
             "Use recursion with pattern matching. Split the list in half and compare the middle element with the target."
         })
 
@@ -137,8 +137,8 @@ defmodule RepositWeb.Api.V1.VotesControllerTest do
     setup ctx do
       {:ok, solution} =
         Solutions.create_solution(ctx.owner_scope, %{
-          problem_description: "How to implement binary search in Elixir efficiently",
-          solution_pattern:
+          problem: "How to implement binary search in Elixir efficiently",
+          solution:
             "Use recursion with pattern matching. Split the list in half and compare the middle element with the target."
         })
 

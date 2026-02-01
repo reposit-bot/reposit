@@ -15,8 +15,8 @@ defmodule Reposit.VotesTest do
 
     {:ok, solution} =
       Solutions.create_solution(user_scope, %{
-        problem_description: "How to implement binary search in Elixir efficiently",
-        solution_pattern:
+        problem: "How to implement binary search in Elixir efficiently",
+        solution:
           "Use recursion with pattern matching. Split the list in half and compare the middle element with the target."
       })
 

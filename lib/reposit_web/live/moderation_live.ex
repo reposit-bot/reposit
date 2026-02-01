@@ -123,7 +123,7 @@ defmodule RepositWeb.ModerationLive do
                 navigate={~p"/solutions/#{solution.id}"}
                 class="card-title text-base hover:text-primary"
               >
-                {truncate(solution.problem_description, 80)}
+                {truncate(solution.problem, 80)}
               </.link>
               <.solution_tags tags={solution.tags} limit={3} class="mt-1" />
 
@@ -173,7 +173,7 @@ defmodule RepositWeb.ModerationLive do
                     navigate={~p"/solutions/#{solution.id}"}
                     class="hover:text-primary font-medium"
                   >
-                    {truncate(solution.problem_description, 60)}
+                    {truncate(solution.problem, 60)}
                   </.link>
                   <.solution_tags tags={solution.tags} limit={3} class="mt-1" />
                 </td>

@@ -298,8 +298,8 @@ defmodule RepositWeb.ModerationLiveTest do
 
   defp create_solution(problem, solution, scope) do
     Solutions.create_solution(scope, %{
-      problem_description: problem,
-      solution_pattern: solution
+      problem: problem,
+      solution: solution
     })
   end
 end

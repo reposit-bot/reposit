@@ -14,8 +14,8 @@ defmodule Reposit.Votes.VoteTest do
     {:ok, solution} =
       %Solution{}
       |> Solution.changeset(%{
-        problem_description: "This is a valid problem description for testing purposes.",
-        solution_pattern:
+        problem: "This is a valid problem description for testing purposes.",
+        solution:
           "This is a valid solution pattern that explains how to solve the problem in detail.",
         user_id: user.id
       })

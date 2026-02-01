@@ -19,8 +19,8 @@ defmodule Reposit.Solutions do
   ## Examples
 
       {:ok, solution} = create_solution(scope, %{
-        problem_description: "How to implement binary search",
-        solution_pattern: "Use divide and conquer..."
+        problem: "How to implement binary search",
+        solution: "Use divide and conquer..."
       })
 
   """
@@ -57,7 +57,7 @@ defmodule Reposit.Solutions do
     changeset = Solution.changeset(%Solution{}, attrs)
 
     if changeset.valid? do
-      # Generate embedding from problem_description + solution_pattern
+      # Generate embedding from problem + solution
       text = build_embedding_text(attrs)
 
       case generate_embedding_for_solution(text, changeset) do
@@ -77,8 +77,8 @@ defmodule Reposit.Solutions do
   end
 
   defp check_content_safety(attrs) do
-    problem = Map.get(attrs, :problem_description) || Map.get(attrs, "problem_description") || ""
-    solution = Map.get(attrs, :solution_pattern) || Map.get(attrs, "solution_pattern") || ""
+    problem = Map.get(attrs, :problem) || Map.get(attrs, "problem") || ""
+    solution = Map.get(attrs, :solution) || Map.get(attrs, "solution") || ""
 
     # context_requirements is a map, so we need to convert it to a string for safety check
     context = Map.get(attrs, :context_requirements) || Map.get(attrs, "context_requirements")
@@ -103,8 +103,8 @@ defmodule Reposit.Solutions do
   end
 
   defp build_embedding_text(attrs) do
-    problem = Map.get(attrs, :problem_description) || Map.get(attrs, "problem_description") || ""
-    solution = Map.get(attrs, :solution_pattern) || Map.get(attrs, "solution_pattern") || ""
+    problem = Map.get(attrs, :problem) || Map.get(attrs, "problem") || ""
+    solution = Map.get(attrs, :solution) || Map.get(attrs, "solution") || ""
     "Problem: #{problem}\nSolution: #{solution}"
   end
 
@@ -336,8 +336,8 @@ defmodule Reposit.Solutions do
       from(s in query,
         select: %{
           id: s.id,
-          problem_description: s.problem_description,
-          solution_pattern: s.solution_pattern,
+          problem: s.problem,
+          solution: s.solution,
           tags: s.tags,
           upvotes: s.upvotes,
           downvotes: s.downvotes,

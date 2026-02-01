@@ -172,10 +172,10 @@ defmodule RepositWeb.HomeLive do
                   >
                     <div class="card-body p-5">
                       <h3 class="card-title text-base line-clamp-1">
-                        {solution.problem_description}
+                        {solution.problem}
                       </h3>
                       <p class="text-sm text-base-content/60 line-clamp-2">
-                        {solution.solution_pattern}
+                        {solution.solution}
                       </p>
                       <div class="flex gap-4 mt-2">
                         <span class="badge badge-ghost gap-1">

@@ -21,7 +21,7 @@ defmodule RepositWeb.SolutionsLive.Show do
         {:ok,
          socket
          |> assign(:solution, solution)
-         |> assign(:markdown_html, render_markdown(solution.solution_pattern))
+         |> assign(:markdown_html, render_markdown(solution.solution))
          |> assign(:user_vote, user_vote)
          |> assign(:voting, false)
          |> assign(:show_downvote_form, false)
@@ -93,11 +93,13 @@ defmodule RepositWeb.SolutionsLive.Show do
           <!-- Problem section -->
           <div class="mb-8">
             <div class="flex items-center gap-3 mb-3">
-              <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Problem</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60">
+                Problem
+              </span>
               <.solution_tags tags={@solution.tags} limit={4} />
             </div>
             <p class="text-base-content text-lg leading-relaxed">
-              {@solution.problem_description}
+              {@solution.problem}
             </p>
             <div :if={@solution.user} class="mt-3 flex items-center gap-2">
               <span class="text-sm text-base-content/60">Shared by</span>
@@ -134,8 +136,8 @@ defmodule RepositWeb.SolutionsLive.Show do
               <span class="mono font-semibold text-success">{@solution.upvotes}</span>
               <span class="text-xs text-base-content/60">upvotes</span>
             </div>
-
-            <!-- Downvote button -->
+            
+    <!-- Downvote button -->
             <button
               :if={logged_in?(@current_scope)}
               phx-click="show-downvote-form"
@@ -152,8 +154,7 @@ defmodule RepositWeb.SolutionsLive.Show do
               <span class="text-xs text-base-content/60">downvotes</span>
             </div>
 
-            <div class="hidden sm:block h-6 w-px bg-base-300">
-            </div>
+            <div class="hidden sm:block h-6 w-px bg-base-300"></div>
 
             <div class="flex items-center gap-2">
               <span class={"mono text-lg sm:text-xl font-bold #{score_color(@score)}"}>
@@ -445,7 +446,9 @@ defmodule RepositWeb.SolutionsLive.Show do
       :if={map_size(@grouped) > 0}
       class="mt-8 pt-6 border-t border-base-300"
     >
-      <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-4 block">Tags</span>
+      <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-4 block">
+        Tags
+      </span>
       <div class="flex flex-wrap gap-6">
         <div :for={{category, values} <- @grouped} class="flex flex-col gap-2">
           <span class="text-[0.7rem] font-medium uppercase text-base-content/60">

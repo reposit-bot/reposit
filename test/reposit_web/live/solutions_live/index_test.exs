@@ -247,8 +247,8 @@ defmodule RepositWeb.SolutionsLive.IndexTest do
 
   defp create_solution(problem, solution, tags, scope) do
     Solutions.create_solution(scope, %{
-      problem_description: problem,
-      solution_pattern: solution,
+      problem: problem,
+      solution: solution,
       tags: tags
     })
   end

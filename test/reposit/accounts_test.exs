@@ -663,8 +663,8 @@ defmodule Reposit.AccountsTest do
 
       {:ok, solution} =
         Reposit.Solutions.create_solution(scope, %{
-          problem_description: "Test problem description that is long enough for validation",
-          solution_pattern:
+          problem: "Test problem description that is long enough for validation",
+          solution:
             "Test solution pattern that is also long enough to pass the minimum character validation requirement"
         })
 
@@ -680,8 +680,8 @@ defmodule Reposit.AccountsTest do
 
       {:ok, solution} =
         Reposit.Solutions.create_solution(author_scope, %{
-          problem_description: "Test problem description that is long enough for validation",
-          solution_pattern:
+          problem: "Test problem description that is long enough for validation",
+          solution:
             "Test solution pattern that is also long enough to pass the minimum character validation requirement"
         })
 

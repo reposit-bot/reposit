@@ -13,6 +13,7 @@ defmodule RepositWeb.UserLiveTest do
       user = user_fixture()
       {:ok, user} = Accounts.update_user_profile(user, %{name: "Jane Doe"})
       scope = Scope.for_user(user)
+
       {:ok, _} =
         create_solution(
           "Problem one: how to do X in Elixir",
@@ -20,6 +21,7 @@ defmodule RepositWeb.UserLiveTest do
           %{},
           scope
         )
+
       {:ok, _} =
         create_solution(
           "Problem two: how to do Y in Phoenix",
@@ -57,8 +59,8 @@ defmodule RepositWeb.UserLiveTest do
 
   defp create_solution(problem, solution, tags, scope) do
     Solutions.create_solution(scope, %{
-      problem_description: problem,
-      solution_pattern: solution,
+      problem: problem,
+      solution: solution,
       tags: tags
     })
   end

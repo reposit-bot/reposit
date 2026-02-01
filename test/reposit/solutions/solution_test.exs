@@ -13,9 +13,8 @@ defmodule Reposit.Solutions.SolutionTest do
   describe "changeset/2" do
     test "valid attributes create a valid changeset", %{user: user} do
       attrs = %{
-        problem_description:
-          "This is a valid problem description that is at least 20 characters long.",
-        solution_pattern:
+        problem: "This is a valid problem description that is at least 20 characters long.",
+        solution:
           "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
         user_id: user.id
       }
@@ -26,9 +25,8 @@ defmodule Reposit.Solutions.SolutionTest do
 
     test "user_id is required" do
       attrs = %{
-        problem_description:
-          "This is a valid problem description that is at least 20 characters long.",
-        solution_pattern:
+        problem: "This is a valid problem description that is at least 20 characters long.",
+        solution:
           "This is a valid solution pattern that explains how to solve the problem in at least 50 characters."
       }
 
@@ -37,61 +35,58 @@ defmodule Reposit.Solutions.SolutionTest do
       assert "can't be blank" in errors_on(changeset).user_id
     end
 
-    test "problem_description is required", %{user: user} do
+    test "problem is required", %{user: user} do
       attrs = %{
-        solution_pattern:
+        solution:
           "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
         user_id: user.id
       }
 
       changeset = Solution.changeset(%Solution{}, attrs)
       refute changeset.valid?
-      assert "can't be blank" in errors_on(changeset).problem_description
+      assert "can't be blank" in errors_on(changeset).problem
     end
 
-    test "solution_pattern is required", %{user: user} do
+    test "solution is required", %{user: user} do
       attrs = %{
-        problem_description:
-          "This is a valid problem description that is at least 20 characters long.",
+        problem: "This is a valid problem description that is at least 20 characters long.",
         user_id: user.id
       }
 
       changeset = Solution.changeset(%Solution{}, attrs)
       refute changeset.valid?
-      assert "can't be blank" in errors_on(changeset).solution_pattern
+      assert "can't be blank" in errors_on(changeset).solution
     end
 
-    test "problem_description must be at least 20 characters", %{user: user} do
+    test "problem must be at least 20 characters", %{user: user} do
       attrs = %{
-        problem_description: "too short",
-        solution_pattern:
+        problem: "too short",
+        solution:
           "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
         user_id: user.id
       }
 
       changeset = Solution.changeset(%Solution{}, attrs)
       refute changeset.valid?
-      assert "should be at least 20 character(s)" in errors_on(changeset).problem_description
+      assert "should be at least 20 character(s)" in errors_on(changeset).problem
     end
 
-    test "solution_pattern must be at least 50 characters", %{user: user} do
+    test "solution must be at least 50 characters", %{user: user} do
       attrs = %{
-        problem_description:
-          "This is a valid problem description that is at least 20 characters long.",
-        solution_pattern: "too short",
+        problem: "This is a valid problem description that is at least 20 characters long.",
+        solution: "too short",
         user_id: user.id
       }
 
       changeset = Solution.changeset(%Solution{}, attrs)
       refute changeset.valid?
-      assert "should be at least 50 character(s)" in errors_on(changeset).solution_pattern
+      assert "should be at least 50 character(s)" in errors_on(changeset).solution
     end
 
     test "tags default to empty arrays", %{user: user} do
       attrs = %{
-        problem_description:
-          "This is a valid problem description that is at least 20 characters long.",
-        solution_pattern:
+        problem: "This is a valid problem description that is at least 20 characters long.",
+        solution:
           "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
         user_id: user.id
       }
@@ -108,9 +103,8 @@ defmodule Reposit.Solutions.SolutionTest do
 
     test "tags can be set with valid keys", %{user: user} do
       attrs = %{
-        problem_description:
-          "This is a valid problem description that is at least 20 characters long.",
-        solution_pattern:
+        problem: "This is a valid problem description that is at least 20 characters long.",
+        solution:
           "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
         user_id: user.id,
         tags: %{language: ["elixir"], framework: ["phoenix"]}
@@ -122,9 +116,8 @@ defmodule Reposit.Solutions.SolutionTest do
 
     test "upvotes and downvotes default to 0", %{user: user} do
       attrs = %{
-        problem_description:
-          "This is a valid problem description that is at least 20 characters long.",
-        solution_pattern:
+        problem: "This is a valid problem description that is at least 20 characters long.",
+        solution:
           "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
         user_id: user.id
       }
@@ -138,9 +131,8 @@ defmodule Reposit.Solutions.SolutionTest do
       vector = List.duplicate(0.1, 1536)
 
       attrs = %{
-        problem_description:
-          "This is a valid problem description that is at least 20 characters long.",
-        solution_pattern:
+        problem: "This is a valid problem description that is at least 20 characters long.",
+        solution:
           "This is a valid solution pattern that explains how to solve the problem in at least 50 characters.",
         user_id: user.id,
         embedding: vector

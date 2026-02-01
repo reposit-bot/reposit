@@ -118,8 +118,8 @@ defmodule RepositWeb.Api.V1.SolutionsController do
   defp solution_json(%Solution{} = solution) do
     %{
       id: solution.id,
-      problem_description: solution.problem_description,
-      solution_pattern: solution.solution_pattern,
+      problem: solution.problem,
+      solution: solution.solution,
       context_requirements: solution.context_requirements,
       tags: solution.tags,
       upvotes: solution.upvotes,
@@ -144,8 +144,8 @@ defmodule RepositWeb.Api.V1.SolutionsController do
   defp search_result_json(result) do
     %{
       id: result.id,
-      problem_description: result.problem_description,
-      solution_pattern: result.solution_pattern,
+      problem: result.problem,
+      solution: result.solution,
       tags: result.tags,
       similarity: result.similarity,
       upvotes: result.upvotes,
