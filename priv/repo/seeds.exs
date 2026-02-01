@@ -496,23 +496,28 @@ vote_attrs = []
 
 vote_attrs =
   Enum.reduce(solutions, {vote_attrs, rng}, fn solution, {acc, rng} ->
-    # Each of alice, bob, carol has ~25% chance to vote on this solution
+    # Each of alice, bob, carol has ~25% chance to vote on this solution (never on their own)
     {votes_for_solution, rng} =
       Enum.reduce([alice, bob, carol], {[], rng}, fn user, {v_acc, r} ->
-        {u, r} = :rand.uniform_s(r)
-
-        if u < 0.25 do
-          # Upvote or occasional downvote
-          {u2, r2} = :rand.uniform_s(r)
-          type = if u2 < 0.9, do: :up, else: :down
-
-          comment =
-            if type == :down, do: "Seed downvote: could be more detailed or updated.", else: nil
-
-          reason = if type == :down, do: :other, else: nil
-          {[{user, solution, type, comment, reason} | v_acc], r2}
-        else
+        # Skip if this user is the solution author — no self-votes
+        if user.id == solution.user_id do
           {v_acc, r}
+        else
+          {u, r} = :rand.uniform_s(r)
+
+          if u < 0.25 do
+            # Upvote or occasional downvote
+            {u2, r2} = :rand.uniform_s(r)
+            type = if u2 < 0.9, do: :up, else: :down
+
+            comment =
+              if type == :down, do: "Seed downvote: could be more detailed or updated.", else: nil
+
+            reason = if type == :down, do: :other, else: nil
+            {[{user, solution, type, comment, reason} | v_acc], r2}
+          else
+            {v_acc, r}
+          end
         end
       end)
 
