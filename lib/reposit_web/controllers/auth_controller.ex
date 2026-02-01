@@ -33,9 +33,10 @@ defmodule RepositWeb.AuthController do
 
     cond do
       # Sudo re-auth: provider is linked and UIDs match - refresh session
+      # Reset authenticated_at so a fresh timestamp is used for the new token
       user_provider_uid == user_info.uid ->
         conn
-        |> UserAuth.log_in_user(user)
+        |> UserAuth.log_in_user(%{user | authenticated_at: nil})
 
       # Provider not linked yet - link it
       is_nil(user_provider_uid) ->
