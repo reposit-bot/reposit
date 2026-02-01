@@ -158,7 +158,7 @@ defmodule RepositWeb.Layouts do
         <.navbar current_scope={@current_scope} />
       </header>
 
-      <main class="relative z-10 flex-1 px-6 py-10 lg:px-12">
+      <main class="flex-1 px-6 py-10 lg:px-12">
         <div class="mx-auto max-w-7xl">
           {render_slot(@inner_block)}
         </div>

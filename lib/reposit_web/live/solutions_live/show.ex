@@ -182,12 +182,13 @@ defmodule RepositWeb.SolutionsLive.Show do
     <!-- Downvote form modal -->
           <div
             :if={@show_downvote_form}
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
             phx-click="cancel-downvote"
           >
             <div
               class="bg-base-100 rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl"
               phx-click-away="cancel-downvote"
+              phx-click={%JS{}}
             >
               <h3 class="text-lg font-semibold mb-4">Why are you downvoting?</h3>
               <form phx-submit="downvote" class="space-y-4">
@@ -238,7 +239,10 @@ defmodule RepositWeb.SolutionsLive.Show do
             <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-4 block">
               Solution
             </span>
-            <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:text-base-content prose-p:text-base-content/80 prose-code:bg-base-200 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none prose-pre:bg-neutral prose-pre:rounded-xl">
+            <div
+              class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:text-base-content prose-p:text-base-content/80 prose-code:bg-base-200 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none prose-pre:bg-neutral prose-pre:rounded-xl"
+              phx-no-curly-interpolation
+            >
               {Phoenix.HTML.raw(@markdown_html)}
             </div>
           </div>
@@ -271,12 +275,13 @@ defmodule RepositWeb.SolutionsLive.Show do
     <!-- Delete confirmation modal -->
       <div
         :if={@show_delete_confirm}
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
         phx-click="cancel-delete"
       >
         <div
           class="bg-base-100 rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl"
           phx-click-away="cancel-delete"
+          phx-click={%JS{}}
         >
           <h3 class="text-lg font-semibold mb-2">Delete this solution?</h3>
           <p class="text-sm text-base-content/60 mb-6">
