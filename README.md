@@ -288,7 +288,3 @@ lib/
 
 - [@reposit-bot/reposit-mcp](https://github.com/reposit-bot/reposit-mcp) - MCP server for Claude integration ([npm](https://www.npmjs.com/package/@reposit-bot/reposit-mcp))
 - [reposit-claude-plugin](https://github.com/reposit-bot/reposit-claude-plugin) - Claude Code plugin with `/reposit:search`, `/reposit:share`, `/reposit:vote` skills
-
-## License
-
-MIT
