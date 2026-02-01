@@ -39,7 +39,7 @@ defmodule RepositWeb.AuthControllerTest do
     end
 
     test "creates new user and logs in for GitHub", %{conn: conn} do
-      auth = build_ueberauth_auth(:github, "github_new_123", "newuser@example.com", "New User")
+      auth = build_ueberauth_auth(:github, 123_456, "newuser@example.com", "New User")
 
       conn =
         conn
@@ -77,13 +77,13 @@ defmodule RepositWeb.AuthControllerTest do
       existing_user = user_fixture()
 
       existing_user
-      |> Ecto.Changeset.change(github_uid: "github_existing_123")
+      |> Ecto.Changeset.change(github_uid: 234_567)
       |> Reposit.Repo.update!()
 
       auth =
         build_ueberauth_auth(
           :github,
-          "github_existing_123",
+          234_567,
           existing_user.email,
           "Existing User"
         )
@@ -136,7 +136,7 @@ defmodule RepositWeb.AuthControllerTest do
 
     test "links GitHub account to logged-in user", %{conn: conn, user: user} do
       auth =
-        build_ueberauth_auth(:github, "github_link_new", "different@example.com", "OAuth Name")
+        build_ueberauth_auth(:github, 345_678, "different@example.com", "OAuth Name")
 
       conn =
         conn
@@ -147,7 +147,7 @@ defmodule RepositWeb.AuthControllerTest do
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "account connected"
 
       updated_user = Reposit.Accounts.get_user!(user.id)
-      assert updated_user.github_uid == "github_link_new"
+      assert updated_user.github_uid == 345_678
     end
 
     test "shows error when OAuth account is already linked to another user", %{conn: conn} do

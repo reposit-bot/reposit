@@ -14,7 +14,7 @@ defmodule Reposit.Accounts.User do
 
     # OAuth fields
     field(:google_uid, :string)
-    field(:github_uid, :string)
+    field(:github_uid, :integer)
     field(:name, :string)
     field(:avatar_url, :string)
 

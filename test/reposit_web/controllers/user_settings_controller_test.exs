@@ -154,7 +154,7 @@ defmodule RepositWeb.UserSettingsControllerTest do
     test "unlinks GitHub OAuth provider", %{conn: conn, user: user} do
       # Link GitHub first
       user
-      |> Ecto.Changeset.change(github_uid: "github_123")
+      |> Ecto.Changeset.change(github_uid: 123_456)
       |> Reposit.Repo.update!()
 
       conn = delete(conn, ~p"/users/settings/oauth/github")

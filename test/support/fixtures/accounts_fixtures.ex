@@ -113,7 +113,7 @@ defmodule Reposit.AccountsFixtures do
     user = user_fixture(attrs)
 
     user
-    |> Ecto.Changeset.change(github_uid: "github_#{System.unique_integer()}")
+    |> Ecto.Changeset.change(github_uid: System.unique_integer([:positive]))
     |> Reposit.Repo.update!()
   end
 
@@ -126,7 +126,7 @@ defmodule Reposit.AccountsFixtures do
     user
     |> Ecto.Changeset.change(
       google_uid: "google_#{System.unique_integer()}",
-      github_uid: "github_#{System.unique_integer()}"
+      github_uid: System.unique_integer([:positive])
     )
     |> Reposit.Repo.update!()
   end

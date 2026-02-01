@@ -466,7 +466,7 @@ defmodule Reposit.AccountsTest do
   describe "get_or_create_user_from_github/1" do
     test "creates new user when email doesn't exist" do
       auth_info = %{
-        uid: "github_12345",
+        uid: 12345,
         email: "newuser@example.com",
         name: "New User",
         avatar_url: "https://example.com/avatar.jpg"
@@ -474,7 +474,7 @@ defmodule Reposit.AccountsTest do
 
       assert {:ok, user} = Accounts.get_or_create_user_from_github(auth_info)
       assert user.email == "newuser@example.com"
-      assert user.github_uid == "github_12345"
+      assert user.github_uid == 12345
       assert user.name == "New User"
       assert user.avatar_url == "https://example.com/avatar.jpg"
       assert user.confirmed_at != nil
@@ -484,7 +484,7 @@ defmodule Reposit.AccountsTest do
       existing_user = user_fixture()
 
       auth_info = %{
-        uid: "github_12345",
+        uid: 12345,
         email: existing_user.email,
         name: "GitHub Name",
         avatar_url: "https://example.com/avatar.jpg"
@@ -492,7 +492,7 @@ defmodule Reposit.AccountsTest do
 
       assert {:ok, user} = Accounts.get_or_create_user_from_github(auth_info)
       assert user.id == existing_user.id
-      assert user.github_uid == "github_12345"
+      assert user.github_uid == 12345
     end
 
     test "returns existing user when github_uid already exists" do
@@ -544,13 +544,13 @@ defmodule Reposit.AccountsTest do
       user = user_fixture()
 
       auth_info = %{
-        uid: "github_link_123",
+        uid: 456_789,
         name: "GitHub Name",
         avatar_url: "https://example.com/avatar.jpg"
       }
 
       assert {:ok, updated_user} = Accounts.link_github_account(user, auth_info)
-      assert updated_user.github_uid == "github_link_123"
+      assert updated_user.github_uid == 456_789
     end
 
     test "fails if github_uid is already taken" do
