@@ -19,6 +19,8 @@ defmodule Reposit.Accounts.User do
     field(:name, :string)
     field(:avatar_url, :string)
 
+    has_many(:solutions, Reposit.Solutions.Solution)
+
     timestamps(type: :utc_datetime)
   end
 

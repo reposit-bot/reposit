@@ -125,7 +125,7 @@ defmodule RepositWeb.ModerationLive do
               >
                 {truncate(solution.problem_description, 80)}
               </.link>
-              <.tags tags={solution.tags} />
+              <.solution_tags tags={solution.tags} limit={3} class="mt-1" />
 
               <div class="flex items-center gap-4 mt-2">
                 <div class="flex items-center gap-2">
@@ -175,7 +175,7 @@ defmodule RepositWeb.ModerationLive do
                   >
                     {truncate(solution.problem_description, 60)}
                   </.link>
-                  <.tags tags={solution.tags} />
+                  <.solution_tags tags={solution.tags} limit={3} class="mt-1" />
                 </td>
                 <td class="text-center">
                   <div class="flex flex-col items-center gap-1">
@@ -246,31 +246,6 @@ defmodule RepositWeb.ModerationLive do
       </p>
     </div>
     """
-  end
-
-  defp tags(assigns) do
-    all_tags = flatten_tags(assigns.tags)
-    assigns = assign(assigns, :all_tags, all_tags)
-
-    ~H"""
-    <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1 mt-1">
-      <span
-        :for={tag <- Enum.take(@all_tags, 3)}
-        class="badge badge-xs badge-ghost"
-      >
-        {tag.value}
-      </span>
-    </div>
-    """
-  end
-
-  defp flatten_tags(nil), do: []
-
-  defp flatten_tags(tags) when is_map(tags) do
-    Enum.flat_map(tags, fn {category, values} ->
-      values = if is_list(values), do: values, else: []
-      Enum.map(values, &%{category: category, value: &1})
-    end)
   end
 
   defp reason_label(:incorrect), do: "Incorrect"

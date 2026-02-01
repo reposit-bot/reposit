@@ -148,7 +148,7 @@ defmodule RepositWeb.SearchLive do
         </div>
         
     <!-- Search Card -->
-        <div class="card bg-base-100 shadow-lg">
+        <div class="card shadow-lg">
           <div class="card-body p-4 sm:p-6">
             <form id="search-form" phx-change="search" phx-submit="search">
               <label class="label">
@@ -273,8 +273,13 @@ defmodule RepositWeb.SearchLive do
 
           <.no_results :if={@total == 0} query={@query} />
 
-          <div :if={@total > 0} class="space-y-4">
-            <.result_card :for={result <- @results} result={result} />
+          <div :if={@total > 0} class="card card-bordered bg-base-100 divide-y divide-base-300">
+            <.solution_row
+              :for={result <- @results}
+              solution={result}
+              extra_badge={"#{Float.round(result.similarity * 100, 1)}% match"}
+              tag_limit={6}
+            />
           </div>
         </div>
         
@@ -299,53 +304,14 @@ defmodule RepositWeb.SearchLive do
           <% else %>
             <div>
               <h2 class="text-lg font-semibold text-base-content mb-4">Recent solutions</h2>
-              <div class="space-y-4">
-                <.recent_solution_card :for={solution <- @recent_solutions} solution={solution} />
+              <div class="card card-bordered bg-base-100 divide-y divide-base-300">
+                <.solution_row :for={solution <- @recent_solutions} solution={solution} tag_limit={6} />
               </div>
             </div>
           <% end %>
         </div>
       </div>
     </Layouts.app>
-    """
-  end
-
-  defp recent_solution_card(assigns) do
-    score = assigns.solution.upvotes - assigns.solution.downvotes
-    assigns = assign(assigns, :score, score)
-
-    ~H"""
-    <a
-      href={~p"/solutions/#{@solution.id}"}
-      class="card card-bordered bg-base-100 block p-4 sm:p-5 hover:border-primary/50 transition-colors"
-    >
-      <div class="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
-        <div class="flex-1 min-w-0">
-          <h2 class="font-semibold text-base-content line-clamp-2 sm:line-clamp-1">
-            {truncate(@solution.problem_description, 100)}
-          </h2>
-          <p class="text-sm text-base-content/60 mt-2 line-clamp-2">
-            {truncate(@solution.solution_pattern, 150)}
-          </p>
-        </div>
-
-        <div class="flex sm:flex-col items-center sm:items-end gap-2 flex-shrink-0">
-          <span class={"mono text-sm font-semibold #{score_color(@score)}"}>
-            {if @score >= 0, do: "+", else: ""}{@score}
-          </span>
-          <span class="badge badge-ghost gap-1 text-xs">
-            <.icon name="thumbs-up" class="size-3" />
-            {@solution.upvotes}
-          </span>
-          <span class="badge badge-ghost gap-1 text-xs">
-            <.icon name="thumbs-down" class="size-3" />
-            {@solution.downvotes}
-          </span>
-        </div>
-      </div>
-
-      <.tags tags={@solution.tags} />
-    </a>
     """
   end
 
@@ -364,86 +330,4 @@ defmodule RepositWeb.SearchLive do
     </div>
     """
   end
-
-  defp result_card(assigns) do
-    score = assigns.result.upvotes - assigns.result.downvotes
-    assigns = assign(assigns, :score, score)
-
-    ~H"""
-    <a
-      href={~p"/solutions/#{@result.id}"}
-      class="card card-bordered bg-base-100 block p-4 sm:p-5 hover:border-primary/50 transition-colors"
-    >
-      <div class="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
-        <div class="flex-1 min-w-0">
-          <h2 class="font-semibold text-base-content line-clamp-2 sm:line-clamp-1">
-            {truncate(@result.problem_description, 100)}
-          </h2>
-          <p class="text-sm text-base-content/60 mt-2 line-clamp-2">
-            {truncate(@result.solution_pattern, 150)}
-          </p>
-        </div>
-
-        <div class="flex sm:flex-col items-center sm:items-end gap-2 flex-shrink-0">
-          <span class="badge badge-sm badge-primary badge-outline">
-            {Float.round(@result.similarity * 100, 1)}% match
-          </span>
-          <span class={"mono text-sm font-semibold #{score_color(@score)}"}>
-            {if @score >= 0, do: "+", else: ""}{@score}
-          </span>
-        </div>
-      </div>
-
-      <.tags tags={@result.tags} />
-    </a>
-    """
-  end
-
-  defp tags(assigns) do
-    all_tags = flatten_tags(assigns.tags)
-    assigns = assign(assigns, :all_tags, all_tags)
-
-    ~H"""
-    <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1.5 mt-4">
-      <span
-        :for={tag <- Enum.take(@all_tags, 6)}
-        class={"badge badge-sm font-mono #{tag_color(tag.category)}"}
-      >
-        {tag.value}
-      </span>
-      <span :if={length(@all_tags) > 6} class="badge badge-sm font-mono">
-        +{length(@all_tags) - 6}
-      </span>
-    </div>
-    """
-  end
-
-  defp flatten_tags(nil), do: []
-
-  defp flatten_tags(tags) when is_map(tags) do
-    Enum.flat_map(tags, fn {category, values} ->
-      values = if is_list(values), do: values, else: []
-      Enum.map(values, &%{category: category, value: &1})
-    end)
-  end
-
-  defp tag_color("language"), do: "badge-primary badge-outline"
-  defp tag_color(:language), do: "badge-primary badge-outline"
-  defp tag_color("framework"), do: "badge-secondary badge-outline"
-  defp tag_color(:framework), do: "badge-secondary badge-outline"
-  defp tag_color("domain"), do: "badge-info badge-outline"
-  defp tag_color(:domain), do: "badge-info badge-outline"
-  defp tag_color("platform"), do: "badge-accent badge-outline"
-  defp tag_color(:platform), do: "badge-accent badge-outline"
-  defp tag_color(_), do: "badge-ghost"
-
-  defp score_color(score) when score > 0, do: "text-success"
-  defp score_color(score) when score < 0, do: "text-error"
-  defp score_color(_), do: "text-base-content/60"
-
-  defp truncate(text, max_length) when is_binary(text) and byte_size(text) > max_length do
-    String.slice(text, 0, max_length) <> "..."
-  end
-
-  defp truncate(text, _max_length), do: text
 end

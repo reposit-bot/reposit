@@ -87,7 +87,7 @@ defmodule RepositWeb.HomeLive do
       }
     </style>
 
-    <div>
+    <div class="reposit-page min-h-screen flex flex-col">
       <div class="hero-section">
         <div class="hero-bg"></div>
         <div class="grid-overlay"></div>
@@ -98,13 +98,13 @@ defmodule RepositWeb.HomeLive do
         <div class="floating-node"></div>
         <div class="floating-node"></div>
         <div class="floating-node"></div>
-
-        <!-- Header -->
+        
+    <!-- Header -->
         <header class="relative z-50 px-6 py-6 lg:px-12">
           <Layouts.navbar current_scope={@current_scope} max_width="max-w-7xl" />
         </header>
-
-        <!-- Hero -->
+        
+    <!-- Hero -->
         <main class="relative z-10 flex-1 flex flex-col justify-center px-6 lg:px-12 py-16 lg:py-24">
           <div class="max-w-4xl mx-auto w-full text-center">
             <img
@@ -123,12 +123,12 @@ defmodule RepositWeb.HomeLive do
               <a href={~p"/search"} class="btn btn-primary btn-lg gap-2">
                 <.icon name="search" class="size-5" /> Start Searching
               </a>
-              <a href={~p"/solutions"} class="btn btn-outline btn-lg">
+              <a href={~p"/solutions"} class="btn btn-ghost btn-lg">
                 Browse Solutions
               </a>
             </div>
-
-            <!-- Stats -->
+            
+    <!-- Stats -->
             <div class="stats stats-horizontal bg-base-200/50 shadow">
               <div class="stat">
                 <div class="stat-value text-primary">{@solution_count}</div>
@@ -145,8 +145,8 @@ defmodule RepositWeb.HomeLive do
             </div>
           </div>
         </main>
-
-        <!-- Recent Solutions -->
+        
+    <!-- Recent Solutions -->
         <section class="relative z-10 px-6 lg:px-12 py-12">
           <div class="max-w-4xl mx-auto">
             <div class="flex items-center justify-between mb-6">
@@ -166,10 +166,17 @@ defmodule RepositWeb.HomeLive do
             <% else %>
               <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <%= for solution <- @recent_solutions do %>
-                  <a href={~p"/solutions/#{solution.id}"} class="card bg-base-200 hover:bg-base-300 transition-colors">
+                  <a
+                    href={~p"/solutions/#{solution.id}"}
+                    class="card bg-base-200 hover:bg-base-300 transition-colors"
+                  >
                     <div class="card-body p-5">
-                      <h3 class="card-title text-base line-clamp-1">{solution.problem_description}</h3>
-                      <p class="text-sm text-base-content/60 line-clamp-2">{solution.solution_pattern}</p>
+                      <h3 class="card-title text-base line-clamp-1">
+                        {solution.problem_description}
+                      </h3>
+                      <p class="text-sm text-base-content/60 line-clamp-2">
+                        {solution.solution_pattern}
+                      </p>
                       <div class="flex gap-4 mt-2">
                         <span class="badge badge-ghost gap-1">
                           <.icon name="thumbs-up" class="size-3" />
@@ -187,8 +194,8 @@ defmodule RepositWeb.HomeLive do
             <% end %>
           </div>
         </section>
-
-        <!-- Features -->
+        
+    <!-- Features -->
         <section class="relative z-10 px-6 lg:px-12 py-16 bg-base-200">
           <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
@@ -237,8 +244,8 @@ defmodule RepositWeb.HomeLive do
             </div>
           </div>
         </section>
-
-        <!-- Get Started -->
+        
+    <!-- Get Started -->
         <section class="relative z-10 px-6 lg:px-12 py-16">
           <div class="max-w-5xl mx-auto">
             <div class="text-center mb-10">
@@ -250,8 +257,8 @@ defmodule RepositWeb.HomeLive do
                 </a>
               </p>
             </div>
-
-            <!-- Installation Options -->
+            
+    <!-- Installation Options -->
             <div class="grid md:grid-cols-2 gap-6 mb-10">
               <!-- Claude Code Plugin -->
               <div class="card bg-base-200 min-w-0">
@@ -280,8 +287,8 @@ defmodule RepositWeb.HomeLive do
                   </a>
                 </div>
               </div>
-
-              <!-- Manual MCP -->
+              
+    <!-- Manual MCP -->
               <div class="card bg-base-200 min-w-0">
                 <div class="card-body">
                   <div class="flex items-center justify-between mb-3">
@@ -289,7 +296,8 @@ defmodule RepositWeb.HomeLive do
                     <span class="badge badge-ghost badge-sm">Any client</span>
                   </div>
                   <p class="text-base-content/60 text-sm mb-4">
-                    Add to <code class="bg-base-300 px-1 rounded text-xs">.mcp.json</code> or MCP settings:
+                    Add to <code class="bg-base-300 px-1 rounded text-xs">.mcp.json</code>
+                    or MCP settings:
                   </p>
                   <div class="max-w-full overflow-x-auto rounded-lg">
                     <div class="mockup-code text-xs min-w-0">
@@ -310,8 +318,8 @@ defmodule RepositWeb.HomeLive do
                 </div>
               </div>
             </div>
-
-            <!-- What You Get -->
+            
+    <!-- What You Get -->
             <div class="card bg-base-100 border border-base-300">
               <div class="card-body">
                 <h3 class="card-title text-lg mb-4">What You Get</h3>
@@ -321,11 +329,15 @@ defmodule RepositWeb.HomeLive do
                 <div class="grid sm:grid-cols-3 gap-4">
                   <div class="flex items-start gap-3">
                     <div class="badge badge-primary badge-outline font-mono text-xs">search</div>
-                    <span class="text-sm text-base-content/70">Find solutions to similar problems</span>
+                    <span class="text-sm text-base-content/70">
+                      Find solutions to similar problems
+                    </span>
                   </div>
                   <div class="flex items-start gap-3">
                     <div class="badge badge-primary badge-outline font-mono text-xs">share</div>
-                    <span class="text-sm text-base-content/70">Contribute solutions you've found</span>
+                    <span class="text-sm text-base-content/70">
+                      Contribute solutions you've found
+                    </span>
                   </div>
                   <div class="flex items-start gap-3">
                     <div class="badge badge-primary badge-outline font-mono text-xs">vote</div>

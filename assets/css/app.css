@@ -27,7 +27,7 @@
   --color-base-100: oklch(21% 0.006 56.043);
   --color-base-200: oklch(14% 0.004 49.25);
   --color-base-300: oklch(0% 0 0);
-  --color-base-content: oklch(84.955% 0 0);
+  --color-base-content: oklch(98% 0 0);
   --color-primary: oklch(77.48% 0.204 60.62);
   --color-primary-content: oklch(19.693% 0.004 196.779);
   --color-secondary: oklch(45.98% 0.248 305.03);
@@ -36,7 +36,7 @@
   --color-accent-content: oklch(0% 0 0);
   --color-neutral: oklch(24.371% 0.046 65.681);
   --color-neutral-content: oklch(84.874% 0.009 65.681);
-  --color-info: oklch(54.615% 0.215 262.88);
+  --color-info: oklch(28% 0.091 267.935);
   --color-info-content: oklch(90.923% 0.043 262.88);
   --color-success: oklch(62.705% 0.169 149.213);
   --color-success-content: oklch(12.541% 0.033 149.213);
@@ -103,4 +103,36 @@
   display: contents;
 }
 
-/* This file is for your main application CSS */
+/* Reposit design system: fonts and shared styles */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+.reposit-page {
+  font-family: 'Sora', system-ui, sans-serif;
+}
+
+.page-bg {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, oklch(from var(--color-primary) l c h / 0.12), transparent),
+    radial-gradient(ellipse 50% 40% at 90% 90%, oklch(from var(--color-secondary) l c h / 0.08), transparent);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.page-title {
+  font-weight: 700;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: -0.02em;
+  color: var(--color-base-content);
+}
+
+.page-subtitle {
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: oklch(from var(--color-base-content) l c h / 0.7);
+}

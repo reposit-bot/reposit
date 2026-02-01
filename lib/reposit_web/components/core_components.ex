@@ -503,4 +503,157 @@ defmodule RepositWeb.CoreComponents do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
+
+  # Single neutral style for solution tags (reused across solutions index, show, search, moderation)
+  @solution_tag_class "badge badge-sm font-mono badge-ghost bg-base-content/10 text-base-content solution-tag"
+
+  @doc """
+  Renders a single solution tag with the shared tag style.
+
+  ## Examples
+
+      <.solution_tag value="elixir" />
+      <.solution_tag value="phoenix" />
+  """
+  attr :value, :string, required: true
+
+  def solution_tag(assigns) do
+    assigns = assign(assigns, :solution_tag_class, @solution_tag_class)
+    ~H"""
+    <span class={@solution_tag_class}>{@value}</span>
+    """
+  end
+
+  @doc """
+  Renders a list of solution tags from a solution-style tags map (category => [values]).
+
+  Optional `limit` caps how many tags to show and adds a "+N" badge for the rest.
+
+  ## Examples
+
+      <.solution_tags tags={@solution.tags} />
+      <.solution_tags tags={@solution.tags} limit={3} class="mt-4" />
+  """
+  attr :tags, :map, default: %{}
+  attr :limit, :integer, default: nil
+  attr :class, :any, default: nil
+
+  def solution_tags(assigns) do
+    assigns = assign(assigns, :all_tags, flatten_solution_tags(assigns.tags))
+
+    ~H"""
+    <div :if={length(@all_tags) > 0} class={["flex flex-wrap gap-1.5", @class]}>
+      <.solution_tag :for={tag <- maybe_take(@all_tags, @limit)} value={tag} />
+      <.solution_tag :if={@limit && length(@all_tags) > @limit} value={"+#{length(@all_tags) - @limit}"} />
+    </div>
+    """
+  end
+
+  defp maybe_take(list, nil), do: list
+  defp maybe_take(list, limit), do: Enum.take(list, limit)
+
+  defp flatten_solution_tags(nil), do: []
+
+  defp flatten_solution_tags(tags) when is_map(tags) do
+    Enum.flat_map(tags, fn {_category, values} ->
+      if is_list(values), do: values, else: []
+    end)
+  end
+
+  # Shared solution row (browse-style): score left, title/snippet/tags/author/date right.
+  # Use on browse, search, and user profile for consistent display.
+  @doc """
+  Renders a single solution row in the browse style.
+
+  Score on the left; title, snippet, tags, optional "by Author", and date on the right.
+  Works with a solution struct (with optional preloaded user) or a map (e.g. search results).
+
+  ## Examples
+
+      <.solution_row solution={@solution} id={@id} />
+      <.solution_row solution={result} extra_badge="85% match" tag_limit={6} />
+      <.solution_row solution={solution} show_author={false} />
+  """
+  attr :solution, :any, required: true
+  attr :id, :string, default: nil
+  attr :tag_limit, :integer, default: 3
+  attr :show_author, :boolean, default: true
+  attr :extra_badge, :string, default: nil
+
+  def solution_row(assigns) do
+    solution = assigns.solution
+    score = (solution.upvotes || 0) - (solution.downvotes || 0)
+    user = Map.get(solution, :user)
+    assigns =
+      assigns
+      |> assign(:score, score)
+      |> assign(:score_class, solution_row_score_class(score))
+      |> assign(:author_name, solution_row_author_name(user))
+      |> assign(:show_author_block, assigns.show_author && user)
+      |> assign(:author_user_id, user && Map.get(user, :id))
+      |> assign(:problem_truncated, solution_row_truncate(Map.get(solution, :problem_description), 100))
+      |> assign(:solution_truncated, solution_row_truncate(Map.get(solution, :solution_pattern), 180))
+      |> assign(:date_str, solution_row_format_date(Map.get(solution, :inserted_at)))
+
+    ~H"""
+    <div
+      id={@id}
+      class="flex gap-3 sm:gap-4 p-4 sm:p-5 hover:bg-base-200 transition-colors"
+    >
+      <div class="flex flex-col items-center justify-start min-w-[44px] sm:min-w-[56px] pt-0.5">
+        <span class={"text-base sm:text-lg font-bold mono #{@score_class}"}>
+          {if @score >= 0, do: "+", else: ""}{@score}
+        </span>
+        <span class="text-[0.65rem] sm:text-[0.7rem] text-base-content/60 mono">
+          {@solution.upvotes || 0}↑ {@solution.downvotes || 0}↓
+        </span>
+      </div>
+      <div class="flex-1 min-w-0">
+        <.link href={"/solutions/#{@solution.id}"} class="block group">
+          <h3 class="font-medium text-base-content line-clamp-2 sm:line-clamp-1 group-hover:text-primary transition-colors">
+            {@problem_truncated}
+          </h3>
+          <p class="text-sm text-base-content/60 mt-1.5 line-clamp-2 hidden sm:block">
+            {@solution_truncated}
+          </p>
+        </.link>
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
+          <.solution_tags tags={@solution.tags} limit={@tag_limit} />
+          <span :if={@show_author_block} class="text-xs text-base-content/60">
+            by
+            <.link href={"/u/#{@author_user_id}"} class="font-medium text-primary hover:underline">
+              {@author_name}
+            </.link>
+          </span>
+          <span :if={@extra_badge} class="badge badge-sm badge-primary badge-outline">
+            {@extra_badge}
+          </span>
+          <span class="text-xs text-base-content/60">
+            {@date_str}
+          </span>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  defp solution_row_score_class(score) when score > 0, do: "text-success"
+  defp solution_row_score_class(score) when score < 0, do: "text-error"
+  defp solution_row_score_class(_), do: "text-base-content/60"
+
+  defp solution_row_author_name(nil), do: nil
+  defp solution_row_author_name(user) do
+    name = Map.get(user, :name)
+    if is_binary(name) and name != "", do: name, else: "Contributor"
+  end
+
+  defp solution_row_truncate(text, max) when is_binary(text) and byte_size(text) > max do
+    String.slice(text, 0, max) <> "..."
+  end
+
+  defp solution_row_truncate(text, _max), do: text || ""
+
+  defp solution_row_format_date(nil), do: ""
+  defp solution_row_format_date(%DateTime{} = dt), do: Calendar.strftime(dt, "%b %d, %Y")
+  defp solution_row_format_date(_), do: ""
 end

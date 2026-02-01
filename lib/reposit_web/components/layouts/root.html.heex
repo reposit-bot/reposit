@@ -4,6 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
+    <link phx-track-static rel="icon" href={~p"/favicon.ico"} sizes="any" />
+    <link phx-track-static rel="icon" href={~p"/favicon.svg"} type="image/svg+xml" />
+    <link phx-track-static rel="apple-touch-icon" href={~p"/apple-touch-icon.png"} />
+    <link phx-track-static rel="manifest" href={~p"/site.webmanifest"} />
     <.live_title default="Reposit" suffix=" · Agent Knowledge Commons">
       {assigns[:page_title]}
     </.live_title>

@@ -12,148 +12,6 @@ defmodule RepositWeb.Layouts do
   embed_templates("layouts/*")
 
   @doc """
-  Shared styles for the Reposit design system.
-  Include this in pages that need the custom styling.
-  """
-  def shared_styles(assigns) do
-    ~H"""
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-      .reposit-page { font-family: 'Sora', system-ui, sans-serif; }
-
-      /* Decorative background - uses theme primary color */
-      .page-bg {
-        position: fixed;
-        inset: 0;
-        background:
-          radial-gradient(ellipse 80% 50% at 50% -10%, oklch(from var(--color-primary) l c h / 0.12), transparent),
-          radial-gradient(ellipse 50% 40% at 90% 90%, oklch(from var(--color-secondary) l c h / 0.08), transparent);
-        pointer-events: none;
-        z-index: -1;
-      }
-
-      .mono { font-family: 'JetBrains Mono', monospace; }
-
-      /* Page title uses base-content color */
-      .page-title {
-        font-weight: 700;
-        font-size: clamp(1.75rem, 4vw, 2.5rem);
-        letter-spacing: -0.02em;
-        color: var(--color-base-content);
-      }
-
-      .page-subtitle {
-        font-weight: 400;
-        font-size: 1.1rem;
-        color: oklch(from var(--color-base-content) l c h / 0.7);
-      }
-
-      /* Prose styling using DaisyUI color variables */
-      .prose-reposit {
-        font-size: 1rem;
-        line-height: 1.75;
-        color: oklch(from var(--color-base-content) l c h / 0.85);
-      }
-
-      .prose-reposit > * + * { margin-top: 1.25em; }
-
-      .prose-reposit h1, .prose-reposit h2, .prose-reposit h3, .prose-reposit h4 {
-        font-weight: 600;
-        line-height: 1.3;
-        color: var(--color-base-content);
-        margin-top: 2em;
-        margin-bottom: 0.75em;
-      }
-
-      .prose-reposit h1 { font-size: 1.875em; }
-      .prose-reposit h2 { font-size: 1.5em; }
-      .prose-reposit h3 { font-size: 1.25em; }
-      .prose-reposit h4 { font-size: 1.125em; }
-
-      .prose-reposit h1:first-child,
-      .prose-reposit h2:first-child,
-      .prose-reposit h3:first-child { margin-top: 0; }
-
-      .prose-reposit p { margin-top: 1.25em; margin-bottom: 1.25em; }
-      .prose-reposit p:first-child { margin-top: 0; }
-      .prose-reposit p:last-child { margin-bottom: 0; }
-
-      .prose-reposit a {
-        color: var(--color-primary);
-        text-decoration: underline;
-        text-underline-offset: 2px;
-      }
-
-      .prose-reposit strong {
-        font-weight: 600;
-        color: var(--color-base-content);
-      }
-
-      .prose-reposit code {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.875em;
-        background: var(--color-base-200);
-        padding: 0.2em 0.4em;
-        border-radius: 6px;
-        color: var(--color-base-content);
-      }
-
-      .prose-reposit pre {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.875em;
-        line-height: 1.7;
-        background: var(--color-neutral);
-        color: var(--color-neutral-content);
-        padding: 1.25em 1.5em;
-        border-radius: 12px;
-        overflow-x: auto;
-        margin: 1.5em 0;
-      }
-
-      .prose-reposit pre code {
-        background: none;
-        padding: 0;
-        border-radius: 0;
-        color: inherit;
-        font-size: inherit;
-      }
-
-      .prose-reposit blockquote {
-        border-left: 3px solid var(--color-base-300);
-        padding-left: 1em;
-        margin: 1.5em 0;
-        color: oklch(from var(--color-base-content) l c h / 0.7);
-        font-style: italic;
-      }
-
-      .prose-reposit ul, .prose-reposit ol { padding-left: 1.5em; margin: 1.25em 0; }
-      .prose-reposit li { margin: 0.5em 0; }
-      .prose-reposit li > ul, .prose-reposit li > ol { margin: 0.5em 0; }
-      .prose-reposit ul > li { list-style-type: disc; }
-      .prose-reposit ul > li > ul > li { list-style-type: circle; }
-      .prose-reposit ol > li { list-style-type: decimal; }
-
-      .prose-reposit hr {
-        border: none;
-        border-top: 1px solid var(--color-base-300);
-        margin: 2em 0;
-      }
-
-      .prose-reposit img { max-width: 100%; height: auto; border-radius: 12px; margin: 1.5em 0; }
-
-      .prose-reposit table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 0.9em; }
-      .prose-reposit th, .prose-reposit td {
-        border: 1px solid var(--color-base-300);
-        padding: 0.75em 1em;
-        text-align: left;
-      }
-      .prose-reposit th { background: var(--color-base-200); font-weight: 600; }
-    </style>
-    """
-  end
-
-  @doc """
   Reusable navigation bar component with desktop and mobile menus.
   """
   attr :current_scope, :map, default: nil
@@ -294,17 +152,15 @@ defmodule RepositWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <.shared_styles />
-
     <div class="reposit-page min-h-screen flex flex-col">
       <div class="page-bg"></div>
 
-      <header class="relative z-50 px-6 py-5 lg:px-12 border-b border-base-300">
-        <.navbar current_scope={@current_scope} />
+      <header class="relative z-50 px-6 py-6 lg:px-12 border-b border-base-300">
+        <.navbar current_scope={@current_scope} max_width="max-w-7xl" />
       </header>
 
       <main class="relative z-10 flex-1 px-6 py-10 lg:px-12">
-        <div class="mx-auto max-w-6xl">
+        <div class="mx-auto max-w-7xl">
           {render_slot(@inner_block)}
         </div>
       </main>
@@ -366,7 +222,7 @@ defmodule RepositWeb.Layouts do
   def site_footer(assigns) do
     ~H"""
     <footer class="relative z-10 px-6 lg:px-12 py-12 border-t border-base-300 bg-base-100/50">
-      <div class="max-w-6xl mx-auto">
+      <div class="max-w-7xl mx-auto">
         <!-- Mobile: Stack everything, Desktop: Grid layout -->
         <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <!-- Brand -->

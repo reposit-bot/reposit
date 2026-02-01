@@ -113,7 +113,7 @@ defmodule RepositWeb.SearchLiveTest do
       |> render_change()
 
       html = render(view)
-      assert html =~ "Enter a problem description to search"
+      assert html =~ "Enter a problem description above to search"
     end
 
     test "displays similarity score", %{conn: conn, scope: scope} do

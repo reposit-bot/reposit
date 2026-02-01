@@ -153,12 +153,12 @@ defmodule Reposit.Solutions do
     query =
       from(s in Solution,
         where: s.id == ^id,
-        preload: [votes: ^votes_query]
+        preload: [:user, votes: ^votes_query]
       )
 
     case Repo.one(query) do
       nil -> {:error, :not_found}
-      solution -> {:ok, solution}
+      solution -> {:ok, Repo.preload(solution, votes: [:user])}
     end
   end
 
@@ -176,6 +176,57 @@ defmodule Reposit.Solutions do
   @spec count_solutions() :: non_neg_integer()
   def count_solutions do
     Repo.aggregate(Solution, :count)
+  end
+
+  @doc """
+  Counts solutions for a user.
+  """
+  @spec count_solutions_by_user(integer()) :: non_neg_integer()
+  def count_solutions_by_user(user_id) do
+    from(s in Solution, where: s.user_id == ^user_id)
+    |> Repo.aggregate(:count)
+  end
+
+  @doc """
+  Lists solutions by user ID for public profile.
+
+  ## Options
+
+  - `:limit` - Maximum number of results (default: 20)
+  - `:offset` - Number of results to skip (default: 0)
+  - `:order_by` - Field to order by (:score, :inserted_at, :upvotes) (default: :inserted_at)
+
+  """
+  @spec list_solutions_by_user(integer(), keyword()) :: [Solution.t()]
+  def list_solutions_by_user(user_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 20)
+    offset = Keyword.get(opts, :offset, 0)
+    order_by = Keyword.get(opts, :order_by, :inserted_at)
+
+    query =
+      from(s in Solution,
+        where: s.user_id == ^user_id and s.status == :active,
+        limit: ^limit,
+        offset: ^offset
+      )
+
+    query =
+      case order_by do
+        :score ->
+          from(s in query, order_by: [desc: fragment("? - ?", s.upvotes, s.downvotes)])
+
+        :inserted_at ->
+          from(s in query, order_by: [desc: s.inserted_at])
+
+        :upvotes ->
+          from(s in query, order_by: [desc: s.upvotes])
+
+        _ ->
+          from(s in query, order_by: [desc: s.inserted_at])
+      end
+
+    query
+    |> Repo.all()
   end
 
   @doc """
@@ -215,7 +266,9 @@ defmodule Reposit.Solutions do
           query
       end
 
-    Repo.all(query)
+    query
+    |> preload(:user)
+    |> Repo.all()
   end
 
   @doc """

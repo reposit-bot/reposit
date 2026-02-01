@@ -2,7 +2,6 @@ defmodule RepositWeb.SolutionsLive.Index do
   use RepositWeb, :live_view
 
   alias Reposit.Solutions
-  alias Reposit.Solutions.Solution
 
   @per_page 12
 
@@ -188,93 +187,4 @@ defmodule RepositWeb.SolutionsLive.Index do
     </Layouts.app>
     """
   end
-
-  defp solution_row(assigns) do
-    score = Solution.score(assigns.solution)
-    assigns = assign(assigns, :score, score)
-
-    ~H"""
-    <a
-      href={~p"/solutions/#{@solution.id}"}
-      id={@id}
-      class="flex gap-3 sm:gap-4 p-4 sm:p-5 hover:bg-base-200 transition-colors block"
-    >
-      <!-- Vote score on the left -->
-      <div class="flex flex-col items-center justify-start min-w-[44px] sm:min-w-[56px] pt-0.5">
-        <span class={"text-base sm:text-lg font-bold mono #{score_color(@score)}"}>
-          {if @score >= 0, do: "+", else: ""}{@score}
-        </span>
-        <span class="text-[0.65rem] sm:text-[0.7rem] text-base-content/60 mono">
-          {@solution.upvotes}↑ {downvotes(@solution)}↓
-        </span>
-      </div>
-      
-    <!-- Main content -->
-      <div class="flex-1 min-w-0">
-        <h3 class="font-medium text-base-content line-clamp-2 sm:line-clamp-1">
-          {truncate(@solution.problem_description, 100)}
-        </h3>
-        <p class="text-sm text-base-content/60 mt-1.5 line-clamp-2 hidden sm:block">
-          {truncate(@solution.solution_pattern, 180)}
-        </p>
-
-        <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
-          <.inline_tags tags={@solution.tags} />
-          <span class="text-xs text-base-content/60">
-            {format_date(@solution.inserted_at)}
-          </span>
-        </div>
-      </div>
-    </a>
-    """
-  end
-
-  defp downvotes(solution), do: solution.downvotes
-
-  defp inline_tags(assigns) do
-    all_tags = flatten_tags(assigns.tags)
-    assigns = assign(assigns, :all_tags, all_tags)
-
-    ~H"""
-    <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1.5">
-      <span
-        :for={tag <- Enum.take(@all_tags, 3)}
-        class={"badge badge-sm font-mono #{tag_color(tag.category)}"}
-      >
-        {tag.value}
-      </span>
-      <span :if={length(@all_tags) > 3} class="badge badge-sm badge-ghost bg-base-content/10 font-mono text-base-content">
-        +{length(@all_tags) - 3}
-      </span>
-    </div>
-    """
-  end
-
-  defp flatten_tags(nil), do: []
-
-  defp flatten_tags(tags) when is_map(tags) do
-    Enum.flat_map(tags, fn {category, values} ->
-      values = if is_list(values), do: values, else: []
-      Enum.map(values, &%{category: category, value: &1})
-    end)
-  end
-
-  # Single neutral style for all tags
-  defp tag_color(_), do: "badge-ghost bg-base-content/10 text-base-content"
-
-  defp score_color(score) when score > 0, do: "text-success"
-  defp score_color(score) when score < 0, do: "text-error"
-  defp score_color(_), do: "text-base-content/60"
-
-  defp truncate(text, max_length) when is_binary(text) and byte_size(text) > max_length do
-    String.slice(text, 0, max_length) <> "..."
-  end
-
-  defp truncate(text, _max_length), do: text
-
-  defp format_date(%DateTime{} = dt) do
-    Calendar.strftime(dt, "%b %d, %Y")
-  end
-
-  defp format_date(_), do: ""
 end

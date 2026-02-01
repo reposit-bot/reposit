@@ -45,6 +45,22 @@ defmodule Reposit.Accounts do
   end
 
   @doc """
+  Gets a single user by ID.
+
+  Returns `nil` if the user does not exist. Use for public profile lookups.
+
+  ## Examples
+
+      iex> get_user(123)
+      %User{}
+
+      iex> get_user(999)
+      nil
+
+  """
+  def get_user(id), do: Repo.get(User, id)
+
+  @doc """
   Gets a single user.
 
   Raises `Ecto.NoResultsError` if the User does not exist.

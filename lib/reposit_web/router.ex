@@ -55,6 +55,7 @@ defmodule RepositWeb.Router do
       live "/", HomeLive
       live "/install", InstallLive
       live "/demo", DemoLive
+      live "/u/:id", UserLive
       live "/solutions", SolutionsLive.Index
       live "/solutions/:id", SolutionsLive.Show
       live "/search", SearchLive

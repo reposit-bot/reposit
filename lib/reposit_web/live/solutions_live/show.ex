@@ -47,6 +47,9 @@ defmodule RepositWeb.SolutionsLive.Show do
   defp is_author?(%{user: %{id: user_id}}, %{user_id: solution_user_id}),
     do: user_id == solution_user_id
 
+  defp author_display_name(%{name: name}) when is_binary(name) and name != "", do: name
+  defp author_display_name(_), do: "Contributor"
+
   defp get_user_vote(socket, solution_id) do
     case socket.assigns[:current_scope] do
       %{user: %{id: user_id}} ->
@@ -91,11 +94,26 @@ defmodule RepositWeb.SolutionsLive.Show do
           <div class="mb-8">
             <div class="flex items-center gap-3 mb-3">
               <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Problem</span>
-              <.inline_tags tags={@solution.tags} />
+              <.solution_tags tags={@solution.tags} limit={4} />
             </div>
             <p class="text-base-content text-lg leading-relaxed">
               {@solution.problem_description}
             </p>
+            <div :if={@solution.user} class="mt-3 flex items-center gap-2">
+              <span class="text-sm text-base-content/60">Shared by</span>
+              <.link
+                href={~p"/u/#{@solution.user.id}"}
+                class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+              >
+                <img
+                  :if={@solution.user.avatar_url}
+                  src={@solution.user.avatar_url}
+                  alt=""
+                  class="w-5 h-5 rounded-full object-cover"
+                />
+                <span>{author_display_name(@solution.user)}</span>
+              </.link>
+            </div>
           </div>
           
     <!-- Vote stats with interactive buttons -->
@@ -418,22 +436,6 @@ defmodule RepositWeb.SolutionsLive.Show do
     end
   end
 
-  defp inline_tags(assigns) do
-    all_tags = flatten_tags(assigns.tags)
-    assigns = assign(assigns, :all_tags, Enum.take(all_tags, 4))
-
-    ~H"""
-    <div :if={length(@all_tags) > 0} class="flex flex-wrap gap-1.5">
-      <span
-        :for={tag <- @all_tags}
-        class={"badge badge-sm font-mono #{tag_color(tag.category)}"}
-      >
-        {tag.value}
-      </span>
-    </div>
-    """
-  end
-
   defp tags_by_category(assigns) do
     grouped = group_tags(assigns.tags)
     assigns = assign(assigns, :grouped, grouped)
@@ -450,12 +452,7 @@ defmodule RepositWeb.SolutionsLive.Show do
             {category}
           </span>
           <div class="flex flex-wrap gap-1.5">
-            <span
-              :for={value <- values}
-              class={"badge badge-sm font-mono #{tag_color(category)}"}
-            >
-              {value}
-            </span>
+            <.solution_tag :for={value <- values} value={value} />
           </div>
         </div>
       </div>
@@ -470,18 +467,6 @@ defmodule RepositWeb.SolutionsLive.Show do
     |> Enum.filter(fn {_k, v} -> is_list(v) and length(v) > 0 end)
     |> Enum.into(%{})
   end
-
-  defp flatten_tags(nil), do: []
-
-  defp flatten_tags(tags) when is_map(tags) do
-    Enum.flat_map(tags, fn {category, values} ->
-      values = if is_list(values), do: values, else: []
-      Enum.map(values, &%{category: category, value: &1})
-    end)
-  end
-
-  # Single neutral style for all tags (matches SolutionsLive.Index)
-  defp tag_color(_), do: "badge-ghost bg-base-content/10 text-base-content"
 
   defp vote_comments(assigns) do
     # Filter to only votes with comments (downvotes)
@@ -501,9 +486,15 @@ defmodule RepositWeb.SolutionsLive.Show do
           :for={vote <- @comments}
           class="p-4 rounded-xl bg-base-200 border-l-3 border-warning"
         >
-          <div class="flex items-center gap-2 mb-2">
+          <div class="flex flex-wrap items-center gap-2 mb-2">
             <span class="badge badge-sm badge-warning badge-outline font-mono">
               {reason_label(vote.reason)}
+            </span>
+            <span :if={vote.user} class="text-xs text-base-content/60">
+              by
+              <.link href={~p"/u/#{vote.user.id}"} class="font-medium text-primary hover:underline">
+                {vote_author_name(vote.user)}
+              </.link>
             </span>
             <span class="text-xs text-base-content/60">{format_date(vote.inserted_at)}</span>
           </div>
@@ -515,6 +506,9 @@ defmodule RepositWeb.SolutionsLive.Show do
     </div>
     """
   end
+
+  defp vote_author_name(%{name: name}) when is_binary(name) and name != "", do: name
+  defp vote_author_name(_), do: "Contributor"
 
   defp reason_label(:incorrect), do: "Incorrect"
   defp reason_label(:outdated), do: "Outdated"
