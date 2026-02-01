@@ -14,6 +14,8 @@ defmodule RepositWeb.SearchLive do
 
   @impl true
   def mount(_params, _session, socket) do
+    recent = Solutions.list_solutions(limit: 5, order_by: :inserted_at)
+
     {:ok,
      socket
      |> assign(:query, "")
@@ -22,18 +24,22 @@ defmodule RepositWeb.SearchLive do
      |> assign(:searching, false)
      |> assign(:searched, false)
      |> assign(:sort, :relevance)
-     |> assign(:tag_filters, %{language: [], framework: [], domain: [], platform: []})}
+     |> assign(:tag_filters, %{language: [], framework: [], domain: [], platform: []})
+     |> assign(:recent_solutions, recent)}
   end
 
   @impl true
   def handle_event("search", %{"query" => query}, socket) do
     if String.trim(query) == "" do
+      recent = Solutions.list_solutions(limit: 5, order_by: :inserted_at)
+
       {:noreply,
        socket
        |> assign(:query, "")
        |> assign(:results, [])
        |> assign(:total, 0)
-       |> assign(:searched, false)}
+       |> assign(:searched, false)
+       |> assign(:recent_solutions, recent)}
     else
       socket =
         socket
@@ -272,20 +278,74 @@ defmodule RepositWeb.SearchLive do
           </div>
         </div>
         
-    <!-- Empty State -->
-        <div :if={not @searching and not @searched} class="card bg-base-100 shadow-lg">
-          <div class="card-body items-center text-center py-12">
-            <div class="w-16 h-16 mb-2 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <.icon name="search" class="size-8 text-primary" />
+    <!-- Empty State / Recent Solutions -->
+        <div :if={not @searching and not @searched} class="space-y-6">
+          <p class="text-base-content/60">
+            Enter a problem description above to search, or browse recent solutions below.
+          </p>
+
+          <%= if Enum.empty?(@recent_solutions) do %>
+            <div class="card bg-base-100 shadow-lg">
+              <div class="card-body items-center text-center py-12">
+                <div class="w-16 h-16 mb-2 rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <.icon name="search" class="size-8 text-primary" />
+                </div>
+                <p class="text-lg font-semibold">Enter a problem description to search</p>
+                <p class="text-base-content/60">
+                  Our semantic search will find similar solutions
+                </p>
+              </div>
             </div>
-            <p class="text-lg font-semibold">Enter a problem description to search</p>
-            <p class="text-base-content/60">
-              Our semantic search will find similar solutions
-            </p>
-          </div>
+          <% else %>
+            <div>
+              <h2 class="text-lg font-semibold text-base-content mb-4">Recent solutions</h2>
+              <div class="space-y-4">
+                <.recent_solution_card :for={solution <- @recent_solutions} solution={solution} />
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </Layouts.app>
+    """
+  end
+
+  defp recent_solution_card(assigns) do
+    score = assigns.solution.upvotes - assigns.solution.downvotes
+    assigns = assign(assigns, :score, score)
+
+    ~H"""
+    <a
+      href={~p"/solutions/#{@solution.id}"}
+      class="card card-bordered bg-base-100 block p-4 sm:p-5 hover:border-primary/50 transition-colors"
+    >
+      <div class="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
+        <div class="flex-1 min-w-0">
+          <h2 class="font-semibold text-base-content line-clamp-2 sm:line-clamp-1">
+            {truncate(@solution.problem_description, 100)}
+          </h2>
+          <p class="text-sm text-base-content/60 mt-2 line-clamp-2">
+            {truncate(@solution.solution_pattern, 150)}
+          </p>
+        </div>
+
+        <div class="flex sm:flex-col items-center sm:items-end gap-2 flex-shrink-0">
+          <span class={"mono text-sm font-semibold #{score_color(@score)}"}>
+            {if @score >= 0, do: "+", else: ""}{@score}
+          </span>
+          <span class="badge badge-ghost gap-1 text-xs">
+            <.icon name="thumbs-up" class="size-3" />
+            {@solution.upvotes}
+          </span>
+          <span class="badge badge-ghost gap-1 text-xs">
+            <.icon name="thumbs-down" class="size-3" />
+            {@solution.downvotes}
+          </span>
+        </div>
+      </div>
+
+      <.tags tags={@solution.tags} />
+    </a>
     """
   end
 

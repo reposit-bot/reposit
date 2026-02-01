@@ -243,7 +243,7 @@ defmodule RepositWeb.SolutionsLive.Index do
       >
         {tag.value}
       </span>
-      <span :if={length(@all_tags) > 3} class="badge badge-sm font-mono">
+      <span :if={length(@all_tags) > 3} class="badge badge-sm badge-ghost bg-base-content/10 font-mono text-base-content">
         +{length(@all_tags) - 3}
       </span>
     </div>
@@ -259,15 +259,8 @@ defmodule RepositWeb.SolutionsLive.Index do
     end)
   end
 
-  defp tag_color("language"), do: "badge-primary badge-outline"
-  defp tag_color(:language), do: "badge-primary badge-outline"
-  defp tag_color("framework"), do: "badge-secondary badge-outline"
-  defp tag_color(:framework), do: "badge-secondary badge-outline"
-  defp tag_color("domain"), do: "badge-info badge-outline"
-  defp tag_color(:domain), do: "badge-info badge-outline"
-  defp tag_color("platform"), do: "badge-accent badge-outline"
-  defp tag_color(:platform), do: "badge-accent badge-outline"
-  defp tag_color(_), do: "badge-ghost"
+  # Single neutral style for all tags
+  defp tag_color(_), do: "badge-ghost bg-base-content/10 text-base-content"
 
   defp score_color(score) when score > 0, do: "text-success"
   defp score_color(score) when score < 0, do: "text-error"

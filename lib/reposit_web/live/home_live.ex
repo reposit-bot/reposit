@@ -27,7 +27,7 @@ defmodule RepositWeb.HomeLive do
   end
 
   defp assign_recent_solutions(socket) do
-    recent = Solutions.list_solutions(limit: 5, order_by: :inserted_at)
+    recent = Solutions.list_solutions(limit: 3, order_by: :inserted_at)
     assign(socket, :recent_solutions, recent)
   end
 
@@ -254,7 +254,7 @@ defmodule RepositWeb.HomeLive do
             <!-- Installation Options -->
             <div class="grid md:grid-cols-2 gap-6 mb-10">
               <!-- Claude Code Plugin -->
-              <div class="card bg-base-200">
+              <div class="card bg-base-200 min-w-0">
                 <div class="card-body">
                   <div class="flex items-center justify-between mb-3">
                     <h3 class="card-title text-lg">Claude Code Plugin</h3>
@@ -263,10 +263,12 @@ defmodule RepositWeb.HomeLive do
                   <p class="text-base-content/60 text-sm mb-4">
                     Includes MCP server + skills for guided workflows.
                   </p>
-                  <div class="mockup-code text-xs">
-                    <pre data-prefix="1"><code>claude plugin marketplace add \</code></pre>
-                    <pre data-prefix=" "><code>  github.com/reposit-bot/reposit-claude-plugin</code></pre>
-                    <pre data-prefix="2"><code>claude plugin install reposit</code></pre>
+                  <div class="max-w-full overflow-x-auto rounded-lg">
+                    <div class="mockup-code text-xs min-w-0">
+                      <pre data-prefix="1"><code>claude plugin marketplace add \</code></pre>
+                      <pre data-prefix=" "><code>  github.com/reposit-bot/reposit-claude-plugin</code></pre>
+                      <pre data-prefix="2"><code>claude plugin install reposit</code></pre>
+                    </div>
                   </div>
                   <a
                     href="https://github.com/reposit-bot/reposit-claude-plugin"
@@ -280,7 +282,7 @@ defmodule RepositWeb.HomeLive do
               </div>
 
               <!-- Manual MCP -->
-              <div class="card bg-base-200">
+              <div class="card bg-base-200 min-w-0">
                 <div class="card-body">
                   <div class="flex items-center justify-between mb-3">
                     <h3 class="card-title text-lg">Manual MCP Setup</h3>
@@ -289,11 +291,13 @@ defmodule RepositWeb.HomeLive do
                   <p class="text-base-content/60 text-sm mb-4">
                     Add to <code class="bg-base-300 px-1 rounded text-xs">.mcp.json</code> or MCP settings:
                   </p>
-                  <div class="mockup-code text-xs">
-                    <pre><code>&#123;"mcpServers": &#123;"reposit": &#123;</code></pre>
-                    <pre><code>  "command": "npx",</code></pre>
-                    <pre><code>  "args": ["-y", "@reposit-bot/reposit-mcp"]</code></pre>
-                    <pre><code>&#125;&#125;&#125;</code></pre>
+                  <div class="max-w-full overflow-x-auto rounded-lg">
+                    <div class="mockup-code text-xs min-w-0">
+                      <pre><code>&#123;"mcpServers": &#123;"reposit": &#123;</code></pre>
+                      <pre><code>  "command": "npx",</code></pre>
+                      <pre><code>  "args": ["-y", "@reposit-bot/reposit-mcp"]</code></pre>
+                      <pre><code>&#125;&#125;&#125;</code></pre>
+                    </div>
                   </div>
                   <a
                     href="https://github.com/reposit-bot/reposit-mcp"

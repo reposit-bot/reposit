@@ -1,10 +1,6 @@
 {
   "permissions": {
     "allow": [
-      "Bash(beans create:*)",
-      "Bash(beans prime)",
-      "Bash(beans query:*)",
-      "Bash(beans update:*)",
       "Bash(colima start:*)",
       "Bash(colima status:*)",
       "Bash(docker-compose up:*)",

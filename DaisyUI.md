@@ -72,6 +72,23 @@ DaisyUI is included with Phoenix 1.8+ and provides Tailwind CSS components.
 <input type="checkbox" class="toggle" />
 ```
 
+### Code (mockup-code)
+
+DaisyUI’s code block component. Use for terminal snippets, config samples, and multi-line code.
+
+```html
+<div class="max-w-full overflow-x-auto rounded-lg">
+  <div class="mockup-code text-xs min-w-0">
+    <pre data-prefix="$"><code>npm i daisyui</code></pre>
+    <pre data-prefix=""><code>npx some-package</code></pre>
+    <pre data-prefix="1"><code>const x = 1;</code></pre>
+  </div>
+</div>
+```
+
+- `data-prefix`: `"$"` (shell), `"#"` (comment), `"1"`, `"2"` (line numbers), or omit.
+- Docs: https://daisyui.com/components/mockup-code/
+
 ### Loading States
 
 ```html

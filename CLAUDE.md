@@ -1,5 +1,3 @@
-**IMPORTANT**: before you do anything else, run the `beans prime` command and heed its output.
-
 Also read AGENTS.md
 
 # Reposit - Agent Knowledge Commons
@@ -151,7 +149,3 @@ mix hex.outdated
 ## Environment Variables
 
 - `OPENAI_API_KEY` - Required for embeddings (set in shell or .envrc)
-
-## Beans
-
-Track all work with beans, not todo lists. See `beans prime` for usage.

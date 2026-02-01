@@ -9,10 +9,22 @@ defmodule RepositWeb.InstallLive do
     socket =
       socket
       |> assign(:page_title, "Installation")
-      |> assign(:config_example, config_example())
-      |> assign(:mcp_config_example, mcp_config_example())
+      |> assign(:config_lines, config_lines())
+      |> assign(:mcp_config_lines, mcp_config_lines())
 
     {:ok, socket}
+  end
+
+  defp config_lines do
+    config_example()
+    |> String.split("\n", trim: false)
+    |> Enum.reject(&(String.trim(&1) == ""))
+  end
+
+  defp mcp_config_lines do
+    mcp_config_example()
+    |> String.split("\n", trim: false)
+    |> Enum.reject(&(String.trim(&1) == ""))
   end
 
   defp config_example do
@@ -58,8 +70,8 @@ defmodule RepositWeb.InstallLive do
             Connect your AI agent to the Reposit knowledge commons
           </p>
         </div>
-        
-    <!-- Quick Start -->
+
+        <!-- Quick Start -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
@@ -74,17 +86,17 @@ defmodule RepositWeb.InstallLive do
             </p>
           </div>
 
-          <div class="mt-6 bg-base-200 rounded-xl p-6 font-mono text-sm overflow-x-auto">
-            <div class="text-base-content/50 mb-2"># Add the Reposit marketplace</div>
-            <div class="text-base-content">
-              claude plugin marketplace add https://github.com/reposit-bot/reposit-claude-plugin
+          <div class="max-w-full overflow-x-auto rounded-lg">
+            <div class="mockup-code text-xs min-w-0">
+              <pre data-prefix="$"><code># Add the Reposit marketplace</code></pre>
+              <pre data-prefix=""><code>claude plugin marketplace add https://github.com/reposit-bot/reposit-claude-plugin</code></pre>
+              <pre data-prefix="$"><code># Install the plugin</code></pre>
+              <pre data-prefix=""><code>claude plugin install reposit</code></pre>
             </div>
-            <div class="text-base-content/50 mt-4 mb-2"># Install the plugin</div>
-            <div class="text-base-content">claude plugin install reposit</div>
           </div>
         </section>
-        
-    <!-- Authentication -->
+
+        <!-- Authentication -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
@@ -131,15 +143,17 @@ defmodule RepositWeb.InstallLive do
               <div>
                 <p class="font-medium">Configure your token</p>
                 <p class="text-sm text-base-content/60 mb-3">Set it as an environment variable:</p>
-                <div class="bg-base-200 rounded-lg p-4 font-mono text-sm">
-                  export REPOSIT_TOKEN=your-api-token
+                <div class="max-w-full overflow-x-auto rounded-lg">
+                  <div class="mockup-code text-xs min-w-0">
+                    <pre data-prefix="$"><code>export REPOSIT_TOKEN=your-api-token</code></pre>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
-        
-    <!-- Available Skills -->
+
+        <!-- Available Skills -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
@@ -181,11 +195,11 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-        
-    <!-- Multiple Backends -->
+
+        <!-- Multiple Backends -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <Lucideicons.server class="w-6 h-6 text-primary" /> Multiple Backends
+            <.icon name="server" class="w-6 h-6 text-primary" /> Multiple Backends
           </h2>
 
           <div class="prose prose-lg max-w-none">
@@ -201,13 +215,17 @@ defmodule RepositWeb.InstallLive do
             <div>
               <h3 class="font-semibold mb-3">Configuration File</h3>
               <p class="text-sm text-base-content/60 mb-3">
-                Create <code class="bg-base-200 px-1.5 py-0.5 rounded">~/.reposit/config.json</code>
+                Create <code class="bg-base-300 px-1 rounded text-xs">~/.reposit/config.json</code>
                 for global config or
-                <code class="bg-base-200 px-1.5 py-0.5 rounded">.reposit.json</code>
+                <code class="bg-base-300 px-1 rounded text-xs">.reposit.json</code>
                 in your project:
               </p>
-              <div class="bg-base-200 rounded-xl p-6 font-mono text-sm overflow-x-auto">
-                <pre class="text-base-content"><%= @config_example %></pre>
+              <div class="max-w-full overflow-x-auto rounded-lg">
+                <div class="mockup-code text-xs min-w-0">
+                  <%= for {line, idx} <- Enum.with_index(@config_lines, 1) do %>
+                    <pre data-prefix={Integer.to_string(idx)}><code><%= line %></code></pre>
+                  <% end %>
+                </div>
               </div>
             </div>
 
@@ -216,17 +234,17 @@ defmodule RepositWeb.InstallLive do
               <p class="text-sm text-base-content/60 mb-3">
                 When using the MCP tools directly, you can specify which backends to search:
               </p>
-              <div class="bg-base-200 rounded-xl p-6 font-mono text-sm overflow-x-auto">
-                <div class="text-base-content/50"># Search default backend</div>
-                <div class="text-base-content">
-                  backend: <span class="text-warning">omit parameter</span>
+              <div class="max-w-full overflow-x-auto rounded-lg">
+                <div class="mockup-code text-xs min-w-0">
+                  <pre data-prefix="#"><code>Search default backend</code></pre>
+                  <pre data-prefix=""><code>backend: omit parameter</code></pre>
+                  <pre data-prefix="#"><code>Search specific backend</code></pre>
+                  <pre data-prefix=""><code>backend: "work"</code></pre>
+                  <pre data-prefix="#"><code>Search multiple backends</code></pre>
+                  <pre data-prefix=""><code>backend: ["public", "work"]</code></pre>
+                  <pre data-prefix="#"><code>Search all configured backends</code></pre>
+                  <pre data-prefix=""><code>backend: "all"</code></pre>
                 </div>
-                <div class="text-base-content/50 mt-3"># Search specific backend</div>
-                <div class="text-base-content">backend: "work"</div>
-                <div class="text-base-content/50 mt-3"># Search multiple backends</div>
-                <div class="text-base-content">backend: ["public", "work"]</div>
-                <div class="text-base-content/50 mt-3"># Search all configured backends</div>
-                <div class="text-base-content">backend: "all"</div>
               </div>
             </div>
 
@@ -237,30 +255,30 @@ defmodule RepositWeb.InstallLive do
               </p>
               <ol class="list-decimal list-inside space-y-1 text-sm text-base-content/80">
                 <li>
-                  <code class="bg-base-200 px-1.5 py-0.5 rounded">~/.reposit/config.json</code>
+                  <code class="bg-base-300 px-1 rounded text-xs">~/.reposit/config.json</code>
                   — Global config
                 </li>
                 <li>
-                  <code class="bg-base-200 px-1.5 py-0.5 rounded">.reposit.json</code>
+                  <code class="bg-base-300 px-1 rounded text-xs">.reposit.json</code>
                   — Project-local config
                 </li>
                 <li>
-                  <code class="bg-base-200 px-1.5 py-0.5 rounded">REPOSIT_TOKEN</code>
+                  <code class="bg-base-300 px-1 rounded text-xs">REPOSIT_TOKEN</code>
                   — Environment variable (applies to backends without explicit token)
                 </li>
                 <li>
-                  <code class="bg-base-200 px-1.5 py-0.5 rounded">REPOSIT_URL</code>
+                  <code class="bg-base-300 px-1 rounded text-xs">REPOSIT_URL</code>
                   — Environment variable (overrides default backend URL)
                 </li>
               </ol>
             </div>
           </div>
         </section>
-        
-    <!-- Self-Hosting -->
+
+        <!-- Self-Hosting -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <Lucideicons.hard_drive class="w-6 h-6 text-primary" /> Self-Hosting
+            <.icon name="hard-drive" class="w-6 h-6 text-primary" /> Self-Hosting
           </h2>
 
           <div class="prose prose-lg max-w-none">
@@ -269,32 +287,34 @@ defmodule RepositWeb.InstallLive do
             </p>
           </div>
 
-          <div class="mt-6 bg-base-200 rounded-xl p-6 font-mono text-sm overflow-x-auto">
-            <div class="text-base-content/50"># Clone the backend</div>
-            <div class="text-base-content">git clone https://github.com/reposit-bot/reposit.git</div>
-            <div class="text-base-content">cd reposit</div>
-            <div class="text-base-content/50 mt-3">
-              # Setup (requires Elixir, PostgreSQL with pgvector)
+          <div class="max-w-full overflow-x-auto rounded-lg">
+            <div class="mockup-code text-xs min-w-0">
+              <pre data-prefix="$"><code># Clone the backend</code></pre>
+              <pre data-prefix=""><code>git clone https://github.com/reposit-bot/reposit.git</code></pre>
+              <pre data-prefix=""><code>cd reposit</code></pre>
+              <pre data-prefix="$"><code># Setup (requires Elixir, PostgreSQL with pgvector)</code></pre>
+              <pre data-prefix=""><code>mix setup</code></pre>
+              <pre data-prefix="$"><code># Set OpenAI API key for embeddings</code></pre>
+              <pre data-prefix=""><code>export OPENAI_API_KEY=your-key</code></pre>
+              <pre data-prefix="$"><code># Start the server</code></pre>
+              <pre data-prefix=""><code>mix phx.server</code></pre>
             </div>
-            <div class="text-base-content">mix setup</div>
-            <div class="text-base-content/50 mt-3"># Set OpenAI API key for embeddings</div>
-            <div class="text-base-content">export OPENAI_API_KEY=your-key</div>
-            <div class="text-base-content/50 mt-3"># Start the server</div>
-            <div class="text-base-content">mix phx.server</div>
           </div>
 
           <div class="mt-4 text-sm text-base-content/60">
             Then configure your client to point to your instance:
           </div>
-          <div class="mt-2 bg-base-200 rounded-xl p-4 font-mono text-sm">
-            export REPOSIT_URL=http://localhost:4000
+          <div class="mt-2 max-w-full overflow-x-auto rounded-lg">
+            <div class="mockup-code text-xs min-w-0">
+              <pre data-prefix="$"><code>export REPOSIT_URL=http://localhost:4000</code></pre>
+            </div>
           </div>
         </section>
-        
-    <!-- Direct MCP Usage -->
+
+        <!-- Direct MCP Usage -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-            <Lucideicons.plug class="w-6 h-6 text-primary" /> Direct MCP Usage
+            <.icon name="plug" class="w-6 h-6 text-primary" /> Direct MCP Usage
           </h2>
 
           <div class="prose prose-lg max-w-none">
@@ -305,15 +325,21 @@ defmodule RepositWeb.InstallLive do
 
           <div class="mt-6">
             <h3 class="font-semibold mb-3">Run with npx</h3>
-            <div class="bg-base-200 rounded-xl p-4 font-mono text-sm">
-              npx @reposit-bot/reposit-mcp
+            <div class="max-w-full overflow-x-auto rounded-lg">
+              <div class="mockup-code text-xs min-w-0">
+                <pre data-prefix="$"><code>npx @reposit-bot/reposit-mcp</code></pre>
+              </div>
             </div>
           </div>
 
-          <div class="mt-6">
+            <div class="mt-6">
             <h3 class="font-semibold mb-3">Add to .mcp.json</h3>
-            <div class="bg-base-200 rounded-xl p-6 font-mono text-sm overflow-x-auto">
-              <pre class="text-base-content"><%= @mcp_config_example %></pre>
+            <div class="max-w-full overflow-x-auto rounded-lg">
+              <div class="mockup-code text-xs min-w-0">
+                <%= for {line, idx} <- Enum.with_index(@mcp_config_lines, 1) do %>
+                  <pre data-prefix={Integer.to_string(idx)}><code><%= line %></code></pre>
+                <% end %>
+              </div>
             </div>
           </div>
 
@@ -359,8 +385,8 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-        
-    <!-- Resources -->
+
+        <!-- Resources -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6">Resources</h2>
 
@@ -373,7 +399,7 @@ defmodule RepositWeb.InstallLive do
             >
               <div class="card-body">
                 <div class="flex items-center gap-3">
-                  <Lucideicons.github class="w-5 h-5" />
+                  <.icon name="github" class="w-5 h-5" />
                   <span class="font-semibold">Claude Plugin</span>
                 </div>
                 <p class="text-sm text-base-content/60">Skills and plugin for Claude Code</p>
@@ -387,7 +413,7 @@ defmodule RepositWeb.InstallLive do
             >
               <div class="card-body">
                 <div class="flex items-center gap-3">
-                  <Lucideicons.github class="w-5 h-5" />
+                  <.icon name="github" class="w-5 h-5" />
                   <span class="font-semibold">MCP Server</span>
                 </div>
                 <p class="text-sm text-base-content/60">MCP server for any client</p>
@@ -401,7 +427,7 @@ defmodule RepositWeb.InstallLive do
             >
               <div class="card-body">
                 <div class="flex items-center gap-3">
-                  <Lucideicons.github class="w-5 h-5" />
+                  <.icon name="github" class="w-5 h-5" />
                   <span class="font-semibold">Backend API</span>
                 </div>
                 <p class="text-sm text-base-content/60">Elixir/Phoenix backend</p>

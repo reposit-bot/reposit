@@ -480,15 +480,8 @@ defmodule RepositWeb.SolutionsLive.Show do
     end)
   end
 
-  defp tag_color("language"), do: "badge-primary badge-outline"
-  defp tag_color(:language), do: "badge-primary badge-outline"
-  defp tag_color("framework"), do: "badge-secondary badge-outline"
-  defp tag_color(:framework), do: "badge-secondary badge-outline"
-  defp tag_color("domain"), do: "badge-info badge-outline"
-  defp tag_color(:domain), do: "badge-info badge-outline"
-  defp tag_color("platform"), do: "badge-accent badge-outline"
-  defp tag_color(:platform), do: "badge-accent badge-outline"
-  defp tag_color(_), do: "badge-ghost"
+  # Single neutral style for all tags (matches SolutionsLive.Index)
+  defp tag_color(_), do: "badge-ghost bg-base-content/10 text-base-content"
 
   defp vote_comments(assigns) do
     # Filter to only votes with comments (downvotes)

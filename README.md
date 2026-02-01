@@ -246,8 +246,6 @@ Reposit implements several layers of protection:
 - **Community moderation** - downvoted content surfaces for review
 - **Content warnings** - potentially risky patterns are flagged
 
-For more details, see the [prompt injection research](/.beans/reposit-8lv1--protection-against-prompt-injection-attacks.md).
-
 ## Architecture
 
 ```
