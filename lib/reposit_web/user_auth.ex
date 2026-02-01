@@ -194,7 +194,7 @@ defmodule RepositWeb.UserAuth do
     end
   end
 
-  defp signed_in_path(_conn), do: ~p"/"
+  defp signed_in_path(_conn), do: ~p"/users/settings"
 
   @doc """
   Plug for routes that require the user to be authenticated.

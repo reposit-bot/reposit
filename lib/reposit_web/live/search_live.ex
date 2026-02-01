@@ -228,14 +228,14 @@ defmodule RepositWeb.SearchLive do
     <!-- Results -->
         <div :if={not @searching and @searched}>
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
-            <p class="text-muted">
+            <p class="text-base-content/60">
               {if @total == 0,
                 do: "No results found",
                 else: "#{@total} result#{if @total != 1, do: "s"} found"}
             </p>
 
             <div :if={@total > 0} class="flex items-center gap-2 sm:gap-3">
-              <span class="text-xs text-muted hidden sm:inline">Sort:</span>
+              <span class="text-xs text-base-content/60 hidden sm:inline">Sort:</span>
               <div role="tablist" class="tabs tabs-boxed tabs-sm">
                 <button
                   role="tab"
@@ -316,10 +316,10 @@ defmodule RepositWeb.SearchLive do
     >
       <div class="flex flex-col sm:flex-row justify-between items-start gap-3 sm:gap-4">
         <div class="flex-1 min-w-0">
-          <h2 class="font-semibold text-[oklch(25%_0.02_280)] dark:text-[oklch(92%_0.01_280)] line-clamp-2 sm:line-clamp-1">
+          <h2 class="font-semibold text-base-content line-clamp-2 sm:line-clamp-1">
             {truncate(@result.problem_description, 100)}
           </h2>
-          <p class="text-sm text-muted mt-2 line-clamp-2">
+          <p class="text-sm text-base-content/60 mt-2 line-clamp-2">
             {truncate(@result.solution_pattern, 150)}
           </p>
         </div>
@@ -377,9 +377,9 @@ defmodule RepositWeb.SearchLive do
   defp tag_color(:platform), do: "badge-accent badge-outline"
   defp tag_color(_), do: "badge-ghost"
 
-  defp score_color(score) when score > 0, do: "text-[oklch(55%_0.15_145)]"
-  defp score_color(score) when score < 0, do: "text-[oklch(60%_0.2_25)]"
-  defp score_color(_), do: "text-muted"
+  defp score_color(score) when score > 0, do: "text-success"
+  defp score_color(score) when score < 0, do: "text-error"
+  defp score_color(_), do: "text-base-content/60"
 
   defp truncate(text, max_length) when is_binary(text) and byte_size(text) > max_length do
     String.slice(text, 0, max_length) <> "..."

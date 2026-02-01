@@ -104,7 +104,7 @@ defmodule RepositWeb.SolutionsLive.Index do
           </div>
 
           <div class="flex items-center gap-2 sm:gap-3">
-            <span class="text-xs text-muted hidden sm:inline">Sort:</span>
+            <span class="text-xs text-base-content/60 hidden sm:inline">Sort:</span>
             <div role="tablist" class="tabs tabs-boxed tabs-sm">
               <button
                 role="tab"
@@ -173,13 +173,13 @@ defmodule RepositWeb.SolutionsLive.Index do
             <span class="loading loading-spinner loading-sm"></span>
             <span class="text-sm font-medium">Loading...</span>
           </div>
-          <span :if={not @loading} class="text-muted text-sm">Scroll for more...</span>
+          <span :if={not @loading} class="text-base-content/60 text-sm">Scroll for more...</span>
         </div>
         
     <!-- End of list message -->
         <div
           :if={@end_of_list and @total > 0}
-          class="text-center py-8 text-muted"
+          class="text-center py-8 text-base-content/60"
         >
           <p>You've reached the end!</p>
           <p class="text-sm mt-1 mono">{@total} solutions total</p>
@@ -197,30 +197,30 @@ defmodule RepositWeb.SolutionsLive.Index do
     <a
       href={~p"/solutions/#{@solution.id}"}
       id={@id}
-      class="flex gap-3 sm:gap-4 p-4 sm:p-5 hover:bg-[oklch(97%_0.005_280)] dark:hover:bg-[oklch(24%_0.02_280)] transition-colors block"
+      class="flex gap-3 sm:gap-4 p-4 sm:p-5 hover:bg-base-200 transition-colors block"
     >
       <!-- Vote score on the left -->
       <div class="flex flex-col items-center justify-start min-w-[44px] sm:min-w-[56px] pt-0.5">
         <span class={"text-base sm:text-lg font-bold mono #{score_color(@score)}"}>
           {if @score >= 0, do: "+", else: ""}{@score}
         </span>
-        <span class="text-[0.65rem] sm:text-[0.7rem] text-muted mono">
+        <span class="text-[0.65rem] sm:text-[0.7rem] text-base-content/60 mono">
           {@solution.upvotes}↑ {downvotes(@solution)}↓
         </span>
       </div>
       
     <!-- Main content -->
       <div class="flex-1 min-w-0">
-        <h3 class="font-medium text-[oklch(25%_0.02_280)] dark:text-[oklch(92%_0.01_280)] line-clamp-2 sm:line-clamp-1">
+        <h3 class="font-medium text-base-content line-clamp-2 sm:line-clamp-1">
           {truncate(@solution.problem_description, 100)}
         </h3>
-        <p class="text-sm text-muted mt-1.5 line-clamp-2 hidden sm:block">
+        <p class="text-sm text-base-content/60 mt-1.5 line-clamp-2 hidden sm:block">
           {truncate(@solution.solution_pattern, 180)}
         </p>
 
         <div class="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 sm:mt-3">
           <.inline_tags tags={@solution.tags} />
-          <span class="text-xs text-muted">
+          <span class="text-xs text-base-content/60">
             {format_date(@solution.inserted_at)}
           </span>
         </div>
@@ -269,9 +269,9 @@ defmodule RepositWeb.SolutionsLive.Index do
   defp tag_color(:platform), do: "badge-accent badge-outline"
   defp tag_color(_), do: "badge-ghost"
 
-  defp score_color(score) when score > 0, do: "text-[oklch(55%_0.15_145)]"
-  defp score_color(score) when score < 0, do: "text-[oklch(60%_0.2_25)]"
-  defp score_color(_), do: "text-muted"
+  defp score_color(score) when score > 0, do: "text-success"
+  defp score_color(score) when score < 0, do: "text-error"
+  defp score_color(_), do: "text-base-content/60"
 
   defp truncate(text, max_length) when is_binary(text) and byte_size(text) > max_length do
     String.slice(text, 0, max_length) <> "..."

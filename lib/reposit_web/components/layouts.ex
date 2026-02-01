@@ -22,84 +22,48 @@ defmodule RepositWeb.Layouts do
 
       .reposit-page { font-family: 'Sora', system-ui, sans-serif; }
 
+      /* Decorative background - uses theme primary color */
       .page-bg {
         position: fixed;
         inset: 0;
         background:
-          radial-gradient(ellipse 80% 50% at 50% -10%, oklch(60% 0.12 280 / 0.15), transparent),
-          radial-gradient(ellipse 50% 40% at 90% 90%, oklch(65% 0.15 200 / 0.08), transparent);
+          radial-gradient(ellipse 80% 50% at 50% -10%, oklch(from var(--color-primary) l c h / 0.12), transparent),
+          radial-gradient(ellipse 50% 40% at 90% 90%, oklch(from var(--color-secondary) l c h / 0.08), transparent);
         pointer-events: none;
         z-index: -1;
       }
 
-      [data-theme="dark"] .page-bg {
-        background:
-          radial-gradient(ellipse 80% 50% at 50% -10%, oklch(50% 0.18 280 / 0.2), transparent),
-          radial-gradient(ellipse 50% 40% at 90% 90%, oklch(55% 0.2 200 / 0.1), transparent);
-      }
+      .mono { font-family: 'JetBrains Mono', monospace; }
 
+      /* Page title uses base-content color */
       .page-title {
         font-weight: 700;
         font-size: clamp(1.75rem, 4vw, 2.5rem);
         letter-spacing: -0.02em;
-        background: linear-gradient(135deg, oklch(35% 0.02 280) 0%, oklch(45% 0.12 280) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-
-      [data-theme="dark"] .page-title {
-        background: linear-gradient(135deg, oklch(95% 0.01 280) 0%, oklch(85% 0.12 280) 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
+        color: var(--color-base-content);
       }
 
       .page-subtitle {
         font-weight: 400;
         font-size: 1.1rem;
-        color: oklch(45% 0.02 280);
+        color: oklch(from var(--color-base-content) l c h / 0.7);
       }
 
-      [data-theme="dark"] .page-subtitle { color: oklch(70% 0.02 280); }
-
-      .mono { font-family: 'JetBrains Mono', monospace; }
-
-      .text-muted {
-        color: oklch(50% 0.02 280);
-      }
-
-      [data-theme="dark"] .text-muted {
-        color: oklch(65% 0.02 280);
-      }
-
-      /* Typography for user-generated content */
+      /* Prose styling using DaisyUI color variables */
       .prose-reposit {
         font-size: 1rem;
         line-height: 1.75;
-        color: oklch(30% 0.02 280);
+        color: oklch(from var(--color-base-content) l c h / 0.85);
       }
 
-      [data-theme="dark"] .prose-reposit {
-        color: oklch(80% 0.02 280);
-      }
-
-      .prose-reposit > * + * {
-        margin-top: 1.25em;
-      }
+      .prose-reposit > * + * { margin-top: 1.25em; }
 
       .prose-reposit h1, .prose-reposit h2, .prose-reposit h3, .prose-reposit h4 {
         font-weight: 600;
         line-height: 1.3;
-        color: oklch(20% 0.02 280);
+        color: var(--color-base-content);
         margin-top: 2em;
         margin-bottom: 0.75em;
-      }
-
-      [data-theme="dark"] .prose-reposit h1,
-      [data-theme="dark"] .prose-reposit h2,
-      [data-theme="dark"] .prose-reposit h3,
-      [data-theme="dark"] .prose-reposit h4 {
-        color: oklch(92% 0.01 280);
       }
 
       .prose-reposit h1 { font-size: 1.875em; }
@@ -109,61 +73,38 @@ defmodule RepositWeb.Layouts do
 
       .prose-reposit h1:first-child,
       .prose-reposit h2:first-child,
-      .prose-reposit h3:first-child {
-        margin-top: 0;
-      }
+      .prose-reposit h3:first-child { margin-top: 0; }
 
-      .prose-reposit p {
-        margin-top: 1.25em;
-        margin-bottom: 1.25em;
-      }
-
+      .prose-reposit p { margin-top: 1.25em; margin-bottom: 1.25em; }
       .prose-reposit p:first-child { margin-top: 0; }
       .prose-reposit p:last-child { margin-bottom: 0; }
 
       .prose-reposit a {
-        color: oklch(50% 0.18 280);
+        color: var(--color-primary);
         text-decoration: underline;
         text-underline-offset: 2px;
       }
 
-      .prose-reposit a:hover {
-        color: oklch(45% 0.2 280);
-      }
-
-      [data-theme="dark"] .prose-reposit a {
-        color: oklch(70% 0.15 280);
-      }
-
       .prose-reposit strong {
         font-weight: 600;
-        color: oklch(20% 0.02 280);
-      }
-
-      [data-theme="dark"] .prose-reposit strong {
-        color: oklch(92% 0.01 280);
+        color: var(--color-base-content);
       }
 
       .prose-reposit code {
         font-family: 'JetBrains Mono', monospace;
         font-size: 0.875em;
-        background: oklch(95% 0.01 280);
+        background: var(--color-base-200);
         padding: 0.2em 0.4em;
         border-radius: 6px;
-        color: oklch(40% 0.05 280);
-      }
-
-      [data-theme="dark"] .prose-reposit code {
-        background: oklch(25% 0.02 280);
-        color: oklch(80% 0.05 280);
+        color: var(--color-base-content);
       }
 
       .prose-reposit pre {
         font-family: 'JetBrains Mono', monospace;
         font-size: 0.875em;
         line-height: 1.7;
-        background: oklch(18% 0.015 280);
-        color: oklch(85% 0.02 280);
+        background: var(--color-neutral);
+        color: var(--color-neutral-content);
         padding: 1.25em 1.5em;
         border-radius: 12px;
         overflow-x: auto;
@@ -179,86 +120,35 @@ defmodule RepositWeb.Layouts do
       }
 
       .prose-reposit blockquote {
-        border-left: 3px solid oklch(80% 0.05 280);
+        border-left: 3px solid var(--color-base-300);
         padding-left: 1em;
         margin: 1.5em 0;
-        color: oklch(40% 0.02 280);
+        color: oklch(from var(--color-base-content) l c h / 0.7);
         font-style: italic;
       }
 
-      [data-theme="dark"] .prose-reposit blockquote {
-        border-color: oklch(40% 0.05 280);
-        color: oklch(70% 0.02 280);
-      }
-
-      .prose-reposit ul, .prose-reposit ol {
-        padding-left: 1.5em;
-        margin: 1.25em 0;
-      }
-
-      .prose-reposit li {
-        margin: 0.5em 0;
-      }
-
-      .prose-reposit li > ul, .prose-reposit li > ol {
-        margin: 0.5em 0;
-      }
-
-      .prose-reposit ul > li {
-        list-style-type: disc;
-      }
-
-      .prose-reposit ul > li > ul > li {
-        list-style-type: circle;
-      }
-
-      .prose-reposit ol > li {
-        list-style-type: decimal;
-      }
+      .prose-reposit ul, .prose-reposit ol { padding-left: 1.5em; margin: 1.25em 0; }
+      .prose-reposit li { margin: 0.5em 0; }
+      .prose-reposit li > ul, .prose-reposit li > ol { margin: 0.5em 0; }
+      .prose-reposit ul > li { list-style-type: disc; }
+      .prose-reposit ul > li > ul > li { list-style-type: circle; }
+      .prose-reposit ol > li { list-style-type: decimal; }
 
       .prose-reposit hr {
         border: none;
-        border-top: 1px solid oklch(90% 0.02 280);
+        border-top: 1px solid var(--color-base-300);
         margin: 2em 0;
       }
 
-      [data-theme="dark"] .prose-reposit hr {
-        border-color: oklch(30% 0.025 280);
-      }
+      .prose-reposit img { max-width: 100%; height: auto; border-radius: 12px; margin: 1.5em 0; }
 
-      .prose-reposit img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 12px;
-        margin: 1.5em 0;
-      }
-
-      .prose-reposit table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1.5em 0;
-        font-size: 0.9em;
-      }
-
+      .prose-reposit table { width: 100%; border-collapse: collapse; margin: 1.5em 0; font-size: 0.9em; }
       .prose-reposit th, .prose-reposit td {
-        border: 1px solid oklch(90% 0.02 280);
+        border: 1px solid var(--color-base-300);
         padding: 0.75em 1em;
         text-align: left;
       }
-
-      [data-theme="dark"] .prose-reposit th,
-      [data-theme="dark"] .prose-reposit td {
-        border-color: oklch(30% 0.025 280);
-      }
-
-      .prose-reposit th {
-        background: oklch(96% 0.005 280);
-        font-weight: 600;
-      }
-
-      [data-theme="dark"] .prose-reposit th {
-        background: oklch(24% 0.015 280);
-      }
+      .prose-reposit th { background: var(--color-base-200); font-weight: 600; }
     </style>
     """
   end
@@ -273,10 +163,8 @@ defmodule RepositWeb.Layouts do
   def navbar(assigns) do
     ~H"""
     <nav class={"flex items-center justify-between mx-auto #{@max_width} #{@class}"}>
-      <a href="/" class="flex items-center gap-3 group">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[oklch(55%_0.2_280)] to-[oklch(60%_0.22_320)] flex items-center justify-center shadow-lg shadow-[oklch(55%_0.2_280_/_0.25)] group-hover:shadow-[oklch(55%_0.2_280_/_0.4)] transition-shadow">
-          <Lucideicons.mic class="w-5 h-5 text-white" />
-        </div>
+      <a href="/" class="flex items-center gap-2 group">
+        <img src={~p"/images/logo.png"} alt="Reposit" class="w-9 h-9" />
         <span class="text-lg font-bold tracking-tight text-base-content">
           Reposit
         </span>
@@ -346,10 +234,7 @@ defmodule RepositWeb.Layouts do
           role="button"
           class="btn btn-ghost btn-sm p-2"
         >
-          <.icon
-            name="menu"
-            class="size-5 text-base-content/70"
-          />
+          <Lucideicons.menu class="size-5 text-base-content/70" />
         </div>
         <ul
           tabindex="0"

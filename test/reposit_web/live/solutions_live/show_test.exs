@@ -96,16 +96,16 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ "+20"
     end
 
-    test "displays upvote percentage in radial progress", %{conn: conn, user_scope: user_scope} do
+    test "displays vote counts and score", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
-          "Test problem for percentage",
+          "Test problem for vote display",
           "This is a detailed solution pattern that helps solve the problem effectively",
           %{},
           user_scope
         )
 
-      # 75% upvote rate (15 up, 5 down)
+      # 15 up, 5 down = +10 score
       solution
       |> Ecto.Changeset.change(upvotes: 15, downvotes: 5)
       |> Reposit.Repo.update!()
@@ -113,7 +113,9 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
 
       html = render(view)
-      assert html =~ "75%"
+      assert html =~ "15"
+      assert html =~ "5"
+      assert html =~ "+10"
     end
 
     test "displays vote comments from downvotes", %{
@@ -554,7 +556,7 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
 
       # Upvote button should have active styling (ring-2)
       html = render(view)
-      assert html =~ "ring-2 ring-[oklch(55%_0.15_145)]"
+      assert html =~ "ring-2 ring-success"
     end
   end
 

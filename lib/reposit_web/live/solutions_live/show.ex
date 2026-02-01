@@ -80,7 +80,7 @@ defmodule RepositWeb.SolutionsLive.Show do
         <!-- Back link -->
         <a
           href={~p"/solutions"}
-          class="inline-flex items-center gap-2 text-sm text-muted hover:text-[oklch(35%_0.05_280)] dark:hover:text-[oklch(85%_0.02_280)] transition-colors"
+          class="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-base-content transition-colors"
         >
           <Lucideicons.arrow_left class="w-4 h-4" /> Back to Solutions
         </a>
@@ -90,62 +90,62 @@ defmodule RepositWeb.SolutionsLive.Show do
           <!-- Problem section -->
           <div class="mb-8">
             <div class="flex items-center gap-3 mb-3">
-              <span class="text-xs font-semibold uppercase tracking-wider text-muted">Problem</span>
+              <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60">Problem</span>
               <.inline_tags tags={@solution.tags} />
             </div>
-            <p class="text-[oklch(25%_0.02_280)] dark:text-[oklch(90%_0.01_280)] text-lg leading-relaxed">
+            <p class="text-base-content text-lg leading-relaxed">
               {@solution.problem_description}
             </p>
           </div>
           
     <!-- Vote stats with interactive buttons -->
-          <div class="flex flex-wrap items-center gap-4 sm:gap-6 py-4 px-4 sm:px-5 rounded-2xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] mb-8">
+          <div class="flex flex-wrap items-center gap-4 sm:gap-6 py-4 px-4 sm:px-5 rounded-2xl bg-base-200 mb-8">
             <!-- Upvote button -->
             <button
               :if={logged_in?(@current_scope)}
               phx-click="upvote"
               disabled={@voting}
-              class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :up, do: "bg-[oklch(55%_0.15_145)]/15 ring-2 ring-[oklch(55%_0.15_145)]", else: "hover:bg-[oklch(55%_0.15_145)]/10"}"}
+              class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :up, do: "bg-success/15 ring-2 ring-success", else: "hover:bg-success/10"}"}
             >
-              <Lucideicons.arrow_up class={"w-5 h-5 #{if @user_vote == :up, do: "text-[oklch(45%_0.15_145)]", else: "text-[oklch(55%_0.15_145)]"}"} />
-              <span class="mono font-semibold text-[oklch(55%_0.15_145)]">{@solution.upvotes}</span>
+              <Lucideicons.arrow_up class={"w-5 h-5 #{if @user_vote == :up, do: "text-success", else: "text-success/70"}"} />
+              <span class="mono font-semibold text-success">{@solution.upvotes}</span>
             </button>
             <!-- Static upvote display for logged out users -->
             <div :if={!logged_in?(@current_scope)} class="flex items-center gap-2">
-              <Lucideicons.arrow_up class="w-4 h-4 sm:w-5 sm:h-5 text-[oklch(55%_0.15_145)]" />
-              <span class="mono font-semibold text-[oklch(55%_0.15_145)]">{@solution.upvotes}</span>
-              <span class="text-xs text-muted">upvotes</span>
+              <Lucideicons.arrow_up class="w-4 h-4 sm:w-5 sm:h-5 text-success" />
+              <span class="mono font-semibold text-success">{@solution.upvotes}</span>
+              <span class="text-xs text-base-content/60">upvotes</span>
             </div>
-            
-    <!-- Downvote button -->
+
+            <!-- Downvote button -->
             <button
               :if={logged_in?(@current_scope)}
               phx-click="show-downvote-form"
               disabled={@voting}
-              class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :down, do: "bg-[oklch(60%_0.2_25)]/15 ring-2 ring-[oklch(60%_0.2_25)]", else: "hover:bg-[oklch(60%_0.2_25)]/10"}"}
+              class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :down, do: "bg-error/15 ring-2 ring-error", else: "hover:bg-error/10"}"}
             >
-              <Lucideicons.arrow_down class={"w-5 h-5 #{if @user_vote == :down, do: "text-[oklch(50%_0.2_25)]", else: "text-[oklch(60%_0.2_25)]"}"} />
-              <span class="mono font-semibold text-[oklch(60%_0.2_25)]">{@solution.downvotes}</span>
+              <Lucideicons.arrow_down class={"w-5 h-5 #{if @user_vote == :down, do: "text-error", else: "text-error/70"}"} />
+              <span class="mono font-semibold text-error">{@solution.downvotes}</span>
             </button>
             <!-- Static downvote display for logged out users -->
             <div :if={!logged_in?(@current_scope)} class="flex items-center gap-2">
-              <Lucideicons.arrow_down class="w-4 h-4 sm:w-5 sm:h-5 text-[oklch(60%_0.2_25)]" />
-              <span class="mono font-semibold text-[oklch(60%_0.2_25)]">{@solution.downvotes}</span>
-              <span class="text-xs text-muted">downvotes</span>
+              <Lucideicons.arrow_down class="w-4 h-4 sm:w-5 sm:h-5 text-error" />
+              <span class="mono font-semibold text-error">{@solution.downvotes}</span>
+              <span class="text-xs text-base-content/60">downvotes</span>
             </div>
 
-            <div class="hidden sm:block h-6 w-px bg-[oklch(90%_0.02_280)] dark:bg-[oklch(30%_0.025_280)]">
+            <div class="hidden sm:block h-6 w-px bg-base-300">
             </div>
 
             <div class="flex items-center gap-2">
               <span class={"mono text-lg sm:text-xl font-bold #{score_color(@score)}"}>
                 {if @score >= 0, do: "+", else: ""}{@score}
               </span>
-              <span class="text-xs text-muted">score</span>
+              <span class="text-xs text-base-content/60">score</span>
             </div>
             
     <!-- Login prompt for guests -->
-            <div :if={!logged_in?(@current_scope)} class="text-xs text-muted">
+            <div :if={!logged_in?(@current_scope)} class="text-xs text-base-content/60">
               <a href={~p"/users/log-in"} class="text-primary hover:underline">Log in</a> to vote
             </div>
             
@@ -154,7 +154,7 @@ defmodule RepositWeb.SolutionsLive.Show do
               :if={logged_in?(@current_scope) && @user_vote}
               phx-click="remove-vote"
               disabled={@voting}
-              class="text-xs text-muted hover:text-error transition-colors"
+              class="text-xs text-base-content/60 hover:text-error transition-colors"
             >
               Remove vote
             </button>
@@ -216,10 +216,10 @@ defmodule RepositWeb.SolutionsLive.Show do
           
     <!-- Solution section -->
           <div>
-            <span class="text-xs font-semibold uppercase tracking-wider text-muted mb-4 block">
+            <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-4 block">
               Solution
             </span>
-            <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:text-[oklch(25%_0.02_280)] dark:prose-headings:text-[oklch(90%_0.01_280)] prose-p:text-[oklch(35%_0.02_280)] dark:prose-p:text-[oklch(75%_0.02_280)] prose-code:bg-[oklch(95%_0.01_280)] dark:prose-code:bg-[oklch(25%_0.02_280)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none prose-pre:bg-[oklch(20%_0.015_280)] prose-pre:rounded-xl">
+            <div class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:text-base-content prose-p:text-base-content/80 prose-code:bg-base-200 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none prose-pre:bg-neutral prose-pre:rounded-xl">
               {Phoenix.HTML.raw(@markdown_html)}
             </div>
           </div>
@@ -231,7 +231,7 @@ defmodule RepositWeb.SolutionsLive.Show do
           <.vote_comments votes={@solution.votes} />
           
     <!-- Metadata footer -->
-          <div class="mt-8 pt-6 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(28%_0.025_280)] flex flex-wrap items-center gap-4 text-xs text-muted">
+          <div class="mt-8 pt-6 border-t border-base-300 flex flex-wrap items-center gap-4 text-xs text-base-content/60">
             <span>Created {format_date(@solution.inserted_at)}</span>
             <span :if={@solution.updated_at != @solution.inserted_at}>
               · Updated {format_date(@solution.updated_at)}
@@ -260,7 +260,7 @@ defmodule RepositWeb.SolutionsLive.Show do
           phx-click-away="cancel-delete"
         >
           <h3 class="text-lg font-semibold mb-2">Delete this solution?</h3>
-          <p class="text-sm text-muted mb-6">
+          <p class="text-sm text-base-content/60 mb-6">
             This action cannot be undone. All votes on this solution will also be deleted.
           </p>
           <div class="flex gap-3 justify-end">
@@ -441,12 +441,12 @@ defmodule RepositWeb.SolutionsLive.Show do
     ~H"""
     <div
       :if={map_size(@grouped) > 0}
-      class="mt-8 pt-6 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(28%_0.025_280)]"
+      class="mt-8 pt-6 border-t border-base-300"
     >
-      <span class="text-xs font-semibold uppercase tracking-wider text-muted mb-4 block">Tags</span>
+      <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-4 block">Tags</span>
       <div class="flex flex-wrap gap-6">
         <div :for={{category, values} <- @grouped} class="flex flex-col gap-2">
-          <span class="text-[0.7rem] font-medium uppercase text-muted">
+          <span class="text-[0.7rem] font-medium uppercase text-base-content/60">
             {category}
           </span>
           <div class="flex flex-wrap gap-1.5">
@@ -498,23 +498,23 @@ defmodule RepositWeb.SolutionsLive.Show do
     ~H"""
     <div
       :if={length(@comments) > 0}
-      class="mt-8 pt-6 border-t border-[oklch(92%_0.02_280)] dark:border-[oklch(28%_0.025_280)]"
+      class="mt-8 pt-6 border-t border-base-300"
     >
-      <span class="text-xs font-semibold uppercase tracking-wider text-muted mb-4 block">
+      <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-4 block">
         Feedback
       </span>
       <div class="space-y-3">
         <div
           :for={vote <- @comments}
-          class="p-4 rounded-xl bg-[oklch(97%_0.005_280)] dark:bg-[oklch(20%_0.015_280)] border-l-3 border-[oklch(60%_0.2_25)]"
+          class="p-4 rounded-xl bg-base-200 border-l-3 border-warning"
         >
           <div class="flex items-center gap-2 mb-2">
             <span class="badge badge-sm badge-warning badge-outline font-mono">
               {reason_label(vote.reason)}
             </span>
-            <span class="text-xs text-muted">{format_date(vote.inserted_at)}</span>
+            <span class="text-xs text-base-content/60">{format_date(vote.inserted_at)}</span>
           </div>
-          <p class="text-sm text-[oklch(35%_0.02_280)] dark:text-[oklch(75%_0.02_280)]">
+          <p class="text-sm text-base-content/80">
             {vote.comment}
           </p>
         </div>
@@ -531,9 +531,9 @@ defmodule RepositWeb.SolutionsLive.Show do
   defp reason_label(:other), do: "Other"
   defp reason_label(_), do: "Feedback"
 
-  defp score_color(score) when score > 0, do: "text-[oklch(55%_0.15_145)]"
-  defp score_color(score) when score < 0, do: "text-[oklch(60%_0.2_25)]"
-  defp score_color(_), do: "text-muted"
+  defp score_color(score) when score > 0, do: "text-success"
+  defp score_color(score) when score < 0, do: "text-error"
+  defp score_color(_), do: "text-base-content/60"
 
   defp format_date(%DateTime{} = dt) do
     Calendar.strftime(dt, "%B %d, %Y")

@@ -1,12 +1,13 @@
 <Layouts.app flash={@flash} current_scope={@current_scope}>
-  <div class="text-center">
-    <.header>
-      Account Settings
-      <:subtitle>Manage your account email, profile, and connected accounts</:subtitle>
-    </.header>
-  </div>
+  <div class="mx-auto max-w-xl space-y-4">
+    <div class="text-center">
+      <.header>
+        Account Settings
+        <:subtitle>Manage your account email, profile, and connected accounts</:subtitle>
+      </.header>
+    </div>
 
-  <.form :let={f} for={@email_changeset} action={~p"/users/settings"} id="update_email">
+    <.form :let={f} for={@email_changeset} action={~p"/users/settings"} id="update_email">
     <input type="hidden" name="action" value="update_email" />
 
     <.input field={f[:email]} type="email" label="Email" autocomplete="email" required />
@@ -193,5 +194,6 @@
         <button>close</button>
       </form>
     </dialog>
+    </div>
   </div>
 </Layouts.app>

@@ -34,7 +34,7 @@ defmodule RepositWeb.AuthControllerTest do
         |> assign(:ueberauth_auth, auth)
         |> get(~p"/auth/google/callback")
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/users/settings"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Welcome"
     end
 
@@ -46,7 +46,7 @@ defmodule RepositWeb.AuthControllerTest do
         |> assign(:ueberauth_auth, auth)
         |> get(~p"/auth/github/callback")
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/users/settings"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Welcome"
     end
 
@@ -70,7 +70,7 @@ defmodule RepositWeb.AuthControllerTest do
         |> assign(:ueberauth_auth, auth)
         |> get(~p"/auth/google/callback")
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/users/settings"
     end
 
     test "logs in existing user for GitHub", %{conn: conn} do
@@ -93,7 +93,7 @@ defmodule RepositWeb.AuthControllerTest do
         |> assign(:ueberauth_auth, auth)
         |> get(~p"/auth/github/callback")
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/users/settings"
     end
 
     test "links Google account to existing user with same email", %{conn: conn} do
@@ -107,7 +107,7 @@ defmodule RepositWeb.AuthControllerTest do
         |> assign(:ueberauth_auth, auth)
         |> get(~p"/auth/google/callback")
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/users/settings"
 
       # Verify the account was linked
       updated_user = Reposit.Accounts.get_user!(existing_user.id)
