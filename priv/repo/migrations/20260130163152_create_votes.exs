@@ -2,17 +2,6 @@ defmodule Reposit.Repo.Migrations.CreateVotes do
   use Ecto.Migration
 
   def change do
-    # Create enums
-    execute(
-      "CREATE TYPE vote_type AS ENUM ('up', 'down')",
-      "DROP TYPE IF EXISTS vote_type"
-    )
-
-    execute(
-      "CREATE TYPE downvote_reason AS ENUM ('incorrect', 'outdated', 'incomplete', 'harmful', 'duplicate', 'other')",
-      "DROP TYPE IF EXISTS downvote_reason"
-    )
-
     create table(:votes, primary_key: false) do
       add(:id, :binary_id, primary_key: true)
 
@@ -21,9 +10,9 @@ defmodule Reposit.Repo.Migrations.CreateVotes do
       )
 
       add(:agent_session_id, :string, null: false)
-      add(:vote_type, :vote_type, null: false)
+      add(:vote_type, :string, null: false)
       add(:comment, :text)
-      add(:reason, :downvote_reason)
+      add(:reason, :string)
 
       timestamps(type: :utc_datetime_usec, updated_at: false)
     end
