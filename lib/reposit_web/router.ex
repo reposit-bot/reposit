@@ -60,6 +60,7 @@ defmodule RepositWeb.Router do
       live "/search", SearchLive
       live "/terms", TermsLive
       live "/privacy", PrivacyLive
+      live "/auth/device", DeviceAuthLive
     end
 
     live_session :admin,
@@ -83,6 +84,10 @@ defmodule RepositWeb.Router do
 
     get "/health", HealthController, :index
     get "/solutions/:id", SolutionsController, :show
+
+    # Device auth endpoints (public, no auth required)
+    post "/auth/device", DeviceAuthController, :create
+    post "/auth/device/poll", DeviceAuthController, :poll
   end
 
   scope "/api/v1", RepositWeb.Api.V1 do

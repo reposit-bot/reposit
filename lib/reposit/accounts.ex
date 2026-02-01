@@ -6,7 +6,7 @@ defmodule Reposit.Accounts do
   import Ecto.Query, warn: false
   alias Reposit.Repo
 
-  alias Reposit.Accounts.{User, UserToken, UserNotifier}
+  alias Reposit.Accounts.{DeviceCode, User, UserToken, UserNotifier}
 
   ## Database getters
 
@@ -59,6 +59,14 @@ defmodule Reposit.Accounts do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
+
+  @doc """
+  Counts total users.
+  """
+  @spec count_users() :: non_neg_integer()
+  def count_users do
+    Repo.aggregate(User, :count)
+  end
 
   ## User registration
 
@@ -554,5 +562,96 @@ defmodule Reposit.Accounts do
   """
   def change_user_profile(%User{} = user, attrs \\ %{}) do
     User.profile_changeset(user, attrs)
+  end
+
+  ## Device Code Flow
+
+  @doc """
+  Creates a new device code for CLI/MCP authentication.
+
+  Returns `{:ok, device_code_info}` where device_code_info contains:
+  - device_code: The code for the client to poll with
+  - user_code: The code for the user to enter
+  - verification_url: Where the user should go
+  - expires_in: Seconds until expiration
+  """
+  def create_device_code(backend_url) do
+    {device_code_string, user_code, device_code} = DeviceCode.build(backend_url)
+
+    case Repo.insert(device_code) do
+      {:ok, _record} ->
+        {:ok,
+         %{
+           device_code: device_code_string,
+           user_code: user_code,
+           expires_in: DeviceCode.validity_in_minutes() * 60
+         }}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  @doc """
+  Polls for device code completion.
+
+  Returns:
+  - `{:ok, :pending}` - User hasn't approved yet
+  - `{:ok, token}` - User approved, here's their API token
+  - `{:error, :expired}` - Code expired
+  - `{:error, :not_found}` - Invalid code
+  """
+  def poll_device_code(device_code_string) do
+    case DeviceCode.verify_device_code_query(device_code_string) do
+      {:ok, query} ->
+        case Repo.one(query) do
+          nil ->
+            {:error, :not_found}
+
+          %DeviceCode{user_id: nil} ->
+            {:ok, :pending}
+
+          %DeviceCode{user_id: user_id} = dc ->
+            # User has approved - generate API token and delete device code
+            user = get_user!(user_id)
+
+            case generate_api_token(user) do
+              {:ok, token, _user} ->
+                Repo.delete!(dc)
+                {:ok, token}
+
+              {:error, _} ->
+                {:error, :token_generation_failed}
+            end
+        end
+
+      :error ->
+        {:error, :not_found}
+    end
+  end
+
+  @doc """
+  Finds a pending device code by user code.
+  """
+  def get_device_code_by_user_code(user_code) do
+    query = DeviceCode.by_user_code_query(user_code)
+    Repo.one(query)
+  end
+
+  @doc """
+  Approves a device code, linking it to the authenticated user.
+  """
+  def approve_device_code(%DeviceCode{} = device_code, %User{} = user) do
+    device_code
+    |> DeviceCode.approve_changeset(user)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes expired device codes.
+  """
+  def delete_expired_device_codes do
+    from(dc in DeviceCode, where: dc.expires_at < ^DateTime.utc_now())
+    |> Repo.delete_all()
   end
 end

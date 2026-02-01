@@ -34,7 +34,8 @@ defmodule RepositWeb.Plugs.ApiAuth do
           Jason.encode!(%{
             success: false,
             error: "unauthorized",
-            hint: "Invalid or missing API token. Get your token from /users/settings"
+            hint:
+              "Invalid or missing API token. Use the 'login' tool to authenticate, or get your token from /users/settings"
           })
         )
         |> halt()
