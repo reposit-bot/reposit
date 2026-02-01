@@ -24,7 +24,8 @@ defmodule Reposit.Votes do
 
   """
   @spec create_vote(Scope.t(), map()) ::
-          {:ok, Vote.t()} | {:error, Ecto.Changeset.t() | :solution_not_found | :content_unsafe}
+          {:ok, Vote.t()}
+          | {:error, Ecto.Changeset.t() | :solution_not_found | :content_unsafe | :forbidden}
   def create_vote(%Scope{user: %{id: user_id}}, attrs) do
     attrs = Map.put(attrs, :user_id, user_id)
 
@@ -46,6 +47,10 @@ defmodule Reposit.Votes do
     case Repo.get(Solution, solution_id) do
       nil ->
         {:error, :solution_not_found}
+
+      %Solution{user_id: ^user_id} ->
+        # User cannot vote on their own solution
+        {:error, :forbidden}
 
       _solution ->
         # Check for existing vote by this user

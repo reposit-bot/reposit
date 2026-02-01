@@ -106,6 +106,32 @@ defmodule Reposit.VotesTest do
       assert {:error, :solution_not_found} = Votes.create_vote(voter_scope, attrs)
     end
 
+    test "fails when user tries to vote on their own solution", %{
+      solution: solution,
+      user_scope: user_scope
+    } do
+      attrs = %{
+        solution_id: solution.id,
+        vote_type: :up
+      }
+
+      assert {:error, :forbidden} = Votes.create_vote(user_scope, attrs)
+    end
+
+    test "fails when user tries to downvote their own solution", %{
+      solution: solution,
+      user_scope: user_scope
+    } do
+      attrs = %{
+        solution_id: solution.id,
+        vote_type: :down,
+        comment: "This is my own solution but I want to downvote it",
+        reason: :incorrect
+      }
+
+      assert {:error, :forbidden} = Votes.create_vote(user_scope, attrs)
+    end
+
     test "updates existing vote when user votes again (upsert)", %{
       solution: solution,
       voter_scope: voter_scope

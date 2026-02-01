@@ -40,6 +40,15 @@ defmodule RepositWeb.Api.V1.VotesController do
           hint: "Solution not found"
         })
 
+      {:error, :forbidden} ->
+        conn
+        |> put_status(:forbidden)
+        |> json(%{
+          success: false,
+          error: "forbidden",
+          hint: "You cannot vote on your own solution"
+        })
+
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -87,6 +96,15 @@ defmodule RepositWeb.Api.V1.VotesController do
           success: false,
           error: "not_found",
           hint: "Solution not found"
+        })
+
+      {:error, :forbidden} ->
+        conn
+        |> put_status(:forbidden)
+        |> json(%{
+          success: false,
+          error: "forbidden",
+          hint: "You cannot vote on your own solution"
         })
 
       {:error, :content_unsafe} ->

@@ -47,6 +47,8 @@ defmodule RepositWeb.SolutionsLive.Show do
   defp is_author?(%{user: %{id: user_id}}, %{user_id: solution_user_id}),
     do: user_id == solution_user_id
 
+  defp can_vote?(scope, solution), do: logged_in?(scope) and not is_author?(scope, solution)
+
   defp author_display_name(%{name: name}) when is_binary(name) and name != "", do: name
   defp author_display_name(_), do: "Contributor"
 
@@ -119,7 +121,7 @@ defmodule RepositWeb.SolutionsLive.Show do
           <div class="flex flex-wrap items-center gap-4 sm:gap-6 py-4 px-4 sm:px-5 rounded-2xl bg-base-200 mb-8">
             <!-- Upvote button -->
             <button
-              :if={logged_in?(@current_scope)}
+              :if={can_vote?(@current_scope, @solution)}
               phx-click="upvote"
               disabled={@voting}
               class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :up, do: "bg-success/15 ring-2 ring-success", else: "hover:bg-success/10"}"}
@@ -127,8 +129,8 @@ defmodule RepositWeb.SolutionsLive.Show do
               <Lucideicons.arrow_up class={"w-5 h-5 #{if @user_vote == :up, do: "text-success", else: "text-success/70"}"} />
               <span class="mono font-semibold text-success">{@solution.upvotes}</span>
             </button>
-            <!-- Static upvote display for logged out users -->
-            <div :if={!logged_in?(@current_scope)} class="flex items-center gap-2">
+            <!-- Static upvote display for logged out users or authors -->
+            <div :if={!can_vote?(@current_scope, @solution)} class="flex items-center gap-2">
               <Lucideicons.arrow_up class="w-4 h-4 sm:w-5 sm:h-5 text-success" />
               <span class="mono font-semibold text-success">{@solution.upvotes}</span>
               <span class="text-xs text-base-content/60">upvotes</span>
@@ -136,7 +138,7 @@ defmodule RepositWeb.SolutionsLive.Show do
             
     <!-- Downvote button -->
             <button
-              :if={logged_in?(@current_scope)}
+              :if={can_vote?(@current_scope, @solution)}
               phx-click="show-downvote-form"
               disabled={@voting}
               class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :down, do: "bg-error/15 ring-2 ring-error", else: "hover:bg-error/10"}"}
@@ -144,8 +146,8 @@ defmodule RepositWeb.SolutionsLive.Show do
               <Lucideicons.arrow_down class={"w-5 h-5 #{if @user_vote == :down, do: "text-error", else: "text-error/70"}"} />
               <span class="mono font-semibold text-error">{@solution.downvotes}</span>
             </button>
-            <!-- Static downvote display for logged out users -->
-            <div :if={!logged_in?(@current_scope)} class="flex items-center gap-2">
+            <!-- Static downvote display for logged out users or authors -->
+            <div :if={!can_vote?(@current_scope, @solution)} class="flex items-center gap-2">
               <Lucideicons.arrow_down class="w-4 h-4 sm:w-5 sm:h-5 text-error" />
               <span class="mono font-semibold text-error">{@solution.downvotes}</span>
               <span class="text-xs text-base-content/60">downvotes</span>
@@ -167,7 +169,7 @@ defmodule RepositWeb.SolutionsLive.Show do
             
     <!-- Remove vote button -->
             <button
-              :if={logged_in?(@current_scope) && @user_vote}
+              :if={can_vote?(@current_scope, @solution) && @user_vote}
               phx-click="remove-vote"
               disabled={@voting}
               class="text-xs text-base-content/60 hover:text-error transition-colors"
