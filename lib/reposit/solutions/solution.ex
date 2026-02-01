@@ -6,7 +6,6 @@ defmodule Reposit.Solutions.Solution do
   schema "solutions" do
     field(:problem, :string)
     field(:solution, :string)
-    field(:context_requirements, :map, default: %{})
     field(:embedding, Pgvector.Ecto.Vector)
     field(:tags, :map, default: %{language: [], framework: [], domain: [], platform: []})
     field(:upvotes, :integer, default: 0)
@@ -25,7 +24,7 @@ defmodule Reposit.Solutions.Solution do
   def statuses, do: @statuses
 
   @required_fields [:problem, :solution, :user_id]
-  @optional_fields [:context_requirements, :embedding, :tags]
+  @optional_fields [:embedding, :tags]
 
   @doc """
   Changeset for creating a new solution.
@@ -40,12 +39,12 @@ defmodule Reposit.Solutions.Solution do
     |> foreign_key_constraint(:user_id)
   end
 
-  @update_fields [:problem, :solution, :context_requirements, :tags]
+  @update_fields [:problem, :solution, :tags]
 
   @doc """
   Changeset for updating an existing solution.
 
-  Only allows editing problem, solution, context_requirements, and tags.
+  Only allows editing problem, solution, and tags.
   Embedding is regenerated in the context on update.
   """
   def update_changeset(solution, attrs) do

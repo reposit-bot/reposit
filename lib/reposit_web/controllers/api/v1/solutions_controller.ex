@@ -120,7 +120,6 @@ defmodule RepositWeb.Api.V1.SolutionsController do
       id: solution.id,
       problem: solution.problem,
       solution: solution.solution,
-      context_requirements: solution.context_requirements,
       tags: solution.tags,
       upvotes: solution.upvotes,
       downvotes: solution.downvotes,

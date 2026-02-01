@@ -63,12 +63,6 @@ defmodule Reposit.SolutionsTest do
       assert solution.tags.framework == ["phoenix"]
     end
 
-    test "creates solution with context_requirements", %{scope: scope} do
-      attrs = Map.put(valid_attrs(), :context_requirements, %{environment: "production"})
-      assert {:ok, solution} = Solutions.create_solution(scope, attrs)
-      assert solution.context_requirements == %{environment: "production"}
-    end
-
     test "rejects solution with prompt injection in problem", %{scope: scope} do
       attrs =
         Map.put(

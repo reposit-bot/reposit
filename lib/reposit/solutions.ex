@@ -78,19 +78,7 @@ defmodule Reposit.Solutions do
   defp check_content_safety(attrs) do
     problem = Map.get(attrs, :problem) || Map.get(attrs, "problem") || ""
     solution = Map.get(attrs, :solution) || Map.get(attrs, "solution") || ""
-
-    # context_requirements is a map, so we need to convert it to a string for safety check
-    context = Map.get(attrs, :context_requirements) || Map.get(attrs, "context_requirements")
-
-    context_str =
-      case context do
-        nil -> ""
-        ctx when is_map(ctx) -> Jason.encode!(ctx)
-        ctx when is_binary(ctx) -> ctx
-        _ -> ""
-      end
-
-    content = "#{problem}\n#{solution}\n#{context_str}"
+    content = "#{problem}\n#{solution}"
 
     if ContentSafety.risky?(content) do
       require Logger
@@ -609,10 +597,8 @@ defmodule Reposit.Solutions do
   end
 
   defp merge_optional_attrs_for_update(solution, attrs) do
-    # Form may only send problem/solution; preserve existing context_requirements and tags
-    attrs
-    |> Map.put_new("context_requirements", solution.context_requirements || %{})
-    |> Map.put_new("tags", solution.tags || %{})
+    # Form may only send problem/solution; preserve existing tags
+    Map.put_new(attrs, "tags", solution.tags || %{})
   end
 
   defp do_update_solution(solution, attrs) do

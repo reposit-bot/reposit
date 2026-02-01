@@ -404,7 +404,6 @@ defmodule RepositWeb.SolutionsLive.Show do
       Solution.update_changeset(solution, %{
         problem: solution.problem,
         solution: solution.solution,
-        context_requirements: solution.context_requirements || %{},
         tags: solution.tags || %{}
       })
 
