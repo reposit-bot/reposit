@@ -60,6 +60,7 @@ defmodule RepositWeb.Api.V1.DeviceAuthController do
 
   Request body:
     - device_code: The device code returned from the create endpoint
+    - device_name: (optional) A friendly name for this device (e.g., "MacBook Pro", "Claude Desktop")
 
   Response (pending):
     - status: "pending"
@@ -69,10 +70,13 @@ defmodule RepositWeb.Api.V1.DeviceAuthController do
     - token: The API token to use for authenticated requests
 
   Response (error):
-    - error: "expired" | "not_found"
+    - error: "expired" | "not_found" | "token_limit_reached"
   """
-  def poll(conn, %{"device_code" => device_code}) do
-    case Accounts.poll_device_code(device_code) do
+  def poll(conn, %{"device_code" => device_code} = params) do
+    device_name = Map.get(params, "device_name")
+    opts = if device_name, do: [device_name: device_name], else: []
+
+    case Accounts.poll_device_code(device_code, opts) do
       {:ok, :pending} ->
         json(conn, %{
           success: true,
@@ -96,6 +100,15 @@ defmodule RepositWeb.Api.V1.DeviceAuthController do
           success: false,
           error: "not_found",
           hint: "Invalid or expired device code."
+        })
+
+      {:error, :token_limit_reached} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{
+          success: false,
+          error: "token_limit_reached",
+          hint: "You have reached the maximum number of API tokens (50). Please delete unused tokens in settings."
         })
 
       {:error, :token_generation_failed} ->

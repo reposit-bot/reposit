@@ -343,50 +343,129 @@ defmodule Reposit.Accounts do
 
   ## API Tokens
 
+  alias Reposit.Accounts.ApiToken
+
   @doc """
-  Generates an API token for the user.
+  Creates an API token for the user.
 
-  Returns `{:ok, plaintext_token, user}` on success.
+  Returns `{:ok, plaintext_token, api_token}` on success.
   The plaintext token should be shown to the user once and not stored.
-  """
-  def generate_api_token(%User{} = user) do
-    {token, changeset} = User.generate_api_token(user)
 
-    case Repo.update(changeset) do
-      {:ok, user} -> {:ok, token, user}
+  ## Options
+  - `device_name` - Optional device identifier for device_flow tokens
+
+  ## Examples
+
+      iex> create_api_token(user, "My Laptop", :settings)
+      {:ok, "abc123...", %ApiToken{}}
+
+      iex> create_api_token(user, "CLI", :device_flow, device_name: "MacBook Pro")
+      {:ok, "def456...", %ApiToken{}}
+  """
+  def create_api_token(%User{} = user, name, source, opts \\ []) do
+    # Use a transaction with row locking to prevent race conditions
+    # that could allow users to exceed the token limit
+    Repo.transaction(fn ->
+      # Lock the user row to serialize concurrent token creations
+      from(u in User, where: u.id == ^user.id, lock: "FOR UPDATE")
+      |> Repo.one!()
+
+      if count_api_tokens(user) >= ApiToken.max_tokens_per_user() do
+        Repo.rollback(:token_limit_reached)
+      else
+        {plaintext_token, changeset} = ApiToken.generate(user, name, source, opts)
+
+        case Repo.insert(changeset) do
+          {:ok, api_token} -> {plaintext_token, api_token}
+          {:error, changeset} -> Repo.rollback(changeset)
+        end
+      end
+    end)
+    |> case do
+      {:ok, {plaintext_token, api_token}} -> {:ok, plaintext_token, api_token}
+      {:error, :token_limit_reached} -> {:error, :token_limit_reached}
       {:error, changeset} -> {:error, changeset}
     end
   end
 
   @doc """
-  Regenerates the API token for the user, invalidating the old one.
+  Lists all API tokens for a user.
 
-  Returns `{:ok, plaintext_token, user}` on success.
+  Returns token records with metadata (id, name, source, created, last_used).
+  Does NOT return the actual token values.
   """
-  def regenerate_api_token(%User{} = user) do
-    generate_api_token(user)
+  def list_api_tokens(%User{} = user) do
+    ApiToken.list_for_user_query(user.id)
+    |> Repo.all()
   end
 
   @doc """
-  Gets a user by their API token.
+  Counts API tokens for a user.
+  """
+  def count_api_tokens(%User{} = user) do
+    ApiToken.count_for_user_query(user.id)
+    |> Repo.one()
+  end
+
+  @doc """
+  Deletes an API token.
+
+  Only allows deletion if the token belongs to the user.
+  """
+  def delete_api_token(%User{} = user, token_id) do
+    ApiToken.get_for_user_query(token_id, user.id)
+    |> Repo.delete_all()
+    |> case do
+      {1, _} -> {:ok, :deleted}
+      {0, _} -> {:error, :not_found}
+    end
+  end
+
+  @doc """
+  Updates the name of an API token.
+  """
+  def rename_api_token(%User{} = user, token_id, new_name) do
+    case Repo.one(ApiToken.get_for_user_query(token_id, user.id)) do
+      nil ->
+        {:error, :not_found}
+
+      token ->
+        token
+        |> ApiToken.rename_changeset(new_name)
+        |> Repo.update()
+    end
+  end
+
+  @doc """
+  Gets a user by their API token and updates last_used_at.
 
   Returns `nil` if the token is invalid or the user is not confirmed.
   """
   def get_user_by_api_token(token) when is_binary(token) do
-    case Base.url_decode64(token, padding: false) do
-      {:ok, decoded} ->
-        hashed = :crypto.hash(:sha256, decoded)
+    case ApiToken.verify_token_query(token) do
+      {:ok, query} ->
+        case Repo.one(query) do
+          {user, api_token} ->
+            # Update last_used_at asynchronously
+            Task.start(fn -> touch_api_token(api_token) end)
+            user
 
-        query =
-          from(u in User,
-            where: u.api_token_hash == ^hashed and not is_nil(u.confirmed_at)
-          )
-
-        Repo.one(query)
+          nil ->
+            nil
+        end
 
       :error ->
         nil
     end
+  end
+
+  @doc """
+  Updates the last_used_at timestamp for an API token.
+  """
+  def touch_api_token(%ApiToken{} = token) do
+    token
+    |> ApiToken.touch_changeset()
+    |> Repo.update()
   end
 
   ## OAuth
@@ -611,34 +690,58 @@ defmodule Reposit.Accounts do
   @doc """
   Polls for device code completion.
 
+  ## Options
+  - `device_name` - Name/identifier for the device (e.g., "MacBook Pro", "Claude Desktop")
+
   Returns:
   - `{:ok, :pending}` - User hasn't approved yet
   - `{:ok, token}` - User approved, here's their API token
   - `{:error, :expired}` - Code expired
   - `{:error, :not_found}` - Invalid code
+  - `{:error, :token_limit_reached}` - User has too many tokens
   """
-  def poll_device_code(device_code_string) do
+  def poll_device_code(device_code_string, opts \\ []) do
+    device_name = Keyword.get(opts, :device_name)
+
     case DeviceCode.verify_device_code_query(device_code_string) do
       {:ok, query} ->
-        case Repo.one(query) do
-          nil ->
-            {:error, :not_found}
+        # Use FOR UPDATE lock to prevent race conditions where multiple
+        # concurrent polls could both see the same approved device code
+        locked_query = from(q in query, lock: "FOR UPDATE")
 
-          %DeviceCode{user_id: nil} ->
-            {:ok, :pending}
+        Repo.transaction(fn ->
+          case Repo.one(locked_query) do
+            nil ->
+              Repo.rollback(:not_found)
 
-          %DeviceCode{user_id: user_id} = dc ->
-            # User has approved - generate API token and delete device code
-            user = get_user!(user_id)
+            %DeviceCode{user_id: nil} ->
+              Repo.rollback(:pending)
 
-            case generate_api_token(user) do
-              {:ok, token, _user} ->
-                Repo.delete!(dc)
-                {:ok, token}
+            %DeviceCode{user_id: user_id} = dc ->
+              # User has approved - delete device code first (it's been "consumed"),
+              # then generate API token. This prevents orphaned device codes.
+              Repo.delete!(dc)
 
-              {:error, _} ->
-                {:error, :token_generation_failed}
-            end
+              user = get_user!(user_id)
+              token_name = device_name || "Device Token"
+
+              # Note: create_api_token has its own transaction which becomes
+              # a nested operation within this transaction
+              case create_api_token(user, token_name, :device_flow, device_name: device_name) do
+                {:ok, token, _api_token} ->
+                  token
+
+                {:error, reason} ->
+                  Repo.rollback(reason)
+              end
+          end
+        end)
+        |> case do
+          {:ok, token} -> {:ok, token}
+          {:error, :pending} -> {:ok, :pending}
+          {:error, :not_found} -> {:error, :not_found}
+          {:error, :token_limit_reached} -> {:error, :token_limit_reached}
+          {:error, _} -> {:error, :token_generation_failed}
         end
 
       :error ->

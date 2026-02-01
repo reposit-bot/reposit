@@ -10,7 +10,6 @@ defmodule Reposit.Accounts.User do
     field(:hashed_password, :string, redact: true)
     field(:confirmed_at, :utc_datetime)
     field(:authenticated_at, :utc_datetime, virtual: true)
-    field(:api_token_hash, :binary, redact: true)
     field(:role, Ecto.Enum, values: @roles, default: :user)
 
     # OAuth fields
@@ -147,36 +146,6 @@ defmodule Reposit.Accounts.User do
     Bcrypt.no_user_verify()
     false
   end
-
-  @doc """
-  Generates a random API token (32 bytes, URL-safe base64 encoded).
-  Returns {plaintext_token, changeset_with_hash}.
-  """
-  def generate_api_token(user) do
-    token = :crypto.strong_rand_bytes(32)
-    encoded_token = Base.url_encode64(token, padding: false)
-    hashed_token = :crypto.hash(:sha256, token)
-
-    changeset = change(user, api_token_hash: hashed_token)
-    {encoded_token, changeset}
-  end
-
-  @doc """
-  Verifies an API token against the stored hash.
-  """
-  def valid_api_token?(%Reposit.Accounts.User{api_token_hash: hash}, token)
-      when is_binary(hash) and is_binary(token) do
-    case Base.url_decode64(token, padding: false) do
-      {:ok, decoded} ->
-        computed_hash = :crypto.hash(:sha256, decoded)
-        :crypto.hash_equals(hash, computed_hash)
-
-      :error ->
-        false
-    end
-  end
-
-  def valid_api_token?(_, _), do: false
 
   ## OAuth Changesets
 

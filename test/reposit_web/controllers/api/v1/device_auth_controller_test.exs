@@ -76,6 +76,39 @@ defmodule RepositWeb.Api.V1.DeviceAuthControllerTest do
       assert Accounts.get_user_by_api_token(token).id == user.id
     end
 
+    test "creates token with device_name when provided", %{conn: conn} do
+      user = user_fixture()
+
+      # Create and approve a device code
+      {:ok, %{device_code: device_code, user_code: user_code}} =
+        Accounts.create_device_code("https://test.com")
+
+      device_code_record = Accounts.get_device_code_by_user_code(user_code)
+      {:ok, _} = Accounts.approve_device_code(device_code_record, user)
+
+      conn =
+        post(conn, ~p"/api/v1/auth/device/poll", %{
+          device_code: device_code,
+          device_name: "Claude Desktop"
+        })
+
+      assert %{
+               "success" => true,
+               "data" => %{"status" => "complete", "token" => token}
+             } = json_response(conn, 200)
+
+      # Verify token was created with correct metadata
+      tokens = Accounts.list_api_tokens(user)
+      assert length(tokens) == 1
+      api_token = hd(tokens)
+      assert api_token.name == "Claude Desktop"
+      assert api_token.source == :device_flow
+      assert api_token.device_name == "Claude Desktop"
+
+      # Verify the token works
+      assert Accounts.get_user_by_api_token(token).id == user.id
+    end
+
     test "returns not_found for invalid device code", %{conn: conn} do
       conn = post(conn, ~p"/api/v1/auth/device/poll", %{device_code: "invalid-code"})
 

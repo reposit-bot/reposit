@@ -106,7 +106,7 @@ defmodule RepositWeb.ConnCase do
   """
   def create_api_user(_context) do
     user = Reposit.AccountsFixtures.user_fixture()
-    {:ok, token, user} = Reposit.Accounts.generate_api_token(user)
+    {:ok, token, _api_token} = Reposit.Accounts.create_api_token(user, "Test Token", :settings)
     %{api_token: token, api_user: user}
   end
 

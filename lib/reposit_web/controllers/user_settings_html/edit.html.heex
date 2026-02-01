@@ -115,9 +115,9 @@
     <div class="divider" />
 
     <div class="space-y-4">
-      <h3 class="text-lg font-semibold">API Token</h3>
+      <h3 class="text-lg font-semibold">API Tokens</h3>
       <p class="text-sm opacity-70">
-        Use this token to authenticate with the Reposit API and MCP endpoints.
+        Create tokens to authenticate with the Reposit API and MCP endpoints. You can have up to 50 tokens.
       </p>
 
       <%= if token = Phoenix.Flash.get(@flash, :api_token) do %>
@@ -125,27 +125,74 @@
           <.icon name="alert-triangle" class="size-5" />
           <div>
             <p class="font-semibold">Copy your token now - it won't be shown again!</p>
-            <code class="block mt-2 p-2 bg-base-300 rounded text-sm break-all select-all">
+            <code class="block mt-2 p-2 bg-neutral text-neutral-content rounded text-sm break-all select-all">
               {token}
             </code>
           </div>
         </div>
-      <% else %>
-        <p class="text-sm">
-          <%= if @current_scope.user.api_token_hash do %>
-            You have an active API token. Regenerate to create a new one (invalidates the old token).
-          <% else %>
-            You don't have an API token yet. Generate one to use the API.
-          <% end %>
-        </p>
       <% end %>
 
-      <form action={~p"/users/settings/regenerate-api-token"} method="post">
+      <div class="space-y-2">
+        <%= if Enum.empty?(@api_tokens) do %>
+          <div class="text-sm opacity-70 p-4 bg-base-200 rounded-lg text-center">
+            No API tokens yet. Create one to use the API.
+          </div>
+        <% else %>
+          <%= for token <- @api_tokens do %>
+            <div class="flex items-center justify-between p-3 bg-base-200 rounded-lg">
+              <div class="flex-1 min-w-0">
+                <div class="font-medium truncate">{token.name}</div>
+                <div class="text-xs opacity-60 mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                  <span>Created: {Calendar.strftime(token.inserted_at, "%b %d, %Y")}</span>
+                  <span>
+                    <%= if token.last_used_at do %>
+                      Last used: {Calendar.strftime(token.last_used_at, "%b %d, %Y %H:%M")}
+                    <% else %>
+                      Never used
+                    <% end %>
+                  </span>
+                  <span class={"badge badge-xs #{if token.source == :device_flow, do: "badge-info", else: "badge-ghost"}"}>
+                    {if token.source == :device_flow, do: "Device", else: "Settings"}
+                  </span>
+                  <%= if token.device_name do %>
+                    <span class="opacity-50">({token.device_name})</span>
+                  <% end %>
+                </div>
+              </div>
+              <form action={~p"/users/settings/api-tokens/#{token.id}"} method="post" class="ml-2">
+                <input type="hidden" name="_method" value="delete" />
+                <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
+                <button
+                  type="submit"
+                  class="btn btn-sm btn-ghost text-error"
+                  onclick="return confirm('Delete this token? Any applications using it will stop working.')"
+                >
+                  Delete
+                </button>
+              </form>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <form action={~p"/users/settings/api-tokens"} method="post" class="flex gap-2">
         <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
-        <button type="submit" class="btn">
-          {if @current_scope.user.api_token_hash, do: "Regenerate", else: "Generate"} API Token
+        <input
+          type="text"
+          name="name"
+          placeholder="Token name (e.g., 'My Laptop')"
+          class="input input-bordered flex-1"
+          required
+          maxlength="255"
+        />
+        <button type="submit" class="btn btn-primary">
+          Create Token
         </button>
       </form>
+
+      <p class="text-xs opacity-50">
+        {length(@api_tokens)} / 50 tokens used
+      </p>
     </div>
 
     <div class="divider" />

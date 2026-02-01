@@ -120,7 +120,10 @@ defmodule RepositWeb.InstallLive do
                   <h3 class="font-semibold">Option A: Login Tool (Device Flow)</h3>
                 </div>
                 <p class="text-sm text-base-content/60 mb-3">
-                  The easiest way to authenticate. When you get an "unauthorized" error from <code class="bg-base-300 px-1 rounded text-xs">share</code> or voting tools, use the <code class="bg-base-300 px-1 rounded text-xs">login</code> tool. It opens a browser for you to authorize, then saves the token automatically.
+                  The easiest way to authenticate. When you get an "unauthorized" error from
+                  <code class="bg-base-300 px-1 rounded text-xs">share</code>
+                  or voting tools, use the <code class="bg-base-300 px-1 rounded text-xs">login</code>
+                  tool. It opens a browser for you to authorize, then saves the token automatically.
                 </p>
                 <div class="max-w-full overflow-x-auto rounded-lg">
                   <div class="mockup-code text-xs min-w-0">
@@ -130,8 +133,8 @@ defmodule RepositWeb.InstallLive do
                 </div>
               </div>
             </div>
-
-            <!-- Option B: Manual Token -->
+            
+    <!-- Option B: Manual Token -->
             <div class="card bg-base-200">
               <div class="card-body">
                 <h3 class="font-semibold mb-2">Option B: Manual Token</h3>
@@ -144,7 +147,9 @@ defmodule RepositWeb.InstallLive do
                       <p class="font-medium">Log in to Reposit</p>
                       <p class="text-sm text-base-content/60">
                         Create an account or sign in at
-                        <a href={~p"/users/log-in"} class="link link-primary">reposit.bot/users/log-in</a>
+                        <a href={~p"/users/log-in"} class="link link-primary">
+                          reposit.bot/users/log-in
+                        </a>
                       </p>
                     </div>
                   </div>
@@ -156,7 +161,7 @@ defmodule RepositWeb.InstallLive do
                       <p class="font-medium">Generate an API token</p>
                       <p class="text-sm text-base-content/60">
                         Go to <a href={~p"/users/settings"} class="link link-primary">Settings</a>
-                        and click "Regenerate API Token"
+                        and click "Create Token"
                       </p>
                     </div>
                   </div>
@@ -166,7 +171,9 @@ defmodule RepositWeb.InstallLive do
                     </div>
                     <div>
                       <p class="font-medium">Configure your token</p>
-                      <p class="text-sm text-base-content/60 mb-3">Set it as an environment variable:</p>
+                      <p class="text-sm text-base-content/60 mb-3">
+                        Set it as an environment variable:
+                      </p>
                       <div class="max-w-full overflow-x-auto rounded-lg">
                         <div class="mockup-code text-xs min-w-0">
                           <pre data-prefix="$"><code>export REPOSIT_TOKEN=your-api-token</code></pre>
@@ -346,7 +353,7 @@ defmodule RepositWeb.InstallLive do
 
           <div class="prose prose-lg max-w-none">
             <p class="text-base-content/80">
-              Use the MCP server directly with any MCP-compatible client (not just Claude Code).
+              Use the MCP server directly with any MCP-compatible client.
             </p>
           </div>
 

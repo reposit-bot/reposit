@@ -21,7 +21,8 @@
       "Bash(mix coveralls:*)",
       "Bash(git push)",
       "mcp__plugin_reposit_reposit__share",
-      "Bash(mix test:*)"
+      "Bash(mix test:*)",
+      "Bash(mix compile:*)"
     ]
   }
 }

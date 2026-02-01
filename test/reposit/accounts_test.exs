@@ -395,45 +395,10 @@ defmodule Reposit.AccountsTest do
     end
   end
 
-  describe "generate_api_token/1" do
-    test "generates a token and stores hash" do
-      user = user_fixture()
-      assert {:ok, token, updated_user} = Accounts.generate_api_token(user)
-
-      # Token should be a non-empty string
-      assert is_binary(token)
-      assert byte_size(token) > 0
-
-      # User should have the hash stored
-      assert updated_user.api_token_hash != nil
-      refute updated_user.api_token_hash == token
-    end
-
-    test "token can be verified" do
-      user = user_fixture()
-      {:ok, token, updated_user} = Accounts.generate_api_token(user)
-
-      assert User.valid_api_token?(updated_user, token)
-      refute User.valid_api_token?(updated_user, "invalid-token")
-    end
-  end
-
-  describe "regenerate_api_token/1" do
-    test "invalidates old token and generates new one" do
-      user = user_fixture()
-      {:ok, old_token, user} = Accounts.generate_api_token(user)
-      {:ok, new_token, user} = Accounts.regenerate_api_token(user)
-
-      refute old_token == new_token
-      assert User.valid_api_token?(user, new_token)
-      refute User.valid_api_token?(user, old_token)
-    end
-  end
-
   describe "get_user_by_api_token/1" do
     test "returns confirmed user with valid token" do
       user = user_fixture()
-      {:ok, token, _user} = Accounts.generate_api_token(user)
+      {:ok, token, _api_token} = Accounts.create_api_token(user, "Test", :settings)
 
       assert found_user = Accounts.get_user_by_api_token(token)
       assert found_user.id == user.id
@@ -445,7 +410,7 @@ defmodule Reposit.AccountsTest do
 
     test "returns nil for unconfirmed user" do
       user = unconfirmed_user_fixture()
-      {:ok, token, _user} = Accounts.generate_api_token(user)
+      {:ok, token, _api_token} = Accounts.create_api_token(user, "Test", :settings)
 
       refute Accounts.get_user_by_api_token(token)
     end
