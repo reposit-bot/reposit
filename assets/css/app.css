@@ -73,12 +73,12 @@
   --color-neutral-content: oklch(98% 0 0);
   --color-info: oklch(88.127% 0.085 214.515);
   --color-info-content: oklch(17.625% 0.017 214.515);
-  --color-success: oklch(80.494% 0.077 197.823);
-  --color-success-content: oklch(16.098% 0.015 197.823);
+  --color-success: oklch(79% 0.209 151.711);
+  --color-success-content: oklch(0% 0 0);
   --color-warning: oklch(82% 0.189 84.429);
   --color-warning-content: oklch(21% 0.006 285.885);
-  --color-error: oklch(73.092% 0.11 20.076);
-  --color-error-content: oklch(14.618% 0.022 20.076);
+  --color-error: oklch(63% 0.237 25.331);
+  --color-error-content: oklch(100% 0 0);
   --radius-selector: 1rem;
   --radius-field: 0.5rem;
   --radius-box: 1rem;
@@ -135,4 +135,16 @@
   font-weight: 400;
   font-size: 1.1rem;
   color: oklch(from var(--color-base-content) l c h / 0.7);
+}
+
+/* Solution markdown: code blocks (pre > code) — don’t style them like inline code.
+   Prose/DaisyUI apply to all code; here we reset block code and support MDEx .line divs. */
+.prose pre code {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  font-size: inherit;
+}
+.prose pre code .line {
+  display: block;
 }

@@ -52,24 +52,55 @@ end
 defmodule SeedData do
   def solution_attrs do
     [
-      # LiveView & Web
+      # LiveView & Web (first two include markdown code blocks for testing)
       solution(
-        "How do I implement pagination for a list of items in Phoenix LiveView without loading everything into memory?",
-        "Use LiveView streams with cursor-based pagination. Store the cursor (e.g. last id or inserted_at) in the socket, fetch the next page with a limit when the user scrolls near the bottom, and stream_insert the new items. Use phx-update=\"stream\" on the container and a hook or phx-click to load more.",
+        "Fly.io machines suspend and Oban jobs get stuck after wake — how do I fix it?",
+        """
+        The root cause is `auto_stop_machines = 'suspend'` in `fly.toml`. When Fly suspends, the VM state is frozen. When woken, Oban's producer still thinks old jobs are running (stored in memory).
+
+        **Fix:** Change `fly.toml` from:
+
+        ```toml
+        [app]
+        auto_stop_machines = 'suspend'
+        ```
+
+        to:
+
+        ```toml
+        [app]
+        auto_stop_machines = 'stop'
+        ```
+
+        With `'stop'`, the machine gets a clean shutdown signal so Oban can persist state. **Immediate recovery:** Restart the app with `fly apps restart`.
+        """,
         %{
           language: ["elixir"],
-          framework: ["phoenix", "liveview"],
-          domain: ["web"],
+          framework: ["phoenix"],
+          domain: ["deploy", "fly"],
           platform: ["backend"]
         }
       ),
       solution(
-        "How do I handle file uploads in Phoenix LiveView and store them in S3 or local disk?",
-        "Use Phoenix.LiveView.allow_upload/3 with :writer option pointing to a custom writer (e.g. S3). Validate file types and size in accept. On form submit, consume the uploads with consume_uploaded_entries and move to final storage. Use Phoenix.LiveView.HTMLEngine for progress.",
+        "How do I pass a JSON body from a Phoenix controller to a LiveView?",
+        """
+        Encode the data in the controller and pass it as a assign. Use **curly braces** in your JSON as usual — they render correctly in the solution.
+
+        In the controller:
+
+        ```json
+        {
+          "user_id": 123,
+          "filters": {"status": "active"}
+        }
+        ```
+
+        Decode with `Jason.decode!/1` and assign to the socket in the LiveView's mount. The LiveView receives the parsed map; no need to re-encode.
+        """,
         %{
           language: ["elixir"],
           framework: ["phoenix", "liveview"],
-          domain: ["web", "storage"],
+          domain: ["web", "api"],
           platform: ["backend"]
         }
       ),

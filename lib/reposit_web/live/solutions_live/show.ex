@@ -239,10 +239,7 @@ defmodule RepositWeb.SolutionsLive.Show do
             <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-4 block">
               Solution
             </span>
-            <div
-              class="prose prose-slate dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:text-base-content prose-p:text-base-content/80 prose-code:bg-base-200 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:before:content-none prose-code:after:content-none prose-pre:bg-neutral prose-pre:rounded-xl"
-              phx-no-curly-interpolation
-            >
+            <div class="prose max-w-none">
               {Phoenix.HTML.raw(@markdown_html)}
             </div>
           </div>
