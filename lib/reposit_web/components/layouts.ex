@@ -335,7 +335,7 @@ defmodule RepositWeb.Layouts do
     <!-- Bottom bar -->
         <div class="mt-10 pt-6 border-t border-base-300 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p class="text-sm text-base-content/50">
-            &copy; 2026 Reposit. Open source under Apache License 2.0.
+            &copy; 2026 Reposit
           </p>
           <span class="text-sm text-base-content/40">
             Built with Claude + Phoenix LiveView
