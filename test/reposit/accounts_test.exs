@@ -1,5 +1,5 @@
 defmodule Reposit.AccountsTest do
-  use Reposit.DataCase
+  use Reposit.DataCase, async: true
 
   alias Reposit.Accounts
 

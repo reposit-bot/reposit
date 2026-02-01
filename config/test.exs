@@ -36,6 +36,9 @@ config :logger, level: :error
 # Set to false or run with LIVE_EMBEDDINGS=true for integration tests
 config :reposit, :embeddings_stub, true
 
+# Run API token last_used_at update in process (no Task) so Ecto sandbox works
+config :reposit, :api_token_touch_async, false
+
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 

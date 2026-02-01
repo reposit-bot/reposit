@@ -1,5 +1,5 @@
 defmodule RepositWeb.Api.V1.HealthControllerTest do
-  use RepositWeb.ConnCase
+  use RepositWeb.ConnCase, async: true
 
   describe "GET /api/v1/health" do
     test "returns success with status ok", %{conn: conn} do

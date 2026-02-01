@@ -446,8 +446,13 @@ defmodule Reposit.Accounts do
       {:ok, query} ->
         case Repo.one(query) do
           {user, api_token} ->
-            # Update last_used_at asynchronously
-            Task.start(fn -> touch_api_token(api_token) end)
+            # Update last_used_at. Async in prod/dev (non-blocking)
+            if Application.get_env(:reposit, :api_token_touch_async, true) do
+              Task.start(fn -> touch_api_token(api_token) end)
+            else
+              touch_api_token(api_token)
+            end
+
             user
 
           nil ->
