@@ -558,6 +558,87 @@ defmodule Reposit.Solutions do
   end
 
   @doc """
+  Updates a solution if the user is the owner and within the 1-hour edit window.
+
+  ## Examples
+
+      {:ok, solution} = update_solution(scope, solution_id, %{problem: "...", solution: "..."})
+      {:error, :edit_window_expired} = update_solution(scope, old_solution_id, attrs)
+
+  """
+  @spec update_solution(Scope.t(), binary(), map()) ::
+          {:ok, Solution.t()}
+          | {:error,
+             :not_found
+             | :unauthorized
+             | :edit_window_expired
+             | :content_unsafe
+             | Ecto.Changeset.t()}
+  def update_solution(%Scope{user: %{id: user_id}}, solution_id, attrs) do
+    case Repo.get(Solution, solution_id) do
+      nil ->
+        {:error, :not_found}
+
+      %Solution{user_id: ^user_id} = solution ->
+        update_solution_as_owner(solution, attrs)
+
+      _solution ->
+        {:error, :unauthorized}
+    end
+  end
+
+  defp update_solution_as_owner(solution, attrs) do
+    if edit_window_expired?(solution) do
+      {:error, :edit_window_expired}
+    else
+      attrs = merge_optional_attrs_for_update(solution, attrs)
+
+      case check_content_safety(attrs) do
+        :ok ->
+          do_update_solution(solution, attrs)
+
+        {:error, :content_unsafe} = error ->
+          error
+      end
+    end
+  end
+
+  defp edit_window_expired?(solution) do
+    seconds_since_creation = DateTime.diff(DateTime.utc_now(), solution.inserted_at, :second)
+    seconds_since_creation > 3600
+  end
+
+  defp merge_optional_attrs_for_update(solution, attrs) do
+    # Form may only send problem/solution; preserve existing context_requirements and tags
+    attrs
+    |> Map.put_new("context_requirements", solution.context_requirements || %{})
+    |> Map.put_new("tags", solution.tags || %{})
+  end
+
+  defp do_update_solution(solution, attrs) do
+    changeset = Solution.update_changeset(solution, attrs)
+
+    if changeset.valid? do
+      text = build_embedding_text(attrs)
+
+      changeset_with_embedding =
+        case generate_embedding_for_solution(text, changeset) do
+          {:ok, cs} ->
+            cs
+
+          {:error, _reason} ->
+            require Logger
+            Logger.warning("Embedding generation failed on solution update")
+            changeset
+        end
+
+      Repo.update(changeset_with_embedding)
+    else
+      {:error, changeset}
+    end
+  end
+
+  @doc """
   Deletes a solution if the user is the owner.
 
   This is a hard delete that also removes all associated votes.

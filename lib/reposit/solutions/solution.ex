@@ -40,6 +40,23 @@ defmodule Reposit.Solutions.Solution do
     |> foreign_key_constraint(:user_id)
   end
 
+  @update_fields [:problem, :solution, :context_requirements, :tags]
+
+  @doc """
+  Changeset for updating an existing solution.
+
+  Only allows editing problem, solution, context_requirements, and tags.
+  Embedding is regenerated in the context on update.
+  """
+  def update_changeset(solution, attrs) do
+    solution
+    |> cast(attrs, @update_fields)
+    |> validate_required([:problem, :solution])
+    |> validate_length(:problem, min: 20)
+    |> validate_length(:solution, min: 50)
+    |> validate_tags()
+  end
+
   @doc """
   Changeset for updating vote counts. Only allows upvotes/downvotes to be updated.
   """

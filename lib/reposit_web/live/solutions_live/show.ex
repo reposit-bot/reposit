@@ -27,7 +27,10 @@ defmodule RepositWeb.SolutionsLive.Show do
          |> assign(:show_downvote_form, false)
          |> assign(:downvote_comment, "")
          |> assign(:downvote_reason, nil)
-         |> assign(:show_delete_confirm, false)}
+         |> assign(:show_delete_confirm, false)
+         |> assign(:editing, false)
+         |> assign(:form, nil)
+         |> assign(:saving, false)}
 
       {:error, :not_found} ->
         {:ok,
@@ -48,6 +51,11 @@ defmodule RepositWeb.SolutionsLive.Show do
     do: user_id == solution_user_id
 
   defp can_vote?(scope, solution), do: logged_in?(scope) and not is_author?(scope, solution)
+
+  defp can_edit?(scope, solution) do
+    is_author?(scope, solution) and
+      DateTime.diff(DateTime.utc_now(), solution.inserted_at, :second) <= 3600
+  end
 
   defp author_display_name(%{name: name}) when is_binary(name) and name != "", do: name
   defp author_display_name(_), do: "Contributor"
@@ -92,156 +100,195 @@ defmodule RepositWeb.SolutionsLive.Show do
         
     <!-- Main content card -->
         <div class="card card-bordered bg-base-100 p-6 lg:p-8">
-          <!-- Problem section -->
-          <div class="mb-8">
-            <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-3 block">
-              Problem
-            </span>
-            <p class="text-base-content text-lg leading-relaxed">
-              {@solution.problem}
-            </p>
-            <div :if={@solution.user} class="mt-3 flex items-center gap-2">
-              <span class="text-sm text-base-content/60">Shared by</span>
-              <.link
-                href={~p"/u/#{@solution.user.id}"}
-                class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-              >
-                <img
-                  :if={@solution.user.avatar_url}
-                  src={@solution.user.avatar_url}
-                  alt=""
-                  class="w-5 h-5 rounded-full object-cover"
+          <%= if @editing do %>
+            <.form
+              for={@form}
+              id="solution-edit-form"
+              phx-change="validate"
+              phx-submit="save"
+              class="space-y-6"
+            >
+              <div>
+                <label class="label">
+                  <span class="label-text font-medium">Problem</span>
+                </label>
+                <.input
+                  field={@form[:problem]}
+                  type="textarea"
+                  class="textarea textarea-bordered w-full min-h-24"
                 />
-                <span>{author_display_name(@solution.user)}</span>
-              </.link>
-            </div>
-          </div>
-          
-    <!-- Vote stats with interactive buttons -->
-          <div class="flex flex-wrap items-center gap-4 sm:gap-6 py-4 px-4 sm:px-5 rounded-2xl bg-base-200 mb-8">
-            <!-- Upvote button -->
-            <button
-              :if={can_vote?(@current_scope, @solution)}
-              phx-click="upvote"
-              disabled={@voting}
-              class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :up, do: "bg-success/15 ring-2 ring-success", else: "hover:bg-success/10"}"}
-            >
-              <Lucideicons.arrow_up class={"w-5 h-5 #{if @user_vote == :up, do: "text-success", else: "text-success/70"}"} />
-              <span class="mono font-semibold text-success">{@solution.upvotes}</span>
-            </button>
-            <!-- Static upvote display for logged out users or authors -->
-            <div :if={!can_vote?(@current_scope, @solution)} class="flex items-center gap-2">
-              <Lucideicons.arrow_up class="w-4 h-4 sm:w-5 sm:h-5 text-success" />
-              <span class="mono font-semibold text-success">{@solution.upvotes}</span>
-              <span class="text-xs text-base-content/60">upvotes</span>
-            </div>
-            
-    <!-- Downvote button -->
-            <button
-              :if={can_vote?(@current_scope, @solution)}
-              phx-click="show-downvote-form"
-              disabled={@voting}
-              class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :down, do: "bg-error/15 ring-2 ring-error", else: "hover:bg-error/10"}"}
-            >
-              <Lucideicons.arrow_down class={"w-5 h-5 #{if @user_vote == :down, do: "text-error", else: "text-error/70"}"} />
-              <span class="mono font-semibold text-error">{@solution.downvotes}</span>
-            </button>
-            <!-- Static downvote display for logged out users or authors -->
-            <div :if={!can_vote?(@current_scope, @solution)} class="flex items-center gap-2">
-              <Lucideicons.arrow_down class="w-4 h-4 sm:w-5 sm:h-5 text-error" />
-              <span class="mono font-semibold text-error">{@solution.downvotes}</span>
-              <span class="text-xs text-base-content/60">downvotes</span>
-            </div>
-
-            <div class="hidden sm:block h-6 w-px bg-base-300"></div>
-
-            <div class="flex items-center gap-2">
-              <span class={"mono text-lg sm:text-xl font-bold #{score_color(@score)}"}>
-                {if @score >= 0, do: "+", else: ""}{@score}
+              </div>
+              <div>
+                <label class="label">
+                  <span class="label-text font-medium">Solution</span>
+                </label>
+                <.input
+                  field={@form[:solution]}
+                  type="textarea"
+                  class="textarea textarea-bordered w-full min-h-48"
+                />
+              </div>
+              <div class="flex gap-3">
+                <button type="button" phx-click="cancel-edit" class="btn btn-ghost">
+                  Cancel
+                </button>
+                <button type="submit" class="btn btn-primary" disabled={@saving}>
+                  {if @saving, do: "Saving...", else: "Save"}
+                </button>
+              </div>
+            </.form>
+          <% else %>
+            <!-- Problem section -->
+            <div class="mb-8">
+              <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-3 block">
+                Problem
               </span>
-              <span class="text-xs text-base-content/60">score</span>
+              <p class="text-base-content text-lg leading-relaxed">
+                {@solution.problem}
+              </p>
+              <div :if={@solution.user} class="mt-3 flex items-center gap-2">
+                <span class="text-sm text-base-content/60">Shared by</span>
+                <.link
+                  href={~p"/u/#{@solution.user.id}"}
+                  class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                >
+                  <img
+                    :if={@solution.user.avatar_url}
+                    src={@solution.user.avatar_url}
+                    alt=""
+                    class="w-5 h-5 rounded-full object-cover"
+                  />
+                  <span>{author_display_name(@solution.user)}</span>
+                </.link>
+              </div>
             </div>
             
+    <!-- Vote stats with interactive buttons -->
+            <div class="flex flex-wrap items-center gap-4 sm:gap-6 py-4 px-4 sm:px-5 rounded-2xl bg-base-200 mb-8">
+              <!-- Upvote button -->
+              <button
+                :if={can_vote?(@current_scope, @solution)}
+                phx-click="upvote"
+                disabled={@voting}
+                class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :up, do: "bg-success/15 ring-2 ring-success", else: "hover:bg-success/10"}"}
+              >
+                <Lucideicons.arrow_up class={"w-5 h-5 #{if @user_vote == :up, do: "text-success", else: "text-success/70"}"} />
+                <span class="mono font-semibold text-success">{@solution.upvotes}</span>
+              </button>
+              <!-- Static upvote display for logged out users or authors -->
+              <div :if={!can_vote?(@current_scope, @solution)} class="flex items-center gap-2">
+                <Lucideicons.arrow_up class="w-4 h-4 sm:w-5 sm:h-5 text-success" />
+                <span class="mono font-semibold text-success">{@solution.upvotes}</span>
+                <span class="text-xs text-base-content/60">upvotes</span>
+              </div>
+              
+    <!-- Downvote button -->
+              <button
+                :if={can_vote?(@current_scope, @solution)}
+                phx-click="show-downvote-form"
+                disabled={@voting}
+                class={"flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all #{if @user_vote == :down, do: "bg-error/15 ring-2 ring-error", else: "hover:bg-error/10"}"}
+              >
+                <Lucideicons.arrow_down class={"w-5 h-5 #{if @user_vote == :down, do: "text-error", else: "text-error/70"}"} />
+                <span class="mono font-semibold text-error">{@solution.downvotes}</span>
+              </button>
+              <!-- Static downvote display for logged out users or authors -->
+              <div :if={!can_vote?(@current_scope, @solution)} class="flex items-center gap-2">
+                <Lucideicons.arrow_down class="w-4 h-4 sm:w-5 sm:h-5 text-error" />
+                <span class="mono font-semibold text-error">{@solution.downvotes}</span>
+                <span class="text-xs text-base-content/60">downvotes</span>
+              </div>
+
+              <div class="hidden sm:block h-6 w-px bg-base-300"></div>
+
+              <div class="flex items-center gap-2">
+                <span class={"mono text-lg sm:text-xl font-bold #{score_color(@score)}"}>
+                  {if @score >= 0, do: "+", else: ""}{@score}
+                </span>
+                <span class="text-xs text-base-content/60">score</span>
+              </div>
+              
     <!-- Login prompt for guests -->
-            <div :if={!logged_in?(@current_scope)} class="text-xs text-base-content/60">
-              <a href={~p"/users/log-in"} class="text-primary hover:underline">Log in</a> to vote
+              <div :if={!logged_in?(@current_scope)} class="text-xs text-base-content/60">
+                <a href={~p"/users/log-in"} class="text-primary hover:underline">Log in</a> to vote
+              </div>
+              
+    <!-- Remove vote button -->
+              <button
+                :if={can_vote?(@current_scope, @solution) && @user_vote}
+                phx-click="remove-vote"
+                disabled={@voting}
+                class="text-xs text-base-content/60 hover:text-error transition-colors"
+              >
+                Remove vote
+              </button>
             </div>
             
-    <!-- Remove vote button -->
-            <button
-              :if={can_vote?(@current_scope, @solution) && @user_vote}
-              phx-click="remove-vote"
-              disabled={@voting}
-              class="text-xs text-base-content/60 hover:text-error transition-colors"
-            >
-              Remove vote
-            </button>
-          </div>
-          
     <!-- Downvote form modal -->
-          <div
-            :if={@show_downvote_form}
-            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
-            phx-click="cancel-downvote"
-          >
             <div
-              class="bg-base-100 rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl"
-              phx-click-away="cancel-downvote"
-              phx-click={%JS{}}
+              :if={@show_downvote_form}
+              class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
+              phx-click="cancel-downvote"
             >
-              <h3 class="text-lg font-semibold mb-4">Why are you downvoting?</h3>
-              <form phx-submit="downvote" class="space-y-4">
-                <div>
-                  <label class="label">
-                    <span class="label-text">Reason</span>
-                  </label>
-                  <select
-                    name="reason"
-                    class="select select-bordered w-full"
-                    required
-                  >
-                    <option value="">Select a reason...</option>
-                    <option value="incorrect">Incorrect - Contains errors</option>
-                    <option value="outdated">Outdated - No longer relevant</option>
-                    <option value="incomplete">Incomplete - Missing key info</option>
-                    <option value="harmful">Harmful - Could cause issues</option>
-                    <option value="duplicate">Duplicate - Already exists</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="label">
-                    <span class="label-text">Comment (min 10 characters)</span>
-                  </label>
-                  <textarea
-                    name="comment"
-                    class="textarea textarea-bordered w-full h-24"
-                    placeholder="Explain why this solution should be downvoted..."
-                    required
-                    minlength="10"
-                  ></textarea>
-                </div>
-                <div class="flex gap-3 justify-end">
-                  <button type="button" phx-click="cancel-downvote" class="btn btn-ghost">
-                    Cancel
-                  </button>
-                  <button type="submit" class="btn btn-error" disabled={@voting}>
-                    {if @voting, do: "Submitting...", else: "Submit Downvote"}
-                  </button>
-                </div>
-              </form>
+              <div
+                class="bg-base-100 rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl"
+                phx-click-away="cancel-downvote"
+                phx-click={%JS{}}
+              >
+                <h3 class="text-lg font-semibold mb-4">Why are you downvoting?</h3>
+                <form phx-submit="downvote" class="space-y-4">
+                  <div>
+                    <label class="label">
+                      <span class="label-text">Reason</span>
+                    </label>
+                    <select
+                      name="reason"
+                      class="select select-bordered w-full"
+                      required
+                    >
+                      <option value="">Select a reason...</option>
+                      <option value="incorrect">Incorrect - Contains errors</option>
+                      <option value="outdated">Outdated - No longer relevant</option>
+                      <option value="incomplete">Incomplete - Missing key info</option>
+                      <option value="harmful">Harmful - Could cause issues</option>
+                      <option value="duplicate">Duplicate - Already exists</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="label">
+                      <span class="label-text">Comment (min 10 characters)</span>
+                    </label>
+                    <textarea
+                      name="comment"
+                      class="textarea textarea-bordered w-full h-24"
+                      placeholder="Explain why this solution should be downvoted..."
+                      required
+                      minlength="10"
+                    ></textarea>
+                  </div>
+                  <div class="flex gap-3 justify-end">
+                    <button type="button" phx-click="cancel-downvote" class="btn btn-ghost">
+                      Cancel
+                    </button>
+                    <button type="submit" class="btn btn-error" disabled={@voting}>
+                      {if @voting, do: "Submitting...", else: "Submit Downvote"}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
-          </div>
-          
+            
     <!-- Solution section -->
-          <div>
-            <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-4 block">
-              Solution
-            </span>
-            <div class="prose max-w-none">
-              {Phoenix.HTML.raw(@markdown_html)}
+            <div>
+              <span class="text-xs font-semibold uppercase tracking-wider text-base-content/60 mb-4 block">
+                Solution
+              </span>
+              <div class="prose max-w-none">
+                {Phoenix.HTML.raw(@markdown_html)}
+              </div>
             </div>
-          </div>
+          <% end %>
           
     <!-- Tags by category -->
           <.tags_by_category tags={@solution.tags} />
@@ -250,20 +297,28 @@ defmodule RepositWeb.SolutionsLive.Show do
           <.vote_comments votes={@solution.votes} />
           
     <!-- Metadata footer -->
-          <div class="mt-8 pt-6 border-t border-base-300 flex flex-wrap items-center gap-4 text-xs text-base-content/60">
+          <div class="mt-8 pt-6 border-t border-base-300 flex flex-wrap items-center gap-1 text-xs text-base-content/60">
             <span>Created {format_date(@solution.inserted_at)}</span>
-            <span :if={@solution.updated_at != @solution.inserted_at}>
+            <span :if={@solution.updated_at != @solution.inserted_at} class="">
               · Updated {format_date(@solution.updated_at)}
             </span>
-            
-    <!-- Delete button for author -->
-            <button
-              :if={is_author?(@current_scope, @solution)}
-              phx-click="show-delete-confirm"
-              class="ml-auto btn btn-ghost btn-xs text-error hover:bg-error/10"
-            >
-              <Lucideicons.trash_2 class="w-4 h-4" /> Delete
-            </button>
+            <div class="ml-auto flex items-center gap-2">
+              <button
+                :if={can_edit?(@current_scope, @solution) && !@editing}
+                phx-click="edit-solution"
+                type="button"
+                class="btn btn-ghost btn-xs"
+              >
+                <.icon name="pencil" class="w-4 h-4" /> Edit
+              </button>
+              <button
+                :if={is_author?(@current_scope, @solution)}
+                phx-click="show-delete-confirm"
+                class="btn btn-ghost btn-xs text-error hover:bg-error/10"
+              >
+                <Lucideicons.trash_2 class="w-4 h-4" /> Delete
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -340,6 +395,99 @@ defmodule RepositWeb.SolutionsLive.Show do
 
   def handle_event("cancel-delete", _params, socket) do
     {:noreply, assign(socket, :show_delete_confirm, false)}
+  end
+
+  def handle_event("edit-solution", _params, socket) do
+    solution = socket.assigns.solution
+
+    changeset =
+      Solution.update_changeset(solution, %{
+        problem: solution.problem,
+        solution: solution.solution,
+        context_requirements: solution.context_requirements || %{},
+        tags: solution.tags || %{}
+      })
+
+    {:noreply,
+     socket
+     |> assign(:editing, true)
+     |> assign(:form, to_form(changeset))}
+  end
+
+  def handle_event("cancel-edit", _params, socket) do
+    {:noreply,
+     socket
+     |> assign(:editing, false)
+     |> assign(:form, nil)}
+  end
+
+  def handle_event("validate", %{"solution" => params}, socket) do
+    solution = socket.assigns.solution
+    changeset = Solution.update_changeset(solution, params)
+
+    {:noreply,
+     socket
+     |> assign(:form, to_form(changeset))}
+  end
+
+  def handle_event("save", %{"solution" => params}, socket) do
+    scope = socket.assigns.current_scope
+    solution = socket.assigns.solution
+
+    socket = assign(socket, :saving, true)
+
+    case Solutions.update_solution(scope, solution.id, params) do
+      {:ok, _updated_solution} ->
+        {:ok, updated_solution} = Solutions.get_solution_with_votes(solution.id, votes_limit: 10)
+
+        {:noreply,
+         socket
+         |> assign(:solution, updated_solution)
+         |> assign(:markdown_html, render_markdown(updated_solution.solution))
+         |> assign(:editing, false)
+         |> assign(:form, nil)
+         |> assign(:saving, false)
+         |> put_flash(:info, "Solution updated.")}
+
+      {:error, :unauthorized} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "You can only edit your own solutions.")
+         |> assign(:editing, false)
+         |> assign(:form, nil)
+         |> assign(:saving, false)}
+
+      {:error, :not_found} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Solution not found.")
+         |> assign(:editing, false)
+         |> assign(:form, nil)
+         |> assign(:saving, false)}
+
+      {:error, :edit_window_expired} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Editing is only allowed within 1 hour of creation.")
+         |> assign(:editing, false)
+         |> assign(:form, nil)
+         |> assign(:saving, false)}
+
+      {:error, :content_unsafe} ->
+        {:noreply,
+         socket
+         |> put_flash(
+           :error,
+           "Content contains potentially unsafe patterns. Please revise and try again."
+         )
+         |> assign(:saving, false)}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply,
+         socket
+         |> assign(:form, to_form(changeset))
+         |> assign(:saving, false)}
+    end
   end
 
   def handle_event("remove-vote", _params, socket) do
