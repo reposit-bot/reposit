@@ -537,6 +537,37 @@ defmodule Reposit.AccountsTest do
       assert {:error, changeset} = Accounts.link_google_account(user, auth_info)
       assert {"has already been taken", _} = changeset.errors[:google_uid]
     end
+
+    test "preserves existing display name when linking" do
+      user =
+        user_fixture()
+        |> Ecto.Changeset.change(name: "Custom Name")
+        |> Repo.update!()
+
+      auth_info = %{
+        uid: "google_link_123",
+        name: "OAuth Name",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, updated_user} = Accounts.link_google_account(user, auth_info)
+      assert updated_user.name == "Custom Name"
+      assert updated_user.google_uid == "google_link_123"
+    end
+
+    test "sets name from OAuth when user name is empty" do
+      user = user_fixture()
+
+      auth_info = %{
+        uid: "google_link_123",
+        name: "OAuth Name",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, updated_user} = Accounts.link_google_account(user, auth_info)
+      assert updated_user.name == "OAuth Name"
+      assert updated_user.google_uid == "google_link_123"
+    end
   end
 
   describe "link_github_account/2" do
@@ -565,6 +596,37 @@ defmodule Reposit.AccountsTest do
 
       assert {:error, changeset} = Accounts.link_github_account(user, auth_info)
       assert {"has already been taken", _} = changeset.errors[:github_uid]
+    end
+
+    test "preserves existing display name when linking" do
+      user =
+        user_fixture()
+        |> Ecto.Changeset.change(name: "Custom Name")
+        |> Repo.update!()
+
+      auth_info = %{
+        uid: 456_789,
+        name: "OAuth Name",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, updated_user} = Accounts.link_github_account(user, auth_info)
+      assert updated_user.name == "Custom Name"
+      assert updated_user.github_uid == 456_789
+    end
+
+    test "sets name from OAuth when user name is empty" do
+      user = user_fixture()
+
+      auth_info = %{
+        uid: 456_789,
+        name: "OAuth Name",
+        avatar_url: "https://example.com/avatar.jpg"
+      }
+
+      assert {:ok, updated_user} = Accounts.link_github_account(user, auth_info)
+      assert updated_user.name == "OAuth Name"
+      assert updated_user.github_uid == 456_789
     end
   end
 

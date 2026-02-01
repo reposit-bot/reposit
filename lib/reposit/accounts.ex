@@ -500,10 +500,15 @@ defmodule Reposit.Accounts do
     end
   end
 
+  defp oauth_name_for_existing_user(user, auth_info) do
+    existing = user.name && String.trim(user.name)
+    if existing != nil and existing != "", do: user.name, else: auth_info[:name]
+  end
+
   defp link_google_and_confirm(user, auth_info) do
     attrs = %{
       google_uid: auth_info.uid,
-      name: auth_info[:name] || user.name,
+      name: oauth_name_for_existing_user(user, auth_info),
       avatar_url: auth_info[:avatar_url] || user.avatar_url
     }
 
@@ -566,7 +571,7 @@ defmodule Reposit.Accounts do
   defp link_github_and_confirm(user, auth_info) do
     attrs = %{
       github_uid: auth_info.uid,
-      name: auth_info[:name] || user.name,
+      name: oauth_name_for_existing_user(user, auth_info),
       avatar_url: auth_info[:avatar_url] || user.avatar_url
     }
 
@@ -604,7 +609,7 @@ defmodule Reposit.Accounts do
   def link_google_account(%User{} = user, auth_info) do
     attrs = %{
       google_uid: auth_info.uid,
-      name: auth_info[:name] || user.name,
+      name: oauth_name_for_existing_user(user, auth_info),
       avatar_url: auth_info[:avatar_url] || user.avatar_url
     }
 
@@ -621,7 +626,7 @@ defmodule Reposit.Accounts do
   def link_github_account(%User{} = user, auth_info) do
     attrs = %{
       github_uid: auth_info.uid,
-      name: auth_info[:name] || user.name,
+      name: oauth_name_for_existing_user(user, auth_info),
       avatar_url: auth_info[:avatar_url] || user.avatar_url
     }
 

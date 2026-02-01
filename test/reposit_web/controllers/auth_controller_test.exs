@@ -113,6 +113,52 @@ defmodule RepositWeb.AuthControllerTest do
       updated_user = Reposit.Accounts.get_user!(existing_user.id)
       assert updated_user.google_uid == "google_link_123"
     end
+
+    test "preserves custom display name when linking Google to existing user by email", %{
+      conn: conn
+    } do
+      existing_user =
+        user_fixture()
+        |> Ecto.Changeset.change(name: "Custom Name")
+        |> Reposit.Repo.update!()
+
+      auth =
+        build_ueberauth_auth(:google, "google_link_456", existing_user.email, "OAuth Name")
+
+      conn =
+        conn
+        |> assign(:ueberauth_auth, auth)
+        |> get(~p"/auth/google/callback")
+
+      assert redirected_to(conn) == ~p"/users/settings"
+
+      updated_user = Reposit.Accounts.get_user!(existing_user.id)
+      assert updated_user.name == "Custom Name"
+      assert updated_user.google_uid == "google_link_456"
+    end
+
+    test "preserves custom display name when linking GitHub to existing user by email", %{
+      conn: conn
+    } do
+      existing_user =
+        user_fixture()
+        |> Ecto.Changeset.change(name: "Custom Name")
+        |> Reposit.Repo.update!()
+
+      auth =
+        build_ueberauth_auth(:github, 456_789, existing_user.email, "OAuth Name")
+
+      conn =
+        conn
+        |> assign(:ueberauth_auth, auth)
+        |> get(~p"/auth/github/callback")
+
+      assert redirected_to(conn) == ~p"/users/settings"
+
+      updated_user = Reposit.Accounts.get_user!(existing_user.id)
+      assert updated_user.name == "Custom Name"
+      assert updated_user.github_uid == 456_789
+    end
   end
 
   describe "callback/2 when user is already logged in (account linking)" do
@@ -148,6 +194,52 @@ defmodule RepositWeb.AuthControllerTest do
 
       updated_user = Reposit.Accounts.get_user!(user.id)
       assert updated_user.github_uid == 345_678
+    end
+
+    test "preserves custom display name when linking Google to logged-in user", %{
+      conn: conn,
+      user: user
+    } do
+      user
+      |> Ecto.Changeset.change(name: "My Profile Name")
+      |> Reposit.Repo.update!()
+
+      auth =
+        build_ueberauth_auth(:google, "google_link_new", "different@example.com", "OAuth Name")
+
+      conn =
+        conn
+        |> assign(:ueberauth_auth, auth)
+        |> get(~p"/auth/google/callback")
+
+      assert redirected_to(conn) == ~p"/users/settings"
+
+      updated_user = Reposit.Accounts.get_user!(user.id)
+      assert updated_user.name == "My Profile Name"
+      assert updated_user.google_uid == "google_link_new"
+    end
+
+    test "preserves custom display name when linking GitHub to logged-in user", %{
+      conn: conn,
+      user: user
+    } do
+      user
+      |> Ecto.Changeset.change(name: "My Profile Name")
+      |> Reposit.Repo.update!()
+
+      auth =
+        build_ueberauth_auth(:github, 345_679, "different@example.com", "OAuth Name")
+
+      conn =
+        conn
+        |> assign(:ueberauth_auth, auth)
+        |> get(~p"/auth/github/callback")
+
+      assert redirected_to(conn) == ~p"/users/settings"
+
+      updated_user = Reposit.Accounts.get_user!(user.id)
+      assert updated_user.name == "My Profile Name"
+      assert updated_user.github_uid == 345_679
     end
 
     test "shows error when OAuth account is already linked to another user", %{conn: conn} do

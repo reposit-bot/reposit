@@ -246,6 +246,63 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
       assert hd(solutions)["tags"]["language"] == ["elixir"]
     end
 
+    test "filters by flat tags parameter (MCP format)", %{conn: conn, owner_scope: scope} do
+      {:ok, _s1} =
+        Solutions.create_solution(scope, %{
+          problem: "How to implement binary search in Elixir",
+          solution: @valid_attrs["solution"],
+          tags: %{language: ["elixir"], framework: ["phoenix"]}
+        })
+
+      {:ok, _s2} =
+        Solutions.create_solution(scope, %{
+          problem: "How to implement binary search in Python",
+          solution: @valid_attrs["solution"],
+          tags: %{language: ["python"], framework: ["django"]}
+        })
+
+      # Flat tags match any category - "elixir" matches language, "phoenix" matches framework
+      conn = get(conn, ~p"/api/v1/solutions/search?q=binary+search&tags=elixir,phoenix")
+
+      assert %{
+               "data" => %{
+                 "solutions" => solutions
+               }
+             } = json_response(conn, 200)
+
+      assert length(solutions) == 1
+      assert hd(solutions)["tags"]["language"] == ["elixir"]
+      assert hd(solutions)["tags"]["framework"] == ["phoenix"]
+    end
+
+    test "flat tags match value in any category", %{conn: conn, owner_scope: scope} do
+      {:ok, _s1} =
+        Solutions.create_solution(scope, %{
+          problem: "How to implement caching in web apps",
+          solution: @valid_attrs["solution"],
+          tags: %{domain: ["caching"], platform: ["backend"]}
+        })
+
+      {:ok, _s2} =
+        Solutions.create_solution(scope, %{
+          problem: "How to implement logging in web apps",
+          solution: @valid_attrs["solution"],
+          tags: %{domain: ["logging"], platform: ["backend"]}
+        })
+
+      # "caching" is in domain category - flat tags should find it
+      conn = get(conn, ~p"/api/v1/solutions/search?q=web+apps&tags=caching")
+
+      assert %{
+               "data" => %{
+                 "solutions" => solutions
+               }
+             } = json_response(conn, 200)
+
+      assert length(solutions) == 1
+      assert hd(solutions)["tags"]["domain"] == ["caching"]
+    end
+
     test "sorts by sort parameter", %{conn: conn, owner_scope: scope} do
       {:ok, _} =
         Solutions.create_solution(scope, atomize_keys(@valid_attrs))
