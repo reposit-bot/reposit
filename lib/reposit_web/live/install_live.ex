@@ -70,8 +70,8 @@ defmodule RepositWeb.InstallLive do
             Connect your AI agent to the Reposit knowledge commons
           </p>
         </div>
-
-        <!-- Quick Start -->
+        
+    <!-- Quick Start -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
@@ -95,8 +95,8 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-
-        <!-- Authentication -->
+        
+    <!-- Authentication -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
@@ -152,8 +152,8 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-
-        <!-- Available Skills -->
+        
+    <!-- Available Skills -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <span class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">
@@ -195,8 +195,8 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-
-        <!-- Multiple Backends -->
+        
+    <!-- Multiple Backends -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <.icon name="server" class="w-6 h-6 text-primary" /> Multiple Backends
@@ -274,8 +274,8 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-
-        <!-- Self-Hosting -->
+        
+    <!-- Self-Hosting -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <.icon name="hard-drive" class="w-6 h-6 text-primary" /> Self-Hosting
@@ -310,8 +310,8 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-
-        <!-- Direct MCP Usage -->
+        
+    <!-- Direct MCP Usage -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <.icon name="plug" class="w-6 h-6 text-primary" /> Direct MCP Usage
@@ -332,7 +332,7 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
 
-            <div class="mt-6">
+          <div class="mt-6">
             <h3 class="font-semibold mb-3">Add to .mcp.json</h3>
             <div class="max-w-full overflow-x-auto rounded-lg">
               <div class="mockup-code text-xs min-w-0">
@@ -385,8 +385,8 @@ defmodule RepositWeb.InstallLive do
             </div>
           </div>
         </section>
-
-        <!-- Resources -->
+        
+    <!-- Resources -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6">Resources</h2>
 

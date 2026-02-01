@@ -27,7 +27,9 @@ defmodule RepositWeb.UserLive do
              |> redirect(to: ~p"/solutions")}
 
           user ->
-            solutions = Solutions.list_solutions_by_user(user_id, limit: @per_page, order_by: :inserted_at)
+            solutions =
+              Solutions.list_solutions_by_user(user_id, limit: @per_page, order_by: :inserted_at)
+
             count = Solutions.count_solutions_by_user(user_id)
 
             {:ok,
@@ -71,7 +73,10 @@ defmodule RepositWeb.UserLive do
                 class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover ring-2 ring-base-300"
               />
             </div>
-            <div :if={!@user.avatar_url} class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-base-200 flex items-center justify-center">
+            <div
+              :if={!@user.avatar_url}
+              class="flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-base-200 flex items-center justify-center"
+            >
               <.icon name="user" class="w-8 h-8 sm:w-10 sm:h-10 text-base-content/40" />
             </div>
             <div class="min-w-0">
@@ -91,7 +96,10 @@ defmodule RepositWeb.UserLive do
               <p class="text-base-content/60">No solutions yet</p>
             </div>
           </div>
-          <div :if={@solution_count > 0} class="card card-bordered bg-base-100 divide-y divide-base-300">
+          <div
+            :if={@solution_count > 0}
+            class="card card-bordered bg-base-100 divide-y divide-base-300"
+          >
             <.solution_row
               :for={solution <- @solutions}
               solution={solution}

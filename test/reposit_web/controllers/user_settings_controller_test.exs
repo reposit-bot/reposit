@@ -19,7 +19,7 @@ defmodule RepositWeb.UserSettingsControllerTest do
       assert redirected_to(conn) == ~p"/users/log-in"
     end
 
-    @tag token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -11, :minute)
+    @tag token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -61, :minute)
     test "redirects if user is not in sudo mode", %{conn: conn} do
       conn = get(conn, ~p"/users/settings")
       assert redirected_to(conn) == ~p"/users/log-in"

@@ -155,7 +155,7 @@ defmodule RepositWeb.Layouts do
       <div class="page-bg"></div>
 
       <header class="relative z-50 px-6 py-6 lg:px-12 border-b border-base-300">
-        <.navbar current_scope={@current_scope} max_width="max-w-7xl" />
+        <.navbar current_scope={@current_scope} />
       </header>
 
       <main class="relative z-10 flex-1 px-6 py-10 lg:px-12">
