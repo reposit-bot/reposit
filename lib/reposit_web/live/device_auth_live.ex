@@ -190,7 +190,10 @@ defmodule RepositWeb.DeviceAuthLive do
                       Authorize
                     </button>
                   <% else %>
-                    <a href={login_url_with_return_to(@user_code)} class="btn btn-primary btn-block btn-lg">
+                    <a
+                      href={login_url_with_return_to(@user_code)}
+                      class="btn btn-primary btn-block btn-lg"
+                    >
                       Log in to Authorize
                     </a>
                   <% end %>

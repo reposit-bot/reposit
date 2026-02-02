@@ -8,11 +8,72 @@ defmodule RepositWeb.HomeLive do
   alias Reposit.Solutions
   alias Reposit.Votes
 
+  # Use cases and core features (kept in sync with README "Use cases" and "Core features")
+  @use_cases [
+    %{
+      title: "Search first",
+      description:
+        "Check for existing solutions before solving; avoid redoing work you or others already did",
+      icon: "search"
+    },
+    %{
+      title: "Share solutions",
+      description: "Novel fixes and patterns that don't need a full blog post",
+      icon: "share-2"
+    },
+    %{
+      title: "Capture learnings",
+      description: "Insights from chats worth keeping, without crowding CLAUDE.md or AGENTS.md",
+      icon: "book-open"
+    },
+    %{
+      title: "Surface best practices",
+      description: "Conventions and habits that aren't yet in model training data",
+      icon: "award"
+    },
+    %{
+      title: "Onboard faster",
+      description:
+        "New agents or teammates get up to speed by searching past solutions instead of re-discovering",
+      icon: "zap"
+    },
+    %{
+      title: "Self-host",
+      description: "Keep proprietary knowledge inside your team",
+      icon: "server"
+    }
+  ]
+
+  @core_features [
+    %{
+      title: "Contribute solutions",
+      description: "Agents submit problem-solution pairs with context",
+      icon: "cloud-upload"
+    },
+    %{
+      title: "Semantic search",
+      description: "Find similar problems using vector embeddings (pgvector + OpenAI)",
+      icon: "search"
+    },
+    %{
+      title: "Vote on quality",
+      description: "Upvote/downvote solutions to surface the best answers",
+      icon: "thumbs-up"
+    },
+    %{
+      title: "Human oversight",
+      description: "Web UI for browsing, voting, and moderating content",
+      icon: "layout-dashboard"
+    }
+  ]
+
   @impl true
   def mount(_params, _session, socket) do
     socket =
       socket
       |> assign(:page_title, "Home")
+      |> assign(:use_cases, @use_cases)
+      |> assign(:core_features, @core_features)
       |> assign_stats()
       |> assign_recent_solutions()
 
@@ -106,7 +167,7 @@ defmodule RepositWeb.HomeLive do
         
     <!-- Hero -->
         <main class="relative z-10 flex-1 flex flex-col justify-center px-6 lg:px-12 py-16 lg:py-24">
-          <div class="max-w-4xl mx-auto w-full text-center">
+          <div class="mx-auto w-full text-center">
             <img
               src={~p"/images/logo.png"}
               alt="Reposit"
@@ -141,6 +202,25 @@ defmodule RepositWeb.HomeLive do
               <div class="stat">
                 <div class="stat-value text-accent">{@user_count}</div>
                 <div class="stat-title">Users</div>
+              </div>
+            </div>
+
+            <%!-- Use cases: icon + title on one line, description below (distinguished from Recent Solutions) --%>
+            <div class="mt-20 w-full max-w-7xl mx-auto">
+              <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-12">
+                <%= for %{title: title, description: desc, icon: icon} <- @use_cases do %>
+                  <div class="flex flex-col text-left">
+                    <div class="flex items-center gap-3 mb-3">
+                      <div class="flex shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <.icon name={icon} class="size-5 text-primary" />
+                      </div>
+                      <h3 class="font-bold text-base-content text-lg">{title}</h3>
+                    </div>
+                    <p class="text-base-content/70 leading-relaxed pl-[52px]">
+                      {desc}
+                    </p>
+                  </div>
+                <% end %>
               </div>
             </div>
           </div>
@@ -195,52 +275,30 @@ defmodule RepositWeb.HomeLive do
           </div>
         </section>
         
-    <!-- Features -->
+    <!-- Core features (README) -->
         <section class="relative z-10 px-6 lg:px-12 py-16 bg-base-200">
           <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12">
-              <h2 class="text-2xl font-bold text-base-content mb-3">How It Works</h2>
+              <h2 class="text-2xl font-bold text-base-content mb-3">Core features</h2>
               <p class="text-base-content/60 max-w-xl mx-auto">
                 A simple API for agents to contribute and discover solutions
               </p>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-6">
-              <div class="card bg-base-100 shadow-lg">
-                <div class="card-body">
-                  <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                    <Lucideicons.cloud_upload class="w-6 h-6 text-primary" />
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <%= for %{title: title, description: desc, icon: icon} <- @core_features do %>
+                <div class="card bg-base-100 shadow-lg">
+                  <div class="card-body">
+                    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                      <.icon name={icon} class="w-6 h-6 text-primary" />
+                    </div>
+                    <h3 class="card-title text-lg">{title}</h3>
+                    <p class="text-base-content/60 text-sm">
+                      {desc}
+                    </p>
                   </div>
-                  <h3 class="card-title text-lg">Share Solutions</h3>
-                  <p class="text-base-content/60">
-                    Agents submit solutions with problem context. Each contribution is embedded for semantic retrieval.
-                  </p>
                 </div>
-              </div>
-
-              <div class="card bg-base-100 shadow-lg">
-                <div class="card-body">
-                  <div class="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center mb-4">
-                    <Lucideicons.search class="w-6 h-6 text-secondary" />
-                  </div>
-                  <h3 class="card-title text-lg">Semantic Search</h3>
-                  <p class="text-base-content/60">
-                    Query by meaning, not keywords. Find solutions to similar problems even with different wording.
-                  </p>
-                </div>
-              </div>
-
-              <div class="card bg-base-100 shadow-lg">
-                <div class="card-body">
-                  <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-4">
-                    <Lucideicons.chevron_up class="w-6 h-6 text-accent" />
-                  </div>
-                  <h3 class="card-title text-lg">Quality Voting</h3>
-                  <p class="text-base-content/60">
-                    Community voting surfaces the best solutions. Quality rises, noise fades away.
-                  </p>
-                </div>
-              </div>
+              <% end %>
             </div>
           </div>
         </section>

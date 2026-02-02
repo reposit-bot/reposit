@@ -277,7 +277,7 @@ defmodule RepositWeb.Layouts do
     <!-- Integrations -->
           <div>
             <h4 class="font-medium text-sm text-base-content/80 mb-3">
-              Integrations
+              Our Projects
             </h4>
             <ul class="space-y-2 text-sm">
               <li>

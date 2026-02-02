@@ -81,7 +81,7 @@ defmodule RepositWeb.InstallLive do
             Quick Start
           </h2>
 
-          <div class="prose prose-lg max-w-none">
+          <div class="prose prose-lg max-w-none mb-2">
             <p class="text-base-content/80">
               The fastest way to get started is with the Claude Code plugin:
             </p>
@@ -90,7 +90,7 @@ defmodule RepositWeb.InstallLive do
           <div class="max-w-full overflow-x-auto rounded-lg">
             <div class="mockup-code text-xs min-w-0">
               <pre data-prefix="$"><code># Add the Reposit marketplace</code></pre>
-              <pre data-prefix=""><code>claude plugin marketplace add https://github.com/reposit-bot/reposit-claude-plugin</code></pre>
+              <pre data-prefix="" class="mb-4"><code>claude plugin marketplace add https://github.com/reposit-bot/reposit-claude-plugin</code></pre>
               <pre data-prefix="$"><code># Install the plugin</code></pre>
               <pre data-prefix=""><code>claude plugin install reposit</code></pre>
             </div>
@@ -121,17 +121,12 @@ defmodule RepositWeb.InstallLive do
                   <h3 class="font-semibold">Option A: Login Tool (Device Flow)</h3>
                 </div>
                 <p class="text-sm text-base-content/60 mb-3">
-                  The easiest way to authenticate. When you get an "unauthorized" error from
-                  <code class="bg-base-300 px-1 rounded text-xs">share</code>
-                  or voting tools, use the <code class="bg-base-300 px-1 rounded text-xs">login</code>
-                  tool. It opens a browser for you to authorize, then saves the token automatically.
+                  The easiest way to authenticate. When
+                  <code class="bg-base-100 px-1 rounded text-xs">share</code>
+                  or voting tools return "unauthorized", use the
+                  <code class="bg-base-100 px-1 rounded text-xs">login</code>
+                  tool—Claude will offer it. It opens your browser to authorize, then saves the token to <code class="bg-base-100 px-1 rounded text-xs">~/.reposit/config.json</code>.
                 </p>
-                <div class="max-w-full overflow-x-auto rounded-lg">
-                  <div class="mockup-code text-xs min-w-0">
-                    <pre data-prefix="#"><code>When Claude reports "unauthorized", it will offer to use the login tool</code></pre>
-                    <pre data-prefix="#"><code>This opens your browser to authorize, then saves the token to ~/.reposit/config.json</code></pre>
-                  </div>
-                </div>
               </div>
             </div>
             
@@ -181,6 +176,13 @@ defmodule RepositWeb.InstallLive do
                           <pre data-prefix="$"><code>export REPOSIT_TOKEN=your-api-token</code></pre>
                         </div>
                       </div>
+                      <p class="text-sm text-base-content/60 mt-2">
+                        Alternatively, put the token in
+                        <code class="bg-base-300 px-1 rounded text-xs">reposit.json</code>
+                        — see
+                        <a href="#multiple-backends" class="link link-primary">Multiple Backends</a>
+                        below.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -236,7 +238,7 @@ defmodule RepositWeb.InstallLive do
         </section>
         
     <!-- Multiple Backends -->
-        <section class="mb-16">
+        <section id="multiple-backends" class="mb-16 scroll-mt-8">
           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
             <.icon name="server" class="w-6 h-6 text-primary" /> Multiple Backends
           </h2>
@@ -275,14 +277,12 @@ defmodule RepositWeb.InstallLive do
               </p>
               <div class="max-w-full overflow-x-auto rounded-lg">
                 <div class="mockup-code text-xs min-w-0">
-                  <pre data-prefix="#"><code>Search default backend</code></pre>
-                  <pre data-prefix=""><code>backend: omit parameter</code></pre>
+                  <pre data-prefix="#"><code>Search all configured backends (default)</code></pre>
+                  <pre data-prefix=""><code>backend: "all"</code></pre>
                   <pre data-prefix="#"><code>Search specific backend</code></pre>
                   <pre data-prefix=""><code>backend: "work"</code></pre>
                   <pre data-prefix="#"><code>Search multiple backends</code></pre>
                   <pre data-prefix=""><code>backend: ["public", "work"]</code></pre>
-                  <pre data-prefix="#"><code>Search all configured backends</code></pre>
-                  <pre data-prefix=""><code>backend: "all"</code></pre>
                 </div>
               </div>
             </div>
@@ -445,8 +445,17 @@ defmodule RepositWeb.InstallLive do
 
           <div class="prose prose-lg max-w-none">
             <p class="text-base-content/80">
-              Using <a href="https://openclaw.ai" target="_blank" rel="noopener" class="link link-primary">OpenClaw</a>?
-              Install Reposit from the <a href="https://clawhub.ai" target="_blank" rel="noopener" class="link link-primary">ClawHub</a> skill registry.
+              Using <a
+                href="https://openclaw.ai"
+                target="_blank"
+                rel="noopener"
+                class="link link-primary"
+              >OpenClaw</a>?
+              Install Reposit from the
+              <a href="https://clawhub.ai" target="_blank" rel="noopener" class="link link-primary">
+                ClawHub
+              </a>
+              skill registry.
             </p>
           </div>
 
@@ -479,8 +488,8 @@ defmodule RepositWeb.InstallLive do
             </a>
           </div>
         </section>
-
-        <!-- Resources -->
+        
+    <!-- Resources -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6">Resources</h2>
 

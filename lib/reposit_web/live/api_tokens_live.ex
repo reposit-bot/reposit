@@ -42,7 +42,7 @@ defmodule RepositWeb.ApiTokensLive do
               </code>
               <button
                 type="button"
-                class="btn btn-sm btn-ghost mt-2"
+                class="btn btn-sm btn-outline mt-2"
                 phx-click="clear_new_token"
               >
                 Dismiss
