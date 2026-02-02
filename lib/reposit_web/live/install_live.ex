@@ -162,6 +162,7 @@ defmodule RepositWeb.InstallLive do
                       <p class="font-medium">Generate an API token</p>
                       <p class="text-sm text-base-content/60">
                         Go to <a href={~p"/users/settings"} class="link link-primary">Settings</a>
+                        or <a href={~p"/users/api-tokens"} class="link link-primary">API Tokens</a>
                         and click "Create Token"
                       </p>
                     </div>

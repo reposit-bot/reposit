@@ -65,44 +65,6 @@ defmodule RepositWeb.UserSettingsController do
     end
   end
 
-  def create_api_token(conn, %{"name" => name}) do
-    user = conn.assigns.current_scope.user
-
-    case Accounts.create_api_token(user, name, :settings) do
-      {:ok, token, _api_token} ->
-        conn
-        |> put_flash(:api_token, token)
-        |> put_flash(:info, "API token created. Copy it now - it won't be shown again.")
-        |> redirect(to: ~p"/users/settings")
-
-      {:error, :token_limit_reached} ->
-        conn
-        |> put_flash(:error, "Token limit reached (50 max). Delete unused tokens first.")
-        |> redirect(to: ~p"/users/settings")
-
-      {:error, _} ->
-        conn
-        |> put_flash(:error, "Failed to create API token.")
-        |> redirect(to: ~p"/users/settings")
-    end
-  end
-
-  def delete_api_token(conn, %{"id" => id}) do
-    user = conn.assigns.current_scope.user
-
-    case Accounts.delete_api_token(user, id) do
-      {:ok, :deleted} ->
-        conn
-        |> put_flash(:info, "API token deleted.")
-        |> redirect(to: ~p"/users/settings")
-
-      {:error, :not_found} ->
-        conn
-        |> put_flash(:error, "Token not found.")
-        |> redirect(to: ~p"/users/settings")
-    end
-  end
-
   def delete(conn, _params) do
     user = conn.assigns.current_scope.user
 
@@ -146,6 +108,5 @@ defmodule RepositWeb.UserSettingsController do
     conn
     |> assign(:email_changeset, Accounts.change_user_email(user))
     |> assign(:profile_changeset, Accounts.change_user_profile(user))
-    |> assign(:api_tokens, Accounts.list_api_tokens(user))
   end
 end

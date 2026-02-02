@@ -63,6 +63,12 @@ defmodule RepositWeb.Layouts do
           >
             Settings
           </a>
+          <a
+            href={~p"/users/api-tokens"}
+            class="px-4 py-2 text-sm font-medium text-base-content/60 hover:text-base-content hover:bg-base-200 rounded-xl transition-all"
+          >
+            API Tokens
+          </a>
           <.link
             href={~p"/users/log-out"}
             method="delete"
@@ -104,6 +110,7 @@ defmodule RepositWeb.Layouts do
           <li class="mt-2 pt-2 border-t border-base-200">
             <%= if @current_scope do %>
               <a href={~p"/users/settings"}>Settings</a>
+              <a href={~p"/users/api-tokens"}>API Tokens</a>
             <% end %>
           </li>
           <%= if @current_scope do %>

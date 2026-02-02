@@ -35,7 +35,7 @@ defmodule RepositWeb.Plugs.ApiAuth do
             success: false,
             error: "unauthorized",
             hint:
-              "Invalid or missing API token. Use the 'login' tool to authenticate, or get your token from /users/settings"
+              "Invalid or missing API token. Use the 'login' tool to authenticate, or get your token from /users/api-tokens"
           })
         )
         |> halt()
