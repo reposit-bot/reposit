@@ -98,4 +98,5 @@ USER nobody
 # above and adding an entrypoint. See https://github.com/krallin/tini for details
 # ENTRYPOINT ["/tini", "--"]
 
-CMD ["/app/bin/server"]
+# Run migrations and start the server
+ENTRYPOINT ["/bin/sh", "-c", "/app/bin/migrate && /app/bin/server"]

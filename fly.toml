@@ -9,9 +9,6 @@ swap_size_mb = 512
 
 [build]
 
-[deploy]
-  release_command = '/app/bin/migrate'
-
 [env]
   PHX_HOST = 'reposit.bot'
   PORT = '8080'

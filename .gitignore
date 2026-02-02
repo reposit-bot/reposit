@@ -35,3 +35,8 @@ reposit-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Environment variables (keep .env.example, ignore actual .env)
+.env
+.env.local
+.env.*.local
+
