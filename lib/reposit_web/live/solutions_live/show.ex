@@ -76,10 +76,20 @@ defmodule RepositWeb.SolutionsLive.Show do
   defp render_markdown(nil), do: ""
 
   defp render_markdown(text) do
-    case MDEx.to_html(text, extension: [autolink: true, strikethrough: true]) do
+    opts = [
+      extension: [autolink: true, strikethrough: true],
+      sanitize: sanitize_options()
+    ]
+
+    case MDEx.to_html(text, opts) do
       {:ok, html} -> safe_user_content_links(html)
       {:error, _} -> text
     end
+  end
+
+  defp sanitize_options do
+    MDEx.Document.default_sanitize_options()
+    |> Keyword.put(:url_schemes, ["http", "https"])
   end
 
   # Add rel and target to links in user-submitted HTML:

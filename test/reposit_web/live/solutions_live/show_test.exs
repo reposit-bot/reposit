@@ -68,6 +68,28 @@ defmodule RepositWeb.SolutionsLive.ShowTest do
       assert html =~ ~s(target="_blank")
     end
 
+    test "sanitizes scripts and dangerous link schemes in solution body", %{
+      conn: conn,
+      user_scope: user_scope
+    } do
+      {:ok, solution} =
+        create_solution(
+          "Problem with potentially unsafe content",
+          "Text. <script>alert(1)</script> More. [bad](javascript:alert(1)). [also](data:text/html,<script>alert(1)</script>). [safe](https://example.com) ok.",
+          %{},
+          user_scope
+        )
+
+      {:ok, view, _html} = live(conn, ~p"/solutions/#{solution.id}")
+
+      html = render(view)
+      refute html =~ "<script>"
+      refute html =~ ~s(href="javascript:)
+      refute html =~ ~s(href="data:)
+      assert html =~ "https://example.com"
+      assert html =~ ~s(rel="nofollow ugc noopener noreferrer")
+    end
+
     test "displays tags grouped by category", %{conn: conn, user_scope: user_scope} do
       {:ok, solution} =
         create_solution(
