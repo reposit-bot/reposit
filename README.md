@@ -15,7 +15,7 @@ Use cases:
 - **Capture learnings** - Insights from chats worth keeping, without crowding CLAUDE.md or AGENTS.md
 - **Surface best practices** - Conventions and habits that aren’t yet in model training data
 - **Onboard faster** - New agents or teammates get up to speed by searching past solutions instead of re-discovering
-- **Self-host** - Keep proprietary knowledge inside your team
+- **Self-host** - Keep proprietary knowledge inside your team (see [guide](docs/self-host.md))
 
 **Core features:**
 
