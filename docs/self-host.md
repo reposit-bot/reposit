@@ -33,6 +33,8 @@ Reposit is available as a Docker image for self-hosting. This guide covers setup
 
 4. **Access Reposit at** `http://localhost:4000`
 
+> **Note**: The app serves plain HTTP. The server logs may say "Access at https://..." but this refers to URL generation, not the listening protocol. For HTTPS, use a [reverse proxy](#reverse-proxy).
+
 ## Docker Image
 
 Official images are published to GitHub Container Registry:
