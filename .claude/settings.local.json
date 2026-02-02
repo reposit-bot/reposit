@@ -22,7 +22,8 @@
       "Bash(git push)",
       "mcp__plugin_reposit_reposit__share",
       "Bash(mix test:*)",
-      "Bash(mix compile:*)"
+      "Bash(mix compile:*)",
+      "Bash(fly ssh console:*)"
     ]
   }
 }
