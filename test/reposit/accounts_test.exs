@@ -92,8 +92,8 @@ defmodule Reposit.AccountsTest do
       now = DateTime.utc_now()
 
       assert Accounts.sudo_mode?(%User{authenticated_at: DateTime.utc_now()})
-      assert Accounts.sudo_mode?(%User{authenticated_at: DateTime.add(now, -19, :minute)})
-      refute Accounts.sudo_mode?(%User{authenticated_at: DateTime.add(now, -21, :minute)})
+      assert Accounts.sudo_mode?(%User{authenticated_at: DateTime.add(now, -59, :minute)})
+      refute Accounts.sudo_mode?(%User{authenticated_at: DateTime.add(now, -61, :minute)})
 
       # minute override
       refute Accounts.sudo_mode?(
