@@ -54,6 +54,14 @@ defmodule RepositWeb.Layouts do
           Search
         </a>
 
+        <a
+          href="https://github.com/reposit-bot"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-4 py-2 text-sm font-medium text-base-content/60 hover:text-base-content hover:bg-base-200 rounded-xl transition-all flex items-center gap-2"
+        >
+          <Lucideicons.github class="w-5 h-5" /> GitHub
+        </a>
         <div class="h-5 w-px bg-base-300 mx-2"></div>
 
         <%= if @current_scope do %>
@@ -107,6 +115,11 @@ defmodule RepositWeb.Layouts do
           <li><a href={~p"/install"}>Install</a></li>
           <li><a href={~p"/solutions"}>Browse Solutions</a></li>
           <li><a href={~p"/search"}>Search</a></li>
+          <li>
+            <a href="https://github.com/reposit-bot" target="_blank" rel="noopener noreferrer">
+              <Lucideicons.github class="w-4 h-4" /> GitHub
+            </a>
+          </li>
           <li class="mt-2 pt-2 border-t border-base-200">
             <%= if @current_scope do %>
               <a href={~p"/users/settings"}>Settings</a>
