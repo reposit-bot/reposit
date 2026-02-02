@@ -124,7 +124,8 @@ defmodule RepositWeb.Api.V1.SolutionsController do
       upvotes: solution.upvotes,
       downvotes: solution.downvotes,
       score: Solution.score(solution),
-      created_at: solution.inserted_at
+      created_at: solution.inserted_at,
+      url: url(~p"/solutions/#{solution.id}")
     }
   end
 
