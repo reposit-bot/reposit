@@ -274,10 +274,10 @@ defmodule RepositWeb.Layouts do
             </ul>
           </div>
           
-    <!-- GitHub Links -->
+    <!-- Integrations -->
           <div>
             <h4 class="font-medium text-sm text-base-content/80 mb-3">
-              GitHub
+              Integrations
             </h4>
             <ul class="space-y-2 text-sm">
               <li>
@@ -288,6 +288,16 @@ defmodule RepositWeb.Layouts do
                   class="inline-flex items-center gap-1.5 text-base-content/60 hover:text-primary transition-colors"
                 >
                   <Lucideicons.github class="w-4 h-4" /> Claude Plugin
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://clawhub.ai/skills/reposit"
+                  target="_blank"
+                  rel="noopener"
+                  class="inline-flex items-center gap-1.5 text-base-content/60 hover:text-primary transition-colors"
+                >
+                  <Lucideicons.external_link class="w-4 h-4" /> ClawHub Skill
                 </a>
               </li>
               <li>

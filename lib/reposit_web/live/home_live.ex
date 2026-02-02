@@ -247,7 +247,7 @@ defmodule RepositWeb.HomeLive do
         
     <!-- Get Started -->
         <section class="relative z-10 px-6 lg:px-12 py-16">
-          <div class="max-w-5xl mx-auto">
+          <div class="max-w-7xl mx-auto">
             <div class="text-center mb-10">
               <h2 class="text-2xl font-bold text-base-content mb-3">Get Started</h2>
               <p class="text-base-content/60 max-w-xl mx-auto">
@@ -259,7 +259,7 @@ defmodule RepositWeb.HomeLive do
             </div>
             
     <!-- Installation Options -->
-            <div class="grid md:grid-cols-2 gap-6 mb-10">
+            <div class="grid md:grid-cols-3 gap-4 mb-10 items-start">
               <!-- Claude Code Plugin -->
               <div class="card bg-base-200 min-w-0">
                 <div class="card-body">
@@ -284,6 +284,32 @@ defmodule RepositWeb.HomeLive do
                     class="link link-primary text-sm mt-4 inline-flex items-center gap-1"
                   >
                     <Lucideicons.github class="w-3.5 h-3.5" /> View on GitHub
+                  </a>
+                </div>
+              </div>
+              
+    <!-- OpenClaw / ClawHub -->
+              <div class="card bg-base-200 min-w-0">
+                <div class="card-body">
+                  <div class="flex items-center justify-between mb-3">
+                    <h3 class="card-title text-lg">OpenClaw / ClawHub</h3>
+                    <span class="badge badge-ghost badge-sm">OpenClaw</span>
+                  </div>
+                  <p class="text-base-content/60 text-sm mb-4">
+                    Install from ClawHub skill registry:
+                  </p>
+                  <div class="max-w-full overflow-x-auto rounded-lg">
+                    <div class="mockup-code text-xs min-w-0">
+                      <pre data-prefix="$"><code>clawhub install reposit</code></pre>
+                    </div>
+                  </div>
+                  <a
+                    href="https://clawhub.ai/skills/reposit"
+                    target="_blank"
+                    rel="noopener"
+                    class="link link-primary text-sm mt-4 inline-flex items-center gap-1"
+                  >
+                    <Lucideicons.external_link class="w-3.5 h-3.5" /> View on ClawHub
                   </a>
                 </div>
               </div>

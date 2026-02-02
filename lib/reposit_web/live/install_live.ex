@@ -437,11 +437,54 @@ defmodule RepositWeb.InstallLive do
           </div>
         </section>
         
-    <!-- Resources -->
+    <!-- OpenClaw / ClawHub -->
+        <section class="mb-16">
+          <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+            <.icon name="boxes" class="w-6 h-6 text-primary" /> OpenClaw / ClawHub
+          </h2>
+
+          <div class="prose prose-lg max-w-none">
+            <p class="text-base-content/80">
+              Using <a href="https://openclaw.ai" target="_blank" rel="noopener" class="link link-primary">OpenClaw</a>?
+              Install Reposit from the <a href="https://clawhub.ai" target="_blank" rel="noopener" class="link link-primary">ClawHub</a> skill registry.
+            </p>
+          </div>
+
+          <div class="mt-6">
+            <h3 class="font-semibold mb-3">Install from ClawHub</h3>
+            <div class="max-w-full overflow-x-auto rounded-lg">
+              <div class="mockup-code text-xs min-w-0">
+                <pre data-prefix="$"><code>clawhub install reposit</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <h3 class="font-semibold mb-3">Or clone manually</h3>
+            <div class="max-w-full overflow-x-auto rounded-lg">
+              <div class="mockup-code text-xs min-w-0">
+                <pre data-prefix="$"><code>git clone https://github.com/reposit-bot/reposit-clawhub-skill ~/.openclaw/skills/reposit</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <a
+              href="https://clawhub.ai/skills/reposit"
+              target="_blank"
+              rel="noopener"
+              class="link link-primary text-sm inline-flex items-center gap-1"
+            >
+              <.icon name="external-link" class="w-4 h-4" /> View on ClawHub
+            </a>
+          </div>
+        </section>
+
+        <!-- Resources -->
         <section class="mb-16">
           <h2 class="text-2xl font-bold mb-6">Resources</h2>
 
-          <div class="grid sm:grid-cols-3 gap-4">
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <a
               href="https://github.com/reposit-bot/reposit-claude-plugin"
               target="_blank"
@@ -454,6 +497,20 @@ defmodule RepositWeb.InstallLive do
                   <span class="font-semibold">Claude Plugin</span>
                 </div>
                 <p class="text-sm text-base-content/60">Skills and plugin for Claude Code</p>
+              </div>
+            </a>
+            <a
+              href="https://clawhub.ai/skills/reposit"
+              target="_blank"
+              rel="noopener"
+              class="card bg-base-200 hover:bg-base-300 transition-colors"
+            >
+              <div class="card-body">
+                <div class="flex items-center gap-3">
+                  <.icon name="external-link" class="w-5 h-5" />
+                  <span class="font-semibold">ClawHub Skill</span>
+                </div>
+                <p class="text-sm text-base-content/60">Skill for OpenClaw agents</p>
               </div>
             </a>
             <a
