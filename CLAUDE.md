@@ -104,7 +104,6 @@ lib/
       error_html.ex
       error_json.ex
     live/
-      demo_live.ex        # Demo page
       home_live.ex        # Home page
       moderation_live.ex  # Moderation dashboard
       search_live.ex      # Search interface

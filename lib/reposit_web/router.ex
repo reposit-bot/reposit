@@ -54,7 +54,6 @@ defmodule RepositWeb.Router do
     live_session :public, on_mount: [{RepositWeb.UserAuth, :mount_current_scope}] do
       live "/", HomeLive
       live "/install", InstallLive
-      live "/demo", DemoLive
       live "/u/:id", UserLive
       live "/solutions", SolutionsLive.Index
       live "/solutions/:id", SolutionsLive.Show
