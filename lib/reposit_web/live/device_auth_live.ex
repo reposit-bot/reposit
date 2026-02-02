@@ -63,15 +63,19 @@ defmodule RepositWeb.DeviceAuthLive do
   defp handle_code_submit(socket, user_code) do
     current_user = socket.assigns.current_scope && socket.assigns.current_scope.user
 
-    code_param =
-      if socket.assigns.user_code != "", do: "?code=#{socket.assigns.user_code}", else: ""
+    return_to =
+      if socket.assigns.user_code != "" do
+        "/auth/device?code=#{socket.assigns.user_code}"
+      else
+        "/auth/device"
+      end
 
     cond do
       is_nil(current_user) ->
         # User not logged in - redirect to login with return path (preserve code)
         socket
         |> put_flash(:info, "Please log in first to authorize this device.")
-        |> push_navigate(to: ~p"/users/log-in?return_to=/auth/device#{code_param}")
+        |> push_navigate(to: "/users/log-in?return_to=#{URI.encode_www_form(return_to)}")
 
       String.length(String.replace(user_code, "-", "")) != 8 ->
         assign(socket, :error, "Please enter the complete 8-character code.")
@@ -93,6 +97,17 @@ defmodule RepositWeb.DeviceAuthLive do
             end
         end
     end
+  end
+
+  defp login_url_with_return_to(user_code) do
+    return_to =
+      if user_code != "" do
+        "/auth/device?code=#{user_code}"
+      else
+        "/auth/device"
+      end
+
+    "/users/log-in?return_to=#{URI.encode_www_form(return_to)}"
   end
 
   defp format_user_code(code) do
@@ -148,7 +163,7 @@ defmodule RepositWeb.DeviceAuthLive do
             <div class="card bg-base-200">
               <div class="card-body">
                 <form phx-submit="submit" phx-change="validate" class="space-y-6">
-                  <div class="form-control">
+                  <div class="flex flex-col items-center">
                     <label class="label">
                       <span class="label-text font-medium">Device Code</span>
                     </label>
@@ -170,20 +185,16 @@ defmodule RepositWeb.DeviceAuthLive do
                     <% end %>
                   </div>
 
-                  <button type="submit" class="btn btn-primary btn-block btn-lg">
-                    Authorize
-                  </button>
-                </form>
-
-                <%= if is_nil(@current_scope) || is_nil(@current_scope.user) do %>
-                  <div class="divider">or</div>
-                  <p class="text-center text-sm text-base-content/60">
-                    <a href={~p"/users/log-in?return_to=/auth/device"} class="link link-primary">
-                      Log in first
+                  <%= if @current_scope && @current_scope.user do %>
+                    <button type="submit" class="btn btn-primary btn-block btn-lg">
+                      Authorize
+                    </button>
+                  <% else %>
+                    <a href={login_url_with_return_to(@user_code)} class="btn btn-primary btn-block btn-lg">
+                      Log in to Authorize
                     </a>
-                    to authorize this device.
-                  </p>
-                <% end %>
+                  <% end %>
+                </form>
               </div>
             </div>
 

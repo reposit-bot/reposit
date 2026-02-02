@@ -4,12 +4,26 @@ defmodule RepositWeb.UserSessionController do
   alias Reposit.Accounts
   alias RepositWeb.UserAuth
 
-  def new(conn, _params) do
+  def new(conn, params) do
     email = get_in(conn.assigns, [:current_scope, Access.key(:user), Access.key(:email)])
     form = Phoenix.Component.to_form(%{"email" => email}, as: "user")
 
-    render(conn, :new, form: form)
+    conn
+    |> maybe_store_return_to(params)
+    |> render(:new, form: form)
   end
+
+  defp maybe_store_return_to(conn, %{"return_to" => return_to})
+       when is_binary(return_to) and return_to != "" do
+    # Only allow relative paths to prevent open redirect vulnerabilities
+    if String.starts_with?(return_to, "/") and not String.starts_with?(return_to, "//") do
+      put_session(conn, :user_return_to, return_to)
+    else
+      conn
+    end
+  end
+
+  defp maybe_store_return_to(conn, _params), do: conn
 
   # magic link login
   def create(conn, %{"user" => %{"token" => token} = user_params} = params) do
@@ -35,17 +49,24 @@ defmodule RepositWeb.UserSessionController do
   # magic link request - find or create user
   def create(conn, %{"user" => %{"email" => email}}) do
     user = Accounts.get_user_by_email(email) || create_user(email)
+    return_to = get_session(conn, :user_return_to)
 
     if user do
       Accounts.deliver_login_instructions(
         user,
-        &url(~p"/users/log-in/#{&1}")
+        &magic_link_url(&1, return_to)
       )
     end
 
     conn
     |> put_flash(:info, "We've sent you a magic link to sign in. Check your email!")
     |> redirect(to: ~p"/users/log-in")
+  end
+
+  defp magic_link_url(token, nil), do: url(~p"/users/log-in/#{token}")
+
+  defp magic_link_url(token, return_to) do
+    url(~p"/users/log-in/#{token}?return_to=#{return_to}")
   end
 
   defp create_user(email) do
@@ -55,11 +76,12 @@ defmodule RepositWeb.UserSessionController do
     end
   end
 
-  def confirm(conn, %{"token" => token}) do
+  def confirm(conn, %{"token" => token} = params) do
     if user = Accounts.get_user_by_magic_link_token(token) do
       form = Phoenix.Component.to_form(%{"token" => token}, as: "user")
 
       conn
+      |> maybe_store_return_to(params)
       |> assign(:user, user)
       |> assign(:form, form)
       |> render(:confirm)
