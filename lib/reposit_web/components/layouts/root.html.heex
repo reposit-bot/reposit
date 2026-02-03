@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script>
-      (function(){
-        var s = document.documentElement.getAttribute("data-theme");
-        if (!s) {
-          try { s = localStorage.getItem("phx:theme"); } catch (e) {}
-          s = s || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-          document.documentElement.setAttribute("data-theme", s);
-        }
-      })();
-    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <%= if assigns[:referrer_policy] do %>

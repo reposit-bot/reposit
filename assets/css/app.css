@@ -21,8 +21,8 @@
   on Elixir colors. Build your own at: https://daisyui.com/theme-generator/ */
 @plugin "../vendor/daisyui-theme" {
   name: 'dark';
-  default: true;
-  prefersdark: true;
+  default: false;
+  prefersdark: false;
   color-scheme: 'dark';
   --color-base-100: oklch(25.33% 0.016 252.42);
   --color-base-200: oklch(23.26% 0.014 253.1);
