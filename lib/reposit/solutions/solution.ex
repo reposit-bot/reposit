@@ -12,6 +12,11 @@ defmodule Reposit.Solutions.Solution do
     field(:downvotes, :integer, default: 0)
     field(:status, Ecto.Enum, values: @statuses, default: :active)
 
+    # Source attribution (for harvested content)
+    field(:source_url, :string)
+    field(:source_author, :string)
+    field(:source_author_url, :string)
+
     belongs_to(:user, Reposit.Accounts.User, type: :binary_id)
     has_many(:votes, Reposit.Votes.Vote)
 
@@ -24,7 +29,7 @@ defmodule Reposit.Solutions.Solution do
   def statuses, do: @statuses
 
   @required_fields [:problem, :solution, :user_id]
-  @optional_fields [:embedding, :tags]
+  @optional_fields [:embedding, :tags, :source_url, :source_author, :source_author_url]
 
   @doc """
   Changeset for creating a new solution.

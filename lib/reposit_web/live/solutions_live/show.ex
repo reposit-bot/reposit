@@ -167,11 +167,12 @@ defmodule RepositWeb.SolutionsLive.Show do
               <p class="text-base-content text-lg leading-relaxed">
                 {@solution.problem}
               </p>
-              <div :if={@solution.user} class="mt-3 flex items-center gap-2">
-                <span class="text-sm text-base-content/60">Shared by</span>
+              <div class="mt-3 flex items-center gap-2 flex-wrap text-sm text-base-content/60">
+                <span :if={@solution.user}>Shared by</span>
                 <.link
+                  :if={@solution.user}
                   href={~p"/u/#{@solution.user.id}"}
-                  class="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                  class="inline-flex items-center gap-1.5 font-medium text-primary hover:underline"
                 >
                   <img
                     :if={@solution.user.avatar_url}
@@ -181,6 +182,31 @@ defmodule RepositWeb.SolutionsLive.Show do
                   />
                   <span>{author_display_name(@solution.user)}</span>
                 </.link>
+                <span :if={@solution.user && @solution.source_url}>·</span>
+                <span :if={@solution.source_url}>Source:</span>
+                <a
+                  :if={@solution.source_url}
+                  href={@solution.source_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary hover:underline inline-flex items-center gap-1"
+                >
+                  <Lucideicons.github class="w-3.5 h-3.5" />
+                  {source_display(@solution.source_url)}
+                </a>
+                <span :if={@solution.source_author}>
+                  by
+                  <a
+                    :if={@solution.source_author_url}
+                    href={@solution.source_author_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-primary hover:underline"
+                  >
+                    {@solution.source_author}
+                  </a>
+                  <span :if={!@solution.source_author_url}>{@solution.source_author}</span>
+                </span>
               </div>
             </div>
             
@@ -699,4 +725,14 @@ defmodule RepositWeb.SolutionsLive.Show do
   end
 
   defp format_date(_), do: ""
+
+  # Format source URL for display (e.g., "owner/repo#123" for GitHub PRs)
+  defp source_display(url) when is_binary(url) do
+    case Regex.run(~r|github\.com/([^/]+)/([^/]+)/pull/(\d+)|, url) do
+      [_, owner, repo, pr_num] -> "#{owner}/#{repo}##{pr_num}"
+      _ -> URI.parse(url).host || url
+    end
+  end
+
+  defp source_display(_), do: "View source"
 end

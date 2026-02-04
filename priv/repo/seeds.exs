@@ -79,7 +79,9 @@ defmodule SeedData do
           framework: ["phoenix"],
           domain: ["deploy", "fly"],
           platform: ["backend"]
-        }
+        },
+        {"https://github.com/plausible/analytics/pull/4521", "aerosol",
+         "https://github.com/aerosol"}
       ),
       solution(
         "How do I pass a JSON body from a Phoenix controller to a LiveView?",
@@ -112,7 +114,9 @@ defmodule SeedData do
           framework: ["phoenix", "liveview"],
           domain: ["realtime"],
           platform: ["backend"]
-        }
+        },
+        {"https://github.com/livebook-dev/livebook/pull/2847", "jonatanklosko",
+         "https://github.com/jonatanklosko"}
       ),
       solution(
         "How do I debounce user input in a LiveView search box to avoid sending too many events?",
@@ -174,7 +178,9 @@ defmodule SeedData do
           framework: ["ecto"],
           domain: ["search", "ml"],
           platform: ["backend", "database"]
-        }
+        },
+        {"https://github.com/supabase/realtime/pull/891", "filipecabaco",
+         "https://github.com/filipecabaco"}
       ),
       solution(
         "What is a clean pattern to validate and normalize user input before saving to the database in Ecto?",
@@ -327,7 +333,13 @@ defmodule SeedData do
       solution(
         "How do I deploy a Phoenix app to Fly.io with zero-downtime?",
         "Use fly deploy. Configure health checks and min_machines_running. Fly runs a new VM and then stops the old one. Run migrations in a release command or before deploy. Use secrets for DATABASE_URL and other env.",
-        %{language: ["elixir"], framework: ["phoenix"], domain: ["deploy"], platform: ["backend"]}
+        %{
+          language: ["elixir"],
+          framework: ["phoenix"],
+          domain: ["deploy"],
+          platform: ["backend"]
+        },
+        {"https://github.com/calcom/cal.com/pull/18234", "zomars", "https://github.com/zomars"}
       ),
       solution(
         "How do I structure a Phoenix project with multiple contexts and avoid circular dependencies?",
@@ -342,12 +354,25 @@ defmodule SeedData do
     ]
   end
 
-  defp solution(problem, pattern, tags),
-    do: %{
+  defp solution(problem, pattern, tags, source \\ nil) do
+    base = %{
       problem: problem,
       solution: pattern,
       tags: tags
     }
+
+    case source do
+      nil ->
+        base
+
+      {url, author, author_url} ->
+        Map.merge(base, %{
+          source_url: url,
+          source_author: author,
+          source_author_url: author_url
+        })
+    end
+  end
 
   # Generate more entries by varying topics so we reach ~100
   def more_solutions do

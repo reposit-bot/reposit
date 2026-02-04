@@ -329,7 +329,10 @@ defmodule Reposit.Solutions do
           upvotes: s.upvotes,
           downvotes: s.downvotes,
           inserted_at: s.inserted_at,
-          similarity: fragment("1 - (? <=> ?)", s.embedding, ^query_embedding)
+          similarity: fragment("1 - (? <=> ?)", s.embedding, ^query_embedding),
+          source_url: s.source_url,
+          source_author: s.source_author,
+          source_author_url: s.source_author_url
         }
       )
 

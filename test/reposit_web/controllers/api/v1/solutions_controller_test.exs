@@ -122,6 +122,29 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
 
       assert hint =~ "unsafe patterns"
     end
+
+    test "creates solution with source attribution fields", %{conn: conn, api_token: token} do
+      attrs =
+        @valid_attrs
+        |> Map.put("source_url", "https://github.com/plausible/analytics/pull/4521")
+        |> Map.put("source_author", "aerosol")
+        |> Map.put("source_author_url", "https://github.com/aerosol")
+
+      conn =
+        conn
+        |> authenticate_api(token)
+        |> post(~p"/api/v1/solutions", attrs)
+
+      assert %{
+               "success" => true,
+               "data" => %{
+                 "id" => _id,
+                 "source_url" => "https://github.com/plausible/analytics/pull/4521",
+                 "source_author" => "aerosol",
+                 "source_author_url" => "https://github.com/aerosol"
+               }
+             } = json_response(conn, 201)
+    end
   end
 
   describe "GET /api/v1/solutions/:id" do
@@ -149,6 +172,44 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
                "success" => false,
                "error" => "not_found"
              } = json_response(conn, 404)
+    end
+
+    test "returns source attribution fields when present", %{conn: conn, owner_scope: scope} do
+      {:ok, solution} =
+        Solutions.create_solution(scope, %{
+          problem: @valid_attrs["problem"],
+          solution: @valid_attrs["solution"],
+          source_url: "https://github.com/livebook-dev/livebook/pull/2847",
+          source_author: "jonatanklosko",
+          source_author_url: "https://github.com/jonatanklosko"
+        })
+
+      conn = get(conn, ~p"/api/v1/solutions/#{solution.id}")
+
+      assert %{
+               "success" => true,
+               "data" => %{
+                 "source_url" => "https://github.com/livebook-dev/livebook/pull/2847",
+                 "source_author" => "jonatanklosko",
+                 "source_author_url" => "https://github.com/jonatanklosko"
+               }
+             } = json_response(conn, 200)
+    end
+
+    test "returns null source fields when not present", %{conn: conn, owner_scope: scope} do
+      {:ok, solution} =
+        Solutions.create_solution(scope, atomize_keys(@valid_attrs))
+
+      conn = get(conn, ~p"/api/v1/solutions/#{solution.id}")
+
+      assert %{
+               "success" => true,
+               "data" => %{
+                 "source_url" => nil,
+                 "source_author" => nil,
+                 "source_author_url" => nil
+               }
+             } = json_response(conn, 200)
     end
   end
 
@@ -310,6 +371,51 @@ defmodule RepositWeb.Api.V1.SolutionsControllerTest do
       conn = get(conn, ~p"/api/v1/solutions/search?q=binary&sort=newest")
 
       assert %{"success" => true} = json_response(conn, 200)
+    end
+
+    test "returns source attribution fields in search results", %{conn: conn, owner_scope: scope} do
+      {:ok, _solution} =
+        Solutions.create_solution(scope, %{
+          problem: "How to implement binary search with source",
+          solution: @valid_attrs["solution"],
+          source_url: "https://github.com/supabase/realtime/pull/891",
+          source_author: "filipecabaco",
+          source_author_url: "https://github.com/filipecabaco"
+        })
+
+      conn = get(conn, ~p"/api/v1/solutions/search?q=binary+search+source")
+
+      assert %{
+               "success" => true,
+               "data" => %{
+                 "solutions" => [result]
+               }
+             } = json_response(conn, 200)
+
+      assert result["source_url"] == "https://github.com/supabase/realtime/pull/891"
+      assert result["source_author"] == "filipecabaco"
+      assert result["source_author_url"] == "https://github.com/filipecabaco"
+    end
+
+    test "returns null source fields in search when not present", %{
+      conn: conn,
+      owner_scope: scope
+    } do
+      {:ok, _solution} =
+        Solutions.create_solution(scope, atomize_keys(@valid_attrs))
+
+      conn = get(conn, ~p"/api/v1/solutions/search?q=binary+search")
+
+      assert %{
+               "success" => true,
+               "data" => %{
+                 "solutions" => [result]
+               }
+             } = json_response(conn, 200)
+
+      assert result["source_url"] == nil
+      assert result["source_author"] == nil
+      assert result["source_author_url"] == nil
     end
   end
 end

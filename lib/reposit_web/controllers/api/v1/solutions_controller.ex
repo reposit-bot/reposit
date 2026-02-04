@@ -125,7 +125,10 @@ defmodule RepositWeb.Api.V1.SolutionsController do
       downvotes: solution.downvotes,
       score: Solution.score(solution),
       created_at: solution.inserted_at,
-      url: url(~p"/solutions/#{solution.id}")
+      url: url(~p"/solutions/#{solution.id}"),
+      source_url: solution.source_url,
+      source_author: solution.source_author,
+      source_author_url: solution.source_author_url
     }
   end
 
@@ -150,7 +153,10 @@ defmodule RepositWeb.Api.V1.SolutionsController do
       similarity: result.similarity,
       upvotes: result.upvotes,
       downvotes: result.downvotes,
-      score: result.upvotes - result.downvotes
+      score: result.upvotes - result.downvotes,
+      source_url: result.source_url,
+      source_author: result.source_author,
+      source_author_url: result.source_author_url
     }
   end
 
