@@ -89,6 +89,34 @@ defmodule RepositWeb.UserSessionControllerTest do
       assert Reposit.Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "login"
     end
 
+    test "rejects submission when honeypot field is filled (bot)", %{conn: conn} do
+      email = "bot#{System.unique_integer()}@example.com"
+
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"email" => email, "website" => "http://spambot.com"}
+        })
+
+      # Still shows success message to not tip off the bot
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "magic link to sign in"
+      assert redirected_to(conn) == ~p"/users/log-in"
+
+      # But no user was created
+      refute Accounts.get_user_by_email(email)
+    end
+
+    test "allows submission when honeypot field is empty", %{conn: conn} do
+      email = "legit#{System.unique_integer()}@example.com"
+
+      conn =
+        post(conn, ~p"/users/log-in", %{
+          "user" => %{"email" => email, "website" => ""}
+        })
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "magic link to sign in"
+      assert Accounts.get_user_by_email(email)
+    end
+
     test "logs the user in", %{conn: conn, user: user} do
       {token, _hashed_token} = generate_user_magic_link_token(user)
 

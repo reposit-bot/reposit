@@ -47,20 +47,27 @@ defmodule RepositWeb.UserSessionController do
   end
 
   # magic link request - find or create user
-  def create(conn, %{"user" => %{"email" => email}}) do
-    user = Accounts.get_user_by_email(email) || create_user(email)
-    return_to = get_session(conn, :user_return_to)
+  def create(conn, %{"user" => %{"email" => email} = user_params}) do
+    # Honeypot: if the hidden field is filled, it's a bot - silently reject
+    if honeypot_filled?(user_params) do
+      conn
+      |> put_flash(:info, "We've sent you a magic link to sign in. Check your email!")
+      |> redirect(to: ~p"/users/log-in")
+    else
+      user = Accounts.get_user_by_email(email) || create_user(email)
+      return_to = get_session(conn, :user_return_to)
 
-    if user do
-      Accounts.deliver_login_instructions(
-        user,
-        &magic_link_url(&1, return_to)
-      )
+      if user do
+        Accounts.deliver_login_instructions(
+          user,
+          &magic_link_url(&1, return_to)
+        )
+      end
+
+      conn
+      |> put_flash(:info, "We've sent you a magic link to sign in. Check your email!")
+      |> redirect(to: ~p"/users/log-in")
     end
-
-    conn
-    |> put_flash(:info, "We've sent you a magic link to sign in. Check your email!")
-    |> redirect(to: ~p"/users/log-in")
   end
 
   defp magic_link_url(token, nil), do: url(~p"/users/log-in/#{token}")
@@ -68,6 +75,9 @@ defmodule RepositWeb.UserSessionController do
   defp magic_link_url(token, return_to) do
     url(~p"/users/log-in/#{token}?return_to=#{return_to}")
   end
+
+  defp honeypot_filled?(%{"website" => value}) when byte_size(value) > 0, do: true
+  defp honeypot_filled?(_), do: false
 
   defp create_user(email) do
     case Accounts.register_user(%{email: email}) do
