@@ -72,41 +72,63 @@ See [API Usage](docs/api.md) for quick examples, authentication, and all endpoin
 
 ## Development
 
-This section covers running Reposit locally for development or self-hosting.
+This section covers running Reposit locally for development. See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ### Prerequisites
 
-- **[asdf](https://asdf-vm.com/)** for Elixir, Erlang, and Node.js (see `.tool-versions` for versions)
-- **Docker** (for PostgreSQL with pgvector via docker-compose)
-- **OpenAI API key** (for embeddings)
+- Elixir, Erlang, Node.js (see `.tool-versions` for exact versions)
+- Docker (for PostgreSQL with pgvector)
 
-### Quick Start
-
-1. **Clone, install runtimes, and start the dev environment:**
+### Option 1: Local Elixir (Recommended)
 
 ```bash
 git clone https://github.com/reposit-bot/reposit.git
 cd reposit
-asdf install
-mix deps.get
-./dev.sh
+cp .env.example .env  # fill in API keys as needed
+make setup            # starts Postgres, installs deps, creates DB, runs migrations
+make server           # starts Phoenix at localhost:4000
 ```
 
-`dev.sh` starts PostgreSQL (and Colima on macOS if needed), waits for it, verifies pgvector, and runs `mix setup` if the database isn’t set up yet.
-
-**Without the script:** run `docker-compose up -d`, then `mix ecto.setup`.
-
-2. **Set up environment variables:**
+### Option 2: Docker Only (No Elixir Needed)
 
 ```bash
-export OPENAI_API_KEY="sk-your-api-key-here"
+git clone https://github.com/reposit-bot/reposit.git
+cd reposit
+cp .env.example .env
+make dev              # builds containers, runs setup
+make dev.server       # starts Phoenix at localhost:4000
 ```
 
-3. **Start the development server:**
+### All Make Commands
 
-```bash
-mix phx.server
-```
+Run `make help` to see all commands:
+
+| Command | Description |
+|---------|-------------|
+| `make setup` | Install deps, create DB, run migrations |
+| `make server` | Start the Phoenix dev server (`iex -S mix phx.server`) |
+| `make test` | Run the test suite |
+| `make precommit` | Run pre-commit checks (compile, format, sobelow, test) |
+| `make db` | Start Postgres (pgvector) in Docker |
+| `make db.stop` | Stop Postgres |
+| `make dev` | Start full stack in Docker and run setup |
+| `make dev.server` | Start Phoenix server in Docker |
+| `make dev.test` | Run tests in Docker |
+| `make dev.precommit` | Run pre-commit checks in Docker |
+| `make dev.stop` | Stop all Docker services |
+| `make dev.shell` | Open a shell in the app container |
+
+### Environment Variables
+
+Copy `.env.example` to `.env` and fill in values as needed. See [docs/self-host.md](docs/self-host.md) for a full list.
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `OPENAI_API_KEY` | For embeddings | OpenAI API key for semantic search |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | No | Google OAuth (optional in dev) |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | No | GitHub OAuth (optional in dev) |
+
+### URLs
 
 - Web UI: [http://localhost:4000](http://localhost:4000)
 - API: [http://localhost:4000/api/v1](http://localhost:4000/api/v1)
@@ -129,32 +151,6 @@ Or create `~/.reposit/config.json`:
   },
   "default": "local"
 }
-```
-
-### Running Tests
-
-```bash
-# Run all tests
-mix test
-
-# Run with coverage report
-mix test --cover
-
-# Run specific test file
-mix test test/reposit/solutions_test.exs
-```
-
-### Development Commands
-
-```bash
-# First-time setup (deps, DB, assets)
-mix setup
-
-# Run precommit checks (compile, format, test)
-mix precommit
-
-# Reset database
-mix ecto.reset
 ```
 
 ---
