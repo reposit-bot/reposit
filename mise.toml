@@ -1,0 +1,59 @@
+[tools]
+erlang = "28.3.1"
+elixir = "1.19.1-otp-28"
+
+[env]
+PORT = "4000"
+DB_NAME = "reposit_dev"
+DB_PORT = "5432"
+DB_USER = "postgres"
+DB_HOST = "localhost"
+
+# Worktree config
+WT_COPY_DIRS = "deps _build"
+
+[tasks."docker:up"]
+description = "Start Docker postgres+pgvector"
+run = '''
+  if docker-compose ps --filter "status=running" 2>/dev/null | grep -q " db "; then
+    echo "==> Container already running"
+  else
+    docker-compose up -d
+    echo "==> Waiting for postgres..."
+    for i in $(seq 1 30); do
+      docker-compose exec -T db pg_isready -U postgres >/dev/null 2>&1 && break
+      sleep 1
+    done
+  fi
+  echo "==> Postgres ready"
+'''
+
+[tasks."docker:down"]
+description = "Stop Docker postgres"
+run = "docker-compose down"
+
+[tasks.deps]
+description = "Install Elixir dependencies"
+run = "mix deps.get"
+
+[tasks."db:setup"]
+description = "Create and migrate database"
+depends = ["docker:up"]
+run = [
+  "mix ecto.create 2>/dev/null || true",
+  "mix ecto.migrate"
+]
+
+[tasks.up]
+description = "Start everything"
+depends = ["docker:up", "deps", "db:setup"]
+run = "iex -S mix phx.server"
+raw = true
+
+[tasks.down]
+description = "Stop services"
+run = "docker-compose down"
+
+[tasks.setup]
+description = "Install deps and setup DB (no server)"
+depends = ["docker:up", "deps", "db:setup"]

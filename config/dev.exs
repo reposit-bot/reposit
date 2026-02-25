@@ -5,7 +5,7 @@ config :reposit, Reposit.Repo,
   username: "postgres",
   password: "postgres",
   hostname: System.get_env("DATABASE_HOST", "localhost"),
-  database: "reposit_dev",
+  database: System.get_env("DB_NAME", "reposit_dev"),
   port: String.to_integer(System.get_env("DATABASE_PORT", "5432")),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
@@ -93,3 +93,8 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+# Cloudflare Turnstile always-pass test keys for development
+config :reposit, :turnstile,
+  secret: "1x0000000000000000000000000000000AA",
+  site_key: "1x00000000000000000000AA"
