@@ -7,6 +7,7 @@ PORT = "4000"
 DB_NAME = "reposit_dev"
 DB_PORT = "5432"
 DB_USER = "postgres"
+DB_PASSWORD = "postgres"
 DB_HOST = "localhost"
 
 # Worktree config
@@ -38,7 +39,7 @@ run = "mix deps.get"
 
 [tasks."db:setup"]
 description = "Create and migrate database"
-depends = ["docker:up"]
+depends = ["docker:up", "deps"]
 run = [
   "mix ecto.create 2>/dev/null || true",
   "mix ecto.migrate"
