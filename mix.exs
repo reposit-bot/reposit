@@ -74,7 +74,7 @@ defmodule Reposit.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:mdex, "~> 0.11.3"},
+      {:mdex, "~> 0.12.0"},
       {:hammer, "~> 7.1"},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.18", only: :test}
