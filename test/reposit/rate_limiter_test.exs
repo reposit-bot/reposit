@@ -25,6 +25,16 @@ defmodule Reposit.RateLimiterTest do
       assert {:deny, _retry_after} = RateLimiter.check_rate(ip, :create_solution)
     end
 
+    test "denies requests over the limit for create_account" do
+      ip = "account-#{System.unique_integer([:positive])}"
+
+      for i <- 1..3 do
+        assert {:allow, ^i} = RateLimiter.check_rate(ip, :create_account)
+      end
+
+      assert {:deny, _retry_after} = RateLimiter.check_rate(ip, :create_account)
+    end
+
     test "different IPs have independent limits" do
       ip1 = "ip1-#{System.unique_integer([:positive])}"
       ip2 = "ip2-#{System.unique_integer([:positive])}"
@@ -56,6 +66,7 @@ defmodule Reposit.RateLimiterTest do
       assert {60_000, 100} = RateLimiter.rate_limit_for(:api)
       assert {60_000, 10} = RateLimiter.rate_limit_for(:create_solution)
       assert {60_000, 30} = RateLimiter.rate_limit_for(:vote)
+      assert {3_600_000, 3} = RateLimiter.rate_limit_for(:create_account)
     end
 
     test "returns default limit for unknown actions" do

@@ -2,6 +2,7 @@ defmodule RepositWeb.UserSessionController do
   use RepositWeb, :controller
 
   alias Reposit.Accounts
+  alias Reposit.RateLimiter
   alias RepositWeb.UserAuth
 
   def new(conn, params) do
@@ -54,7 +55,7 @@ defmodule RepositWeb.UserSessionController do
       |> put_flash(:info, "We've sent you a magic link to sign in. Check your email!")
       |> redirect(to: ~p"/users/log-in")
     else
-      user = Accounts.get_user_by_email(email) || create_user(email)
+      user = get_or_create_user(conn, email)
       return_to = get_session(conn, :user_return_to)
 
       if user do
@@ -79,10 +80,31 @@ defmodule RepositWeb.UserSessionController do
   defp honeypot_filled?(%{"website" => value}) when byte_size(value) > 0, do: true
   defp honeypot_filled?(_), do: false
 
+  defp get_or_create_user(conn, email) do
+    Accounts.get_user_by_email(email) || maybe_create_user(conn, email)
+  end
+
+  defp maybe_create_user(conn, email) do
+    case RateLimiter.check_rate(client_ip(conn), :create_account) do
+      {:allow, _count} -> create_user(email)
+      {:deny, _retry_after} -> nil
+    end
+  end
+
   defp create_user(email) do
     case Accounts.register_user(%{email: email}) do
       {:ok, user} -> user
       {:error, _changeset} -> nil
+    end
+  end
+
+  defp client_ip(conn) do
+    case get_req_header(conn, "x-forwarded-for") do
+      [ips | _] ->
+        ips |> String.split(",") |> hd() |> String.trim()
+
+      [] ->
+        conn.remote_ip |> :inet.ntoa() |> to_string()
     end
   end
 
