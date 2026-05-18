@@ -7,6 +7,7 @@ defmodule Reposit.RateLimiter do
   - Search: 30 per minute per IP (calls OpenAI for embeddings)
   - Solution creation: 10 per minute per IP
   - Voting: 30 per minute per IP
+  - Account creation: 3 per hour per IP
   """
   use Hammer, backend: :ets
 
@@ -19,6 +20,7 @@ defmodule Reposit.RateLimiter do
   - `:search` - Search requests (uses OpenAI embeddings), 30/minute
   - `:create_solution` - Creating solutions, 10/minute
   - `:vote` - Voting on solutions, 30/minute
+  - `:create_account` - Creating accounts, 3/hour
 
   ## Returns
 
@@ -43,5 +45,6 @@ defmodule Reposit.RateLimiter do
   def rate_limit_for(:search), do: {:timer.minutes(1), 30}
   def rate_limit_for(:create_solution), do: {:timer.minutes(1), 10}
   def rate_limit_for(:vote), do: {:timer.minutes(1), 30}
+  def rate_limit_for(:create_account), do: {:timer.hours(1), 3}
   def rate_limit_for(_), do: {:timer.minutes(1), 100}
 end

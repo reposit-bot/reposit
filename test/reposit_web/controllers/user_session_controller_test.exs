@@ -1,5 +1,5 @@
 defmodule RepositWeb.UserSessionControllerTest do
-  use RepositWeb.ConnCase, async: true
+  use RepositWeb.ConnCase, async: false
 
   import Reposit.AccountsFixtures
   alias Reposit.Accounts
@@ -115,6 +115,60 @@ defmodule RepositWeb.UserSessionControllerTest do
 
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "magic link to sign in"
       assert Accounts.get_user_by_email(email)
+    end
+
+    test "silently blocks new account creation after rate limit is exceeded", %{conn: conn} do
+      ip = "203.0.113.#{System.unique_integer([:positive])}"
+
+      for _ <- 1..3 do
+        email = "limited#{System.unique_integer([:positive])}@example.com"
+
+        conn =
+          conn
+          |> recycle()
+          |> put_req_header("x-forwarded-for", ip)
+          |> post(~p"/users/log-in", %{"user" => %{"email" => email}})
+
+        assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "magic link to sign in"
+        assert Accounts.get_user_by_email(email)
+      end
+
+      blocked_email = "limited#{System.unique_integer([:positive])}@example.com"
+
+      conn =
+        conn
+        |> recycle()
+        |> put_req_header("x-forwarded-for", ip)
+        |> post(~p"/users/log-in", %{"user" => %{"email" => blocked_email}})
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "magic link to sign in"
+      assert redirected_to(conn) == ~p"/users/log-in"
+      refute Accounts.get_user_by_email(blocked_email)
+    end
+
+    test "still sends magic link for existing user after account creation limit is exceeded", %{
+      conn: conn,
+      user: user
+    } do
+      ip = "203.0.113.#{System.unique_integer([:positive])}"
+
+      for _ <- 1..3 do
+        conn
+        |> recycle()
+        |> put_req_header("x-forwarded-for", ip)
+        |> post(~p"/users/log-in", %{
+          "user" => %{"email" => "limited#{System.unique_integer([:positive])}@example.com"}
+        })
+      end
+
+      conn =
+        conn
+        |> recycle()
+        |> put_req_header("x-forwarded-for", ip)
+        |> post(~p"/users/log-in", %{"user" => %{"email" => user.email}})
+
+      assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "magic link to sign in"
+      assert Reposit.Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "login"
     end
 
     test "logs the user in", %{conn: conn, user: user} do
